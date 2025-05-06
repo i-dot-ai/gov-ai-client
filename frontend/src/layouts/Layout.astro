@@ -1,0 +1,31 @@
+---
+import '../../node_modules/i.ai-design-system/dist/iai-design-system.css'
+import LitWrapper from '../components/lit-wrapper.astro'
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<title>Gov AI MCP Client</title>
+	</head>
+	<body class="govuk-template__body govuk-frontend-supported">
+
+		<LitWrapper>
+			<iai-header product-name="MCP Client"></iai-header>
+		</LitWrapper>
+
+		<div class="govuk-width-container">
+			<main class="govuk-main-wrapper">
+				<slot />
+			</main>
+		</div>
+
+		<script>
+			import '../../node_modules/i.ai-design-system/dist/iai-design-system.js'
+		</script>
+
+	</body>
+</html>

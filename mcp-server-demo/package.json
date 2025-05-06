@@ -1,0 +1,14 @@
+{
+  "name": "mcp-server-demo",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Demo MCP server for testing locally",
+  "main": "mcp_server.js",
+  "scripts": {
+    "start": "node mcp_server.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.8.0",
+    "express": "^5.0.1"
+  }
+}

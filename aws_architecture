@@ -1,0 +1,86 @@
+digraph "AWS architecture" {
+	graph [bgcolor=transparent fontcolor="#2D3436" fontname="Sans-Serif" fontsize=14 label="AWS architecture" nodesep=0.60 pad=2.0 rankdir=TB ranksep=0.75 splines=ortho]
+	node [fixedsize=true fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13 height=1.4 imagescale=true labelloc=b shape=box style=rounded width=1.4]
+	edge [color="#7B8894"]
+	aa20b7a85bfc4a47b5f5bb493638acd1 -> c0a7f2e6f89e4802befb2189fd48ee9a [dir=none fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	subgraph "cluster_I.AI dev account" {
+		graph [bgcolor="#E5F5FD" fontname="Sans-Serif" fontsize=12 label="I.AI dev account" labeljust=l pencolor="#AEB6BE" rankdir=LR shape=box style=rounded]
+		subgraph "cluster_eu-west-2" {
+			graph [bgcolor="#EBF3E7" fontname="Sans-Serif" fontsize=12 label="eu-west-2" labeljust=l pencolor="#AEB6BE" rankdir=LR shape=box style=rounded]
+			subgraph cluster_VPC {
+				graph [bgcolor="#ECE8F6" fontname="Sans-Serif" fontsize=12 label=VPC labeljust=l pencolor="#AEB6BE" rankdir=LR shape=box style=rounded]
+				subgraph "cluster_Account wide security" {
+					graph [bgcolor="#FDF7E3" fontname="Sans-Serif" fontsize=12 label="Account wide security" labeljust=l pencolor="#AEB6BE" rankdir=LR shape=box style=rounded]
+					"2ad4ba88c51d4c9a9cf4a0bed0ce736b" [label=GuardDuty height=1.9 image="/Users/george.burton/gov-ai-client/venv/lib/python3.12/site-packages/resources/aws/security/guardduty.png" shape=none]
+				}
+				subgraph "cluster_Private subnet" {
+					graph [bgcolor="#FDF7E3" fontname="Sans-Serif" fontsize=12 label="Private subnet" labeljust=l pencolor="#AEB6BE" rankdir=LR shape=box style=rounded]
+					b0c9ce33bfea4f1eaefb5e740c81761d [label=WAF height=1.9 image="/Users/george.burton/gov-ai-client/venv/lib/python3.12/site-packages/resources/aws/security/waf.png" shape=none]
+					subgraph cluster_SNS {
+						graph [bgcolor="#E5F5FD" fontname="Sans-Serif" fontsize=12 label=SNS labeljust=l pencolor="#AEB6BE" rankdir=LR shape=box style=rounded]
+						"1960586b8b034302997052296bb3d83e" [label=SNS height=1.9 image="/Users/george.burton/gov-ai-client/venv/lib/python3.12/site-packages/resources/aws/integration/simple-notification-service-sns-topic.png" shape=none]
+					}
+					subgraph cluster_ECS {
+						graph [bgcolor="#E5F5FD" fontname="Sans-Serif" fontsize=12 label=ECS labeljust=l pencolor="#AEB6BE" rankdir=LR shape=box style=rounded]
+						"84b52868042c4db8b15ae7695dfd26d2" [label=Frontend height=1.9 image="/Users/george.burton/gov-ai-client/venv/lib/python3.12/site-packages/resources/aws/compute/elastic-container-service.png" shape=none]
+						"741f8e26b6914c269978cbe10bd67ea1" [label=Backend height=1.9 image="/Users/george.burton/gov-ai-client/venv/lib/python3.12/site-packages/resources/aws/compute/elastic-container-service.png" shape=none]
+					}
+					subgraph cluster_Autoscaling {
+						graph [bgcolor="#E5F5FD" fontname="Sans-Serif" fontsize=12 label=Autoscaling labeljust=l pencolor="#AEB6BE" rankdir=LR shape=box style=rounded]
+						"6effb840793a4eefa5369933ed9a2dc5" [label="Usage scaling" height=1.9 image="/Users/george.burton/gov-ai-client/venv/lib/python3.12/site-packages/resources/aws/management/auto-scaling.png" shape=none]
+						"6728b84e6a7a4a1db31b90e414d54db4" [label="Peak time scaling" height=1.9 image="/Users/george.burton/gov-ai-client/venv/lib/python3.12/site-packages/resources/aws/management/auto-scaling.png" shape=none]
+					}
+					subgraph cluster_Observability {
+						graph [bgcolor="#E5F5FD" fontname="Sans-Serif" fontsize=12 label=Observability labeljust=l pencolor="#AEB6BE" rankdir=LR shape=box style=rounded]
+						"23d0aaa1adf048daa84197744d740e8d" [label="Service monitoring" height=1.9 image="/Users/george.burton/gov-ai-client/venv/lib/python3.12/site-packages/resources/aws/management/cloudwatch-alarm.png" shape=none]
+					}
+					subgraph "cluster_File storage" {
+						graph [bgcolor="#E5F5FD" fontname="Sans-Serif" fontsize=12 label="File storage" labeljust=l pencolor="#AEB6BE" rankdir=LR shape=box style=rounded]
+						"03e2b5873077448b9fbd48f45c91db95" [label="AWS S3 bucket" height=1.9 image="/Users/george.burton/gov-ai-client/venv/lib/python3.12/site-packages/resources/aws/storage/simple-storage-service-s3.png" shape=none]
+					}
+					subgraph "cluster_Secret storage" {
+						graph [bgcolor="#E5F5FD" fontname="Sans-Serif" fontsize=12 label="Secret storage" labeljust=l pencolor="#AEB6BE" rankdir=LR shape=box style=rounded]
+						d8c2b283631b4e37b6ec4f8a610bb2a9 [label="AWS secrets manager" height=1.9 image="/Users/george.burton/gov-ai-client/venv/lib/python3.12/site-packages/resources/aws/security/secrets-manager.png" shape=none]
+					}
+					subgraph "cluster_App logs/metrics" {
+						graph [bgcolor="#E5F5FD" fontname="Sans-Serif" fontsize=12 label="App logs/metrics" labeljust=l pencolor="#AEB6BE" rankdir=LR shape=box style=rounded]
+						"1aafcc35f6c449248495d74e1e2ff805" [label="CloudWatch logs" height=1.9 image="/Users/george.burton/gov-ai-client/venv/lib/python3.12/site-packages/resources/aws/management/cloudwatch.png" shape=none]
+					}
+					subgraph "cluster_Persistent storage" {
+						graph [bgcolor="#E5F5FD" fontname="Sans-Serif" fontsize=12 label="Persistent storage" labeljust=l pencolor="#AEB6BE" rankdir=LR shape=box style=rounded]
+						aa20b7a85bfc4a47b5f5bb493638acd1 [label="Aurora postgresql" height=1.9 image="/Users/george.burton/gov-ai-client/venv/lib/python3.12/site-packages/resources/aws/database/aurora.png" shape=none]
+						c0a7f2e6f89e4802befb2189fd48ee9a [label="Instance 1" height=1.9 image="/Users/george.burton/gov-ai-client/venv/lib/python3.12/site-packages/resources/aws/database/aurora-instance.png" shape=none]
+					}
+				}
+				subgraph "cluster_Public subnet" {
+					graph [bgcolor="#FDF7E3" fontname="Sans-Serif" fontsize=12 label="Public subnet" labeljust=l pencolor="#AEB6BE" rankdir=LR shape=box style=rounded]
+					"86b1cdf18b20433d8b6bf539361ec675" [label="Application load balancer" height=1.9 image="/Users/george.burton/gov-ai-client/venv/lib/python3.12/site-packages/resources/aws/network/elastic-load-balancing.png" shape=none]
+					"27dc5a7350934d53a3200edfecc4fb16" [label=Cognito height=1.9 image="/Users/george.burton/gov-ai-client/venv/lib/python3.12/site-packages/resources/aws/security/cognito.png" shape=none]
+				}
+			}
+		}
+	}
+	"1a096fab61824960af15447a1ec048cf" [label=User height=1.9 image="/Users/george.burton/gov-ai-client/venv/lib/python3.12/site-packages/resources/aws/general/users.png" shape=none]
+	"1a096fab61824960af15447a1ec048cf" -> "27dc5a7350934d53a3200edfecc4fb16" [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"27dc5a7350934d53a3200edfecc4fb16" -> "86b1cdf18b20433d8b6bf539361ec675" [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"86b1cdf18b20433d8b6bf539361ec675" -> b0c9ce33bfea4f1eaefb5e740c81761d [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	b0c9ce33bfea4f1eaefb5e740c81761d -> "741f8e26b6914c269978cbe10bd67ea1" [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"741f8e26b6914c269978cbe10bd67ea1" -> "03e2b5873077448b9fbd48f45c91db95" [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"741f8e26b6914c269978cbe10bd67ea1" -> d8c2b283631b4e37b6ec4f8a610bb2a9 [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"741f8e26b6914c269978cbe10bd67ea1" -> "1aafcc35f6c449248495d74e1e2ff805" [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"741f8e26b6914c269978cbe10bd67ea1" -> aa20b7a85bfc4a47b5f5bb493638acd1 [dir=both fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"741f8e26b6914c269978cbe10bd67ea1" -> "1960586b8b034302997052296bb3d83e" [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"6effb840793a4eefa5369933ed9a2dc5" -> "741f8e26b6914c269978cbe10bd67ea1" [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"6728b84e6a7a4a1db31b90e414d54db4" -> "741f8e26b6914c269978cbe10bd67ea1" [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"23d0aaa1adf048daa84197744d740e8d" -> "741f8e26b6914c269978cbe10bd67ea1" [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"27dc5a7350934d53a3200edfecc4fb16" -> "86b1cdf18b20433d8b6bf539361ec675" [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"86b1cdf18b20433d8b6bf539361ec675" -> b0c9ce33bfea4f1eaefb5e740c81761d [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	b0c9ce33bfea4f1eaefb5e740c81761d -> "84b52868042c4db8b15ae7695dfd26d2" [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"84b52868042c4db8b15ae7695dfd26d2" -> "03e2b5873077448b9fbd48f45c91db95" [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"84b52868042c4db8b15ae7695dfd26d2" -> d8c2b283631b4e37b6ec4f8a610bb2a9 [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"84b52868042c4db8b15ae7695dfd26d2" -> "1aafcc35f6c449248495d74e1e2ff805" [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"6effb840793a4eefa5369933ed9a2dc5" -> "84b52868042c4db8b15ae7695dfd26d2" [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"6728b84e6a7a4a1db31b90e414d54db4" -> "84b52868042c4db8b15ae7695dfd26d2" [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"23d0aaa1adf048daa84197744d740e8d" -> "84b52868042c4db8b15ae7695dfd26d2" [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"84b52868042c4db8b15ae7695dfd26d2" -> "741f8e26b6914c269978cbe10bd67ea1" [dir=both fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+}

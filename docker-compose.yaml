@@ -1,0 +1,18 @@
+services:
+
+  frontend:
+    build:
+      context: .
+      dockerfile: ./frontend/Dockerfile
+    container_name: astro
+    ports:
+      - "8081:8081"
+    env_file:
+      - .env
+    networks:
+      - gov-ai-client-network
+    
+
+networks:
+  gov-ai-client-network:
+    driver: bridge

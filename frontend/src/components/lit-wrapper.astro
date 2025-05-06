@@ -1,0 +1,19 @@
+---
+import { html, render } from "@lit-labs/ssr";
+import { unsafeHTML } from "lit-html/directives/unsafe-html.js";
+//import.meta.glob('../../public/components/*.mjs');
+import ('./iai-header.mjs');
+import ('./markdown-converter.mjs');
+import ('./tool-info.mjs');
+import ('./message-box.mjs');
+
+const innerHtml = await Astro.slots.render('default');
+
+const litHtmlString = [...render(html`${unsafeHTML(innerHtml)}`)]
+.join("")
+.replace(/<template shadowroot="open" shadowrootmode="open">/g, "")
+.replace(/<\/template>/g, "");
+
+---
+
+<Fragment set:html={litHtmlString} />

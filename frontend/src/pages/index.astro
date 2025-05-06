@@ -1,0 +1,202 @@
+---
+import Layout from '../layouts/Layout.astro'
+import LitWrapper from '../components/lit-wrapper.astro'
+import type { Message } from '../logic/ai3.ts'
+
+let messages: Message[] | undefined = await Astro.session?.get('messages')
+
+---
+
+<Layout>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-three-quarters-from-desktop">
+
+      <h1 class="govuk-visually-hidden">Gov AI MCP Client Chat</h1>
+
+      <div id="message-container">
+
+        { messages?.map((message) =>
+          <LitWrapper>
+            <message-box type={ message.type } content={ message.response.content } tool-calls={ JSON.stringify(message.response.tool_calls) }></message-box>
+          </LitWrapper>
+        )}
+
+      </div>
+
+      <form class="prompt-box govuk-!-padding-3" method="POST" action="/post-message" enctype="application/x-www-form-urlencoded">
+        <message-input>
+          <label class="govuk-label govuk-label--s" for="prompt">Ask anything</label>
+          <div id="prompt-hint" class="govuk-hint govuk-!-font-size-16">
+            AI can make mistakes - check before using its output
+          </div>
+          <textarea class="govuk-textarea govuk-!-margin-bottom-3 prompt-box__textarea" id="prompt" name="prompt" rows="3" required aria-describedby="prompt-hint"></textarea>
+        </message-input>
+        <div class="govuk-button-group govuk-!-margin-bottom-1">
+          <button class="govuk-button govuk-!-margin-bottom-0">Send</button>
+          <a class="govuk-link govuk-!-font-size-16 govuk-!-margin-bottom-0" href="/clear-session">Clear session</a>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <script>
+    
+    import type { MessageInput } from '../components/message-input.mjs'
+
+    const textArea = document.querySelector('message-input') as MessageInput;
+    const form = document.querySelector('form') as HTMLFormElement
+    let container = document.querySelector('#message-container') as HTMLElement
+    form.addEventListener('submit', (evt) => {
+      evt.preventDefault()
+      const formData = new URLSearchParams(new FormData(form)).toString()
+
+      // set up new message
+      let messageBoxUser = document.createElement('message-box')
+      messageBoxUser.setAttribute('type', 'user')
+      messageBoxUser.setAttribute('content', textArea.getValue().replace(/"/g, '&quot;'))
+      container.appendChild(messageBoxUser)
+
+      let messageBoxLLM = document.createElement('message-box')
+      messageBoxLLM.setAttribute('type', 'llm')
+      container.appendChild(messageBoxLLM)
+      
+      // send prompt
+      fetch("/post-message", {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: formData
+      });
+
+      textArea.reset()
+
+    })
+
+  </script>
+
+  <script>
+    import '../components/loading-message.mjs'
+    import '../components/markdown-converter.mjs'
+    import '../components/message-box.mjs'
+    import '../components/message-input.mjs'
+    import '../components/tool-info.mjs'
+  </script>
+
+</Layout>
+
+
+<style is:global>
+
+  :root {
+    --iai-pink: #c50878;
+  }
+			
+  #loading[tabindex="-1"]:focus-visible {
+    border-radius: 0.5rem;
+    outline: 1px solid var(--iai-pink);
+  }
+
+  .message-box {
+    border: 1px solid #b1b4b6;
+    border-radius: 0.5rem;
+    margin-bottom: 1.25rem;
+    padding: 1rem;
+  }
+  .message-box--user {
+    background-color: #fee7f4;
+    border-color: var(--iai-pink);
+    margin-right: 2.75rem;
+  }
+  .message-box--llm {
+    margin-left: 2.75rem;
+    position: relative;
+  }
+  .message-box--llm::before {
+    align-items: center;
+    background-color: var(--iai-pink);
+    border-radius: 100%;
+    color: #fff;
+    content: 'AI';
+    display: flex;
+    font-family: Inter, Arial, sans-serif;
+    height: 2rem;
+    justify-content: center;
+    left: -2.75rem;
+    position: absolute;
+    top: 0.25rem;
+    width: 2rem;
+  }
+  .message-box:focus-visible {
+    border: 2px solid #c50878;
+    outline: none;
+  }
+  .message-box pre {
+    overflow: scroll;
+  }
+  .message-box p:last-child {
+    margin-bottom: 0.25rem;
+  }
+  .message-box li {
+    margin-top: 1rem;
+  }
+
+  .prompt-box {
+    background-color: #f3f2f1;
+    border: 1px solid #b1b4b6;
+  }
+  .prompt-box__textarea {
+    min-height: 86px;
+  }
+</style>
+
+<style is:global>
+  .loading-ellipsis span {
+    animation-duration: 1.5s;
+    animation-iteration-count: infinite;
+    margin: 0 -2px;
+  }
+  .loading-ellipsis span:nth-of-type(1) {
+    animation-name: rb-ellipsis-1;
+  }
+  .loading-ellipsis span:nth-of-type(2) {
+    animation-name: rb-ellipsis-2;
+  }
+  .loading-ellipsis span:nth-of-type(3) {
+    animation-name: rb-ellipsis-3;
+  }
+  @keyframes rb-ellipsis-1 {
+    0% {
+      opacity: 0;
+    }
+    24% {
+      opacity: 0;
+    }
+    25% {
+      opacity: 1;
+    }
+  }
+  @keyframes rb-ellipsis-2 {
+    0% {
+      opacity: 0;
+    }
+    49% {
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+  @keyframes rb-ellipsis-3 {
+    0% {
+      opacity: 0;
+    }
+    74% {
+      opacity: 0;
+    }
+    75% {
+      opacity: 1;
+    }
+  }
+</style>
