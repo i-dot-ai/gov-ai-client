@@ -1,0 +1,95 @@
+venv
+.DS_Store
+.idea
+.gcloudignore
+.git
+.venv
+__pycache__/
+/setup.cfg
+.ipynb_checkpoints
+*.ipynb
+.env
+.mcp-servers.yaml
+Brewfile.lock.json
+*.pdf
+
+# Terraform
+**/.terraform/*
+**/terraform/terraform.tfstate.d
+**/.terraform*
+# Terraform lock files
+*/.terraform.lock.hcl
+.terraform.lock.hcl
+*.terraform.lock.hcl 
+
+# Data
+*.csv
+*.xlsx
+*.xls
+*.pkl
+*.parquet
+*.zip
+*.ods
+
+# outputs
+*.pdf
+*.jpg
+*.png
+*.pptx
+*.ppt
+*.docx
+
+# Rendered presentations
+*.html
+*_files/
+
+# Docker cache
+.build-cache
+
+
+
+### astro / nextjs
+
+# dependencies
+frontend/nextjs/node_modules
+frontend/nextjs/.pnp
+frontend/nextjs/.pnp.js
+frontend/nextjs/.yarn/install-state.gz
+
+# testing
+frontend/nextjs/coverage
+
+# next.js
+frontend/nextjs/.next/
+frontend/nextjs/out/
+frontend/nextjs/package-lock.json
+
+# production
+frontend/nextjs/build
+
+# misc
+frontend/nextjs/.DS_Store
+frontend/nextjs/*.pem
+
+# debug
+frontend/nextjs/npm-debug.log*
+frontend/nextjs/yarn-debug.log*
+frontend/nextjs/yarn-error.log*
+
+# local env files
+frontend/nextjs/.env*.local
+
+# vercel
+frontend/nextjs/.vercel
+
+# typescript
+frontend/nextjs/*.tsbuildinfo
+frontend/nextjs/next-env.d.ts
+
+frontend/.next/
+frontend/node_modules/
+
+
+# MCP demo server
+mcp-server-demo/node_modules
+
