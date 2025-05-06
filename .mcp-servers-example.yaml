@@ -1,0 +1,11 @@
+# Copy this to .mcp-servers.yaml and update accordingly
+# This will be overridden if MCP_SERVERS env var is set
+
+servers:
+
+  - name: test-mcp-server
+    url: http://localhost:3210/sse
+
+  - name: Caddy
+    url: [add URL here]
+    accessToken: [optional access token]
