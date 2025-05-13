@@ -8,6 +8,7 @@ import { AzureChatOpenAI } from '@langchain/openai'
 import { AIMessage, HumanMessage, SystemMessage } from '@langchain/core/messages'
 import { Client } from '@modelcontextprotocol/sdk/client/index.js'
 import { SSEClientTransport } from '@modelcontextprotocol/sdk/client/sse.js'
+import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import { loadMcpTools } from '@langchain/mcp-adapters'
 import { sendMessage } from '../pages/api/sse'
 import fs from 'fs'
@@ -71,14 +72,7 @@ export const getLlmResponse = async (messages: Message[]) => {
       serverHeaders['x-external-access-token'] = mcpServer.accessToken
     }
     try {
-      const transport = new SSEClientTransport(new URL(mcpServer.url), {
-        eventSourceInit: {
-          fetch: (input, init) =>
-            fetch(input, {
-              ...init,
-              headers: serverHeaders
-            }),
-        },
+      const transport: StreamableHTTPClientTransport = new StreamableHTTPClientTransport(new URL(mcpServer.url), {
         requestInit: {
           headers: serverHeaders
         }

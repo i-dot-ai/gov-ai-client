@@ -43,5 +43,5 @@ export async function POST({ request, redirect, session }) {
   // save session data
   await session?.set('messages', messages)
 
-  return redirect('/')
+  return Response.json(llmResponse)
 }

@@ -36,7 +36,7 @@ export class MessageBox extends LitElement {
   connectedCallback() {
     super.connectedCallback()
     if (!this.content && this.type === 'llm') {
-      this.#stream()
+      this.#fetchMessage()
     }
   }
 
@@ -71,57 +71,41 @@ export class MessageBox extends LitElement {
     `
   }
 
-
-  #stream() {
-
-    this.streamingInProgress = true
-    
-    // get message in view
+  async #fetchMessage() {
+    this.streamingInProgress = true;
+  
+    // Ensure message is scrolled into view
     window.setTimeout(() => {
-      this.scrollIntoView({
-        block: 'start',
-        behavior: 'instant'
-      })
+      this.scrollIntoView({ block: 'start', behavior: 'instant' });
     }, 100);
     /** @type {HTMLElement | null} */(this.querySelector('.message-box'))?.focus()
 
-    // setup SSE
-    const source = new EventSource('/api/sse')
-    source.onmessage = (evt) => {
+    try {
+      const response = await fetch("/post-message", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: this.prompt
+      });
       
-      // parse response data
-      /**
-       * @type { {type?: 'tool' | 'content' | 'end', data?: any} }
-       */
-      let response = {}
-      try {
-        response = JSON.parse(evt.data)
-      } catch (err) {
-        console.log(err)
-        return
+      const data = await response.json();
+  
+      // Handle tool calls
+      if (Array.isArray(data.toolCalls)) {
+        this.toolCalls = data.toolCalls;
+      }
+  
+      // Handle content
+      if (typeof data.content === 'string') {
+        this.content = data.content;
       }
 
-      // It's a tool
-      if (response.type === 'tool') {
-        this.toolCalls.push(response.data[0])
-
-      // It's the text response
-      } else if (response.type === 'content') {        
-        this.content += response.data
-
-      } else if (response.type === 'end') {
-        source.close()
-        this.streamingInProgress = false
-      }
-
+    } catch (err) {
+      console.error('Fetch error:', err);
+    } finally {
+      this.streamingInProgress = false;
     }
-    source.onerror = (err) => {
-      console.log('SSE error:', err)
-      source.close()
-      this.streamingInProgress = false
-      window.setTimeout(this.#stream, 500)
-    }
-    
   }
 
 }
