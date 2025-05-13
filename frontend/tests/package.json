@@ -1,0 +1,16 @@
+{
+  "name": "gov-ai-client-e2e-tests",
+  "version": "1.0.0",
+  "description": "End-to-end tests for Gov AI Client",
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:debug": "playwright test --debug",
+    "test:headed": "playwright test --headed",
+    "report": "playwright show-report"
+  },
+  "dependencies": {
+    "@axe-core/playwright": "^4.7.3",
+    "@playwright/test": "^1.38.0"
+  }
+}

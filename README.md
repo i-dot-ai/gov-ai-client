@@ -45,7 +45,13 @@ The app is designed to work without JavaScript (for progressive enhancement), an
 
 ## Tests
 
-End-to-end tests using [Playwright](https://playwright.dev/) are located in the `/tests` directory.
+### End-to-End Tests
+
+End-to-end tests using [Playwright](https://playwright.dev/) are available in two locations:
+
+#### Legacy Tests
+
+Legacy E2E tests are located in the `/tests` directory.
 
 From the `/tests` directory, run: 
 
@@ -53,6 +59,25 @@ From the `/tests` directory, run:
 npm install
 npx playwright test
 ```
+
+#### New E2E Tests
+
+New E2E tests following the implementation plan in `docs/e2e-test-implementation-plan.md` are located in the `/frontend/tests` directory.
+
+From the `/frontend/tests` directory, run:
+
+```bash
+npm install
+npm test
+```
+
+These tests include:
+- Chat functionality tests
+- MCP server integration tests
+- Message input functionality tests
+- Accessibility tests
+
+See the [frontend/tests/README.md](frontend/tests/README.md) for more details on the test structure and how to run the tests.
 
 
 ## Deployment
