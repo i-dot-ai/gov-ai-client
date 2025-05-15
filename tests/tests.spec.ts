@@ -99,3 +99,20 @@ test('Message input functionality', async ({ page }) => {
   expect(height3).toEqual(height1)
 
 })
+
+
+test('Copy to clipboard', async ({ page, browserName }) => {
+
+  await sendPrompt('What is the capital of Norway?', page)
+
+  const copyButton = page.getByRole('button', { name: 'Copy' }).last()
+  await copyButton.click()
+  
+  // Buttons have accessible text to make each one unique
+  expect((await copyButton.allInnerTexts()).toString()).toContain('response 1')
+
+  // Content is copied to the clipboard
+  let clipboardText = await page.evaluate('navigator.clipboard.readText()')
+  expect(clipboardText).toContain('Oslo')
+
+})
