@@ -65,6 +65,8 @@ export class MessageBox extends LitElement {
             <loading-message></loading-message>
           ` : nothing}
 
+          <button class="govuk-button govuk-button--secondary govuk-!-margin-top-3 govuk-!-margin-bottom-0" @click="${this.#copyToClipboard}">Copy to clipboard</button>
+
         ` : nothing}
       
       </div>
@@ -122,6 +124,18 @@ export class MessageBox extends LitElement {
       window.setTimeout(this.#stream, 500)
     }
     
+  }
+
+
+  #copyToClipboard() {
+    const listener = (evt) => {
+      evt.clipboardData.setData("text/html", this.querySelector("markdown-converter")?.innerHTML.trim());
+      evt.clipboardData.setData("text/plain", this.querySelector("markdown-converter")?.textContent?.trim());
+      evt.preventDefault();
+    };
+    document.addEventListener("copy", listener);
+    document.execCommand("copy");
+    document.removeEventListener("copy", listener);
   }
 
 }
