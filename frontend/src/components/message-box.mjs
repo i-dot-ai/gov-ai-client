@@ -65,7 +65,7 @@ export class MessageBox extends LitElement {
             <loading-message></loading-message>
           ` : nothing}
 
-          <button class="govuk-button govuk-button--secondary govuk-!-margin-top-3 govuk-!-margin-bottom-0" @click="${this.#copyToClipboard}">Copy to clipboard</button>
+          <button class="copy-button govuk-button govuk-!-margin-top-3 govuk-!-margin-bottom-0" @click="${this.#copyToClipboard}">Copy</button>
 
         ` : nothing}
       
