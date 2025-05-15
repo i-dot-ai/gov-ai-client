@@ -53,6 +53,8 @@ const MCP_SERVERS = (() => {
 
 })()
 
+console.log('MCP Servers: ', MCP_SERVERS)
+
 
 export const getLlmResponse = async (messages: Message[]) => {
 
@@ -125,9 +127,28 @@ export const getLlmResponse = async (messages: Message[]) => {
   let finalMessage: string = ''
   let toolCalls: {}[] = []
   agent.streamMode = ['messages', 'updates']
-  const agentStream = await agent.stream(
-    { messages: agentMessages }
-  );
+  
+  let agentStream;
+  try {
+    agentStream = await agent.stream(
+      { messages: agentMessages }
+    )
+  } catch (err) {
+    console.error('Error connecting to LLM. Check your env vars.')
+    console.log(err)
+    const msg = 'There is a problem connecting to the LLM. Please try again.'
+    sendMessage(JSON.stringify({
+      type: 'content',
+      data: msg
+    }))
+    sendMessage(JSON.stringify({
+      type: 'end'
+    }))
+    return {
+      content: msg
+    }
+  }
+
   for await (const chunk of agentStream) {
 
     // 'messages' stream
