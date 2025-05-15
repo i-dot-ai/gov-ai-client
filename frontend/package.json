@@ -10,8 +10,8 @@
   },
   "dependencies": {
     "@astrojs/node": "^9.2.1",
-    "@langchain/core": "^0.3.43",
-    "@langchain/langgraph": "^0.2.62",
+    "@langchain/core": "^0.3.55",
+    "@langchain/langgraph": "^0.2.72",
     "@langchain/mcp-adapters": "^0.4.5",
     "@langchain/openai": "^0.5.10",
     "@lit-labs/ssr": "^3.3.1",
@@ -20,7 +20,7 @@
     "i.ai-design-system": "^0.6.1",
     "jose": "^6.0.10",
     "lit-html": "^3.2.1",
-    "openai": "^4.90.0",
+    "openai": "^4.98.0",
     "showdown": "^2.1.0",
     "yaml": "^2.7.1"
   },
