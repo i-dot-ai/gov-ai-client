@@ -14,17 +14,6 @@ variable "state_bucket" {
   description = "Name of the S3 bucket to use a terraform state"
 }
 
-variable "account_id" {
-  type        = string
-  description = "The AWS account ID"
-
-}
-
-variable "hosted_zone_id" {
-  type        = string
-  description = "Route 53 Hosted Zone"
-}
-
 variable "domain_name" {
   type        = string
   description = "The base domain name for the project"
@@ -46,11 +35,16 @@ variable "internal_ips" {
   description = "List of internal IPs"
 }
 
+<<<<<<< found
 variable "developer_ips" {
   type        = list(string)
   description = "List of developer IPs"
-}
-
+||||||| expected
+variable "ip_whitelist" {
+  type        = list(string)
+  description = "List of whitelist IPs"
+=======
+>>>>>>> replacement
 variable "team_name" {
   type        = string
   description = "The name of the team"
@@ -82,11 +76,6 @@ variable "security_level" {
   type        = string
   default     = "base"
   description = "Security Level of the infrastructure."
-}
-
-variable "slack_webhook" {
-  type        = string
-  description = "Slack webook URL for alert."
 }
 
 variable "azure_openai_api_key" {
