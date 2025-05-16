@@ -67,3 +67,11 @@ data "aws_ssm_parameter" "client_secret" {
 data "aws_ssm_parameter" "auth_provider_public_key" {
   name = "/i-dot-ai-${terraform.workspace}-core-keycloak/realm_public_key"
 }
+
+data "aws_secretsmanager_secret" "slack" {
+  name = "i-dot-ai-${var.env}-platform-slack-webhook"
+}
+
+data "aws_secretsmanager_secret_version" "platform_slack_webhook" {
+  secret_id = data.aws_secretsmanager_secret.slack.id
+}
