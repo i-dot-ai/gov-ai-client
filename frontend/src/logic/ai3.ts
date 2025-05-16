@@ -72,25 +72,27 @@ export const getLlmResponse = async (messages: Message[]) => {
       serverHeaders['x-external-access-token'] = mcpServer.accessToken
     }
     try {
-      let client: Client|undefined = undefined
-      try {
-      const transport: StreamableHTTPClientTransport = new StreamableHTTPClientTransport(new URL(mcpServer.url), {
-        requestInit: {
-          headers: serverHeaders
-        }
-      })
-      client = new Client({
-        name: mcpServer.name,
-        version: "1.0.0",
-      });
-      await client.connect(transport)
-      console.log("Connected using Streamable HTTP transport");
-      } catch (error) {
-        console.log("Streamable HTTP connection failed, falling back to SSE transport");
-        client = new Client({
+      const client = new Client({
           name: mcpServer.name,
           version: "1.0.0"
         });
+      try {
+        const transport: StreamableHTTPClientTransport = new StreamableHTTPClientTransport(new URL(mcpServer.url), {
+          eventSourceInit: {
+            fetch: (input, init) =>
+              fetch(input, {
+                ...init,
+                headers: serverHeaders
+              }),
+          },
+          requestInit: {
+            headers: serverHeaders
+          }
+        })
+        await client.connect(transport)
+        console.log("Connected using Streamable HTTP transport");
+      } catch (error) {
+        console.log("Streamable HTTP connection failed, falling back to SSE transport");
         const sseTransport = new SSEClientTransport(new URL(mcpServer.url), {
           eventSourceInit: {
             fetch: (input, init) =>
