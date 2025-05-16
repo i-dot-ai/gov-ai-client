@@ -92,10 +92,17 @@ export const getLlmResponse = async (messages: Message[]) => {
           version: "1.0.0"
         });
         const sseTransport = new SSEClientTransport(new URL(mcpServer.url), {
-        requestInit: {
-          headers: serverHeaders
-        }
-      });
+          eventSourceInit: {
+            fetch: (input, init) =>
+              fetch(input, {
+                ...init,
+                headers: serverHeaders
+              }),
+          },
+          requestInit: {
+            headers: serverHeaders
+          }
+        });
         await client.connect(sseTransport);
         console.log("Connected using SSE transport");
       }
