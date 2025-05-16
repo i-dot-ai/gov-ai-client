@@ -6,11 +6,6 @@ module "app_bucket" {
   name          = "${local.name}-data"
   log_bucket    = data.terraform_remote_state.platform.outputs.log_bucket
   kms_key       = data.terraform_remote_state.platform.outputs.kms_key_arn
-<<<<<<< found
   source_ips    = concat(var.developer_ips, var.internal_ips)
-||||||| expected
-  source_ips    = var.ip_whitelist
-=======
->>>>>>> replacement
   force_destroy = var.env == "dev" ? true : false
 }

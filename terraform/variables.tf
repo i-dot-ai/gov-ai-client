@@ -35,16 +35,11 @@ variable "internal_ips" {
   description = "List of internal IPs"
 }
 
-<<<<<<< found
 variable "developer_ips" {
   type        = list(string)
   description = "List of developer IPs"
-||||||| expected
-variable "ip_whitelist" {
-  type        = list(string)
-  description = "List of whitelist IPs"
-=======
->>>>>>> replacement
+}
+
 variable "team_name" {
   type        = string
   description = "The name of the team"

@@ -4,53 +4,13 @@ locals {
 }
 
 module "frontend" {
-<<<<<<< found
   name                         = "${local.name}-frontend"
   # checkov:skip=CKV_SECRET_4:Skip secret check as these have to be used within the Github Action
   # checkov:skip=CKV_TF_1: We're using semantic versions instead of commit hash
-||||||| expected
-  source                       = "git::https://github.com/i-dot-ai/i-dot-ai-core-terraform-modules.git//modules/infrastructure/ecs?ref=v5.0.0-ecs"
-  image_tag                    = var.image_tag
-  ecr_repository_uri           = "${var.account_id}.dkr.ecr.${var.region}.amazonaws.com/gov-ai-client-backend"
-  vpc_id                       = data.terraform_remote_state.vpc.outputs.vpc_id
-  private_subnets              = data.terraform_remote_state.vpc.outputs.private_subnets
-  host                         = local.host_backend
-=======
-  source                       = "git::https://github.com/i-dot-ai/i-dot-ai-core-terraform-modules.git//modules/infrastructure/ecs?ref=v5.0.0-ecs"
-  image_tag                    = var.image_tag
-  ecr_repository_uri           = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.region}.amazonaws.com/gov-ai-client-backend"
-  vpc_id                       = data.terraform_remote_state.vpc.outputs.vpc_id
-  private_subnets              = data.terraform_remote_state.vpc.outputs.private_subnets
-  host                         = local.host_backend
->>>>>>> replacement
-<<<<<<< found
-||||||| expected
-    "PORT" : local.backend_port,
-    "REPO" : "gov-ai-client",
-    "APP_URL": aws_route53_record.type_a_record.fqdn,
-    "AWS_ACCOUNT_ID": var.account_id,
-    "DOCKER_BUILDER_CONTAINER": "gov-ai-client",
-    "AUTH_PROVIDER_PUBLIC_KEY": data.aws_ssm_parameter.auth_provider_public_key.value,
-  }
-=======
-    "PORT" : local.backend_port,
-    "REPO" : "gov-ai-client",
-    "APP_URL": aws_route53_record.type_a_record.fqdn,
-    "AWS_ACCOUNT_ID": data.aws_caller_identity.current.account_id,
-    "DOCKER_BUILDER_CONTAINER": "gov-ai-client",
-    "AUTH_PROVIDER_PUBLIC_KEY": data.aws_ssm_parameter.auth_provider_public_key.value,
-  }
->>>>>>> replacement
   #source                      = "../../i-dot-ai-core-terraform-modules//modules/infrastructure/ecs" # For testing local changes
   source                       = "git::https://github.com/i-dot-ai/i-dot-ai-core-terraform-modules.git//modules/infrastructure/ecs?ref=v5.0.0-ecs"
   image_tag                    = var.image_tag
-<<<<<<< found
   ecr_repository_uri           = "public.ecr.aws/idotai/gov-ai-client"
-||||||| expected
-  ecr_repository_uri           = "${var.account_id}.dkr.ecr.${var.region}.amazonaws.com/gov-ai-client-frontend"
-=======
-  ecr_repository_uri           = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.region}.amazonaws.com/gov-ai-client-frontend"
->>>>>>> replacement
   vpc_id                       = data.terraform_remote_state.vpc.outputs.vpc_id
   private_subnets              = data.terraform_remote_state.vpc.outputs.private_subnets
   host                         = local.host
