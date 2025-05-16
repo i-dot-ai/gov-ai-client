@@ -78,6 +78,13 @@ export const getLlmResponse = async (messages: Message[]) => {
         });
       try {
         const transport: StreamableHTTPClientTransport = new StreamableHTTPClientTransport(new URL(mcpServer.url), {
+          eventSourceInit: {
+            fetch: (input, init) =>
+              fetch(input, {
+                ...init,
+                headers: serverHeaders
+              }),
+          },
           requestInit: {
             headers: serverHeaders
           }
