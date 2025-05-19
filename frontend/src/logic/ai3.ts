@@ -56,7 +56,7 @@ const MCP_SERVERS = (() => {
 console.log('MCP Servers: ', MCP_SERVERS)
 
 
-export const getLlmResponse = async (messages: Message[]) => {
+export const getLlmResponse = async (messages: Message[], authToken: string) => {
 
   const agentModel = new AzureChatOpenAI({
     openAIApiKey: process.env['AZURE_OPENAI_API_KEY'],
@@ -71,6 +71,9 @@ export const getLlmResponse = async (messages: Message[]) => {
     const serverHeaders: any = {}
     if (mcpServer.accessToken) {
       serverHeaders['x-external-access-token'] = mcpServer.accessToken
+    }
+    if (authToken) {
+      serverHeaders['x_amzn_oidc_accesstoken'] = authToken
     }
     try {
       const transport = new SSEClientTransport(new URL(mcpServer.url), {

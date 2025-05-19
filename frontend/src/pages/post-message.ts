@@ -30,7 +30,7 @@ export async function POST({ request, redirect, session }) {
   // get LLM response
   let llmResponse
   if (userPrompt) {
-    llmResponse = await getLlmResponse(messages)
+    llmResponse = await getLlmResponse(messages, request.headers.get('x-amzn-oidc-accesstoken'))
   }
 
   // add LLM response to session data
