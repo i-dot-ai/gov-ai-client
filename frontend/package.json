@@ -11,8 +11,8 @@
   "dependencies": {
     "@astrojs/node": "^9.2.1",
     "@langchain/core": "^0.3.43",
-    "@langchain/langgraph": "^0.2.62",
-    "@langchain/mcp-adapters": "^0.3.4",
+    "@langchain/langgraph": "==0.2.62",
+    "@langchain/mcp-adapters": "==0.3.4",
     "@langchain/openai": "^0.5.2",
     "@lit-labs/ssr": "^3.3.1",
     "astro": "^5.7.8",
@@ -20,7 +20,7 @@
     "i.ai-design-system": "^0.6.1",
     "jose": "^6.0.10",
     "lit-html": "^3.2.1",
-    "mcp-client": "^1.12.0",
+    "mcp-client": "==1.12.0",
     "openai": "^4.90.0",
     "showdown": "^2.1.0",
     "yaml": "^2.7.1"
