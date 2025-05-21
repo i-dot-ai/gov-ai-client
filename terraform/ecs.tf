@@ -1,7 +1,6 @@
 locals {
   frontend_port          = 8081
   additional_policy_arns = {for idx, arn in [aws_iam_policy.ecs_exec_custom_policy.arn] : idx => arn}
-  slack_webhook          = var.slack_webhook
 }
 
 module "frontend" {
@@ -75,7 +74,7 @@ module "sns_topic" {
   # source                       = "../../i-dot-ai-core-terraform-modules/modules/observability/cloudwatch-slack-integration"
   source                       = "git::https://github.com/i-dot-ai/i-dot-ai-core-terraform-modules.git//modules/observability/cloudwatch-slack-integration?ref=v2.0.1-cloudwatch-slack-integration"
   name                         = local.name
-  slack_webhook                = local.slack_webhook
+  slack_webhook                = data.aws_secretsmanager_secret_version.platform_slack_webhook.secret_string
 
   permissions_boundary_name    = "infra/i-dot-ai-${var.env}-gov-ai-client-perms-boundary-app"
 }

@@ -10,6 +10,7 @@ A thin chat client for connecting to MCP Servers
 To run the frontend application, use the following command:
 
 ```bash
+make install
 make run_frontend
 ```
 
@@ -47,9 +48,8 @@ The app is designed to work without JavaScript (for progressive enhancement), an
 
 End-to-end tests using [Playwright](https://playwright.dev/) are located in the `/tests` directory.
 
-From the `/tests` directory, run: 
-
 ```bash
+cd tests
 npm install
 npx playwright test
 ```

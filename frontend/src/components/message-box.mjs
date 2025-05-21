@@ -10,6 +10,7 @@ export class MessageBox extends LitElement {
     content: {type: String, attribute: 'content'},
     toolCalls: {type: Array, attribute: 'tool-calls'},
     streamingInProgress: {type: Boolean, state: true},
+    messageIndex: {type: Number, state: true},
   }
 
   constructor() {
@@ -38,13 +39,18 @@ export class MessageBox extends LitElement {
     if (!this.content && this.type === 'llm') {
       this.#stream()
     }
+    const messageBoxes = document.querySelectorAll('message-box[type="llm"]')
+    messageBoxes.forEach((messageBox, index) => {
+      if (messageBox === this) {
+        this.messageIndex = index + 1
+      }
+    })
   }
 
 
   render() {
     return html`
       <div class=${'message-box message-box--' + this.type} tabindex="-1">
-        
         ${this.type === 'user' ? html`
           <h2 class="govuk-heading-s govuk-!-font-size-16 govuk-!-margin-bottom-1">You:</h2>
           <p class="govuk-body">${this.content}</p>
@@ -63,6 +69,13 @@ export class MessageBox extends LitElement {
 
           ${this.streamingInProgress ? html`
             <loading-message></loading-message>
+          ` : nothing}
+
+          ${!this.streamingInProgress ? html`
+            <button class="copy-button govuk-button govuk-!-margin-top-3 govuk-!-margin-bottom-0" @click="${this.#copyToClipboard}">
+              Copy
+              <span class="govuk-visually-hidden">response ${this.messageIndex}</span>
+            </button>
           ` : nothing}
 
         ` : nothing}
@@ -122,6 +135,18 @@ export class MessageBox extends LitElement {
       window.setTimeout(this.#stream, 500)
     }
     
+  }
+
+
+  #copyToClipboard() {
+    const listener = (evt) => {
+      evt.clipboardData.setData("text/html", this.querySelector("markdown-converter")?.innerHTML.trim());
+      evt.clipboardData.setData("text/plain", this.querySelector("markdown-converter")?.textContent?.trim());
+      evt.preventDefault();
+    };
+    document.addEventListener("copy", listener);
+    document.execCommand("copy");
+    document.removeEventListener("copy", listener);
   }
 
 }

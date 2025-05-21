@@ -54,8 +54,10 @@ const MCP_SERVERS = (() => {
 
 })()
 
+console.log('MCP Servers: ', MCP_SERVERS)
 
-export const getLlmResponse = async (messages: Message[]) => {
+
+export const getLlmResponse = async (messages: Message[], authToken: string) => {
 
   const agentModel = new AzureChatOpenAI({
     openAIApiKey: process.env['AZURE_OPENAI_API_KEY'],
@@ -70,6 +72,9 @@ export const getLlmResponse = async (messages: Message[]) => {
     const serverHeaders: any = {}
     if (mcpServer.accessToken) {
       serverHeaders['x-external-access-token'] = mcpServer.accessToken
+    }
+    if (authToken) {
+      serverHeaders['x_amzn_oidc_accesstoken'] = authToken
     }
     try {
       const client = new Client({
@@ -124,10 +129,9 @@ export const getLlmResponse = async (messages: Message[]) => {
   let systemMessageText: string = `
   You are a UK civil servant. 
   If you see a word starting with "@" search for a tool by that name and use it. 
-  Always cite any responses from tools to support answer, e.g. provide:
-  - source
+  Where appropriate cite any responses from tools to support answer, e.g. provide:
+  - source, i.e. link or title (this should be verbatim, do not modify, or invent this)
   - quotes
-  - links
   - etc
   Reply in British English.
   `
@@ -147,9 +151,28 @@ export const getLlmResponse = async (messages: Message[]) => {
   let finalMessage: string = ''
   let toolCalls: {}[] = []
   agent.streamMode = ['messages', 'updates']
-  const agentStream = await agent.stream(
-    { messages: agentMessages }
-  );
+  
+  let agentStream;
+  try {
+    agentStream = await agent.stream(
+      { messages: agentMessages }
+    )
+  } catch (err) {
+    console.error('Error connecting to LLM. Check your env vars.')
+    console.log(err)
+    const msg = 'There is a problem connecting to the LLM. Please try again.'
+    sendMessage(JSON.stringify({
+      type: 'content',
+      data: msg
+    }))
+    sendMessage(JSON.stringify({
+      type: 'end'
+    }))
+    return {
+      content: msg
+    }
+  }
+
   for await (const chunk of agentStream) {
 
     // 'messages' stream

@@ -3,7 +3,7 @@ module "load_balancer" {
   #source           = "../../i-dot-ai-core-terraform-modules//modules/infrastructure/load_balancer" # For testing local changes
   source            = "git::https://github.com/i-dot-ai/i-dot-ai-core-terraform-modules.git//modules/infrastructure/load_balancer?ref=v1.2.1-load_balancer"
   name              = local.name
-  account_id        = var.account_id
+  account_id        = data.aws_caller_identity.current.account_id
   vpc_id            = data.terraform_remote_state.vpc.outputs.vpc_id
   public_subnets    = data.terraform_remote_state.vpc.outputs.public_subnets
   ip_whitelist      = concat(var.internal_ips, var.developer_ips)
@@ -17,12 +17,12 @@ module "waf" {
   #source        = "../../i-dot-ai-core-terraform-modules//modules/infrastructure/waf" # For testing local changes
   source         = "git::https://github.com/i-dot-ai/i-dot-ai-core-terraform-modules.git//modules/infrastructure/waf?ref=v5.2.0-waf"
   name           = local.name
-  ip_set         = concat(var.internal_ips, var.developer_ips)
   host           = local.host
+  ip_set         = concat(var.internal_ips, var.developer_ips)
 }
 
 resource "aws_route53_record" "type_a_record" {
-  zone_id = var.hosted_zone_id
+  zone_id = data.terraform_remote_state.account.outputs.hosted_zone_id
   name    = local.host
   type    = "A"
 

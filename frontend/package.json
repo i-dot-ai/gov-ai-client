@@ -21,6 +21,7 @@
     "jose": "^6.0.10",
     "lit-html": "^3.2.1",
     "openai": "^4.98.0",
+    "@modelcontextprotocol/sdk": "^1.11.4",
     "showdown": "^2.1.0",
     "yaml": "^2.7.1"
   },
