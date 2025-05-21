@@ -20,7 +20,7 @@
     "i.ai-design-system": "^0.6.1",
     "jose": "^6.0.10",
     "lit-html": "^3.2.1",
-    "@modelcontextprotocol/sdk": "==1.6.1",
+    "@modelcontextprotocol/sdk": "==1.8.0",
     "openai": "^4.90.0",
     "showdown": "^2.1.0",
     "yaml": "^2.7.1"
