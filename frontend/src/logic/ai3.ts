@@ -8,6 +8,7 @@ import { AzureChatOpenAI } from '@langchain/openai'
 import { AIMessage, HumanMessage, SystemMessage } from '@langchain/core/messages'
 import { Client } from '@modelcontextprotocol/sdk/client/index.js'
 import { SSEClientTransport } from '@modelcontextprotocol/sdk/client/sse.js'
+import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import { loadMcpTools } from '@langchain/mcp-adapters'
 import { sendMessage } from '../pages/api/sse'
 import fs from 'fs'
@@ -76,23 +77,43 @@ export const getLlmResponse = async (messages: Message[], authToken: string) => 
       serverHeaders['x_amzn_oidc_accesstoken'] = authToken
     }
     try {
-      const transport = new SSEClientTransport(new URL(mcpServer.url), {
-        eventSourceInit: {
-          fetch: (input, init) =>
-            fetch(input, {
-              ...init,
-              headers: serverHeaders
-            }),
-        },
-        requestInit: {
-          headers: serverHeaders
-        }
-      })
       const client = new Client({
-        name: mcpServer.name,
-        version: '1.0.0',
-      });
-      await client.connect(transport)
+          name: mcpServer.name,
+          version: "1.0.0"
+        });
+      try {
+        const transport: StreamableHTTPClientTransport = new StreamableHTTPClientTransport(new URL(mcpServer.url), {
+          eventSourceInit: {
+            fetch: (input, init) =>
+              fetch(input, {
+                ...init,
+                headers: serverHeaders
+              }),
+          },
+          requestInit: {
+            headers: serverHeaders
+          }
+        })
+        await client.connect(transport)
+        console.log("Connected using Streamable HTTP transport");
+      } catch (error) {
+        console.log("Streamable HTTP connection failed, falling back to SSE transport");
+        const sseTransport = new SSEClientTransport(new URL(mcpServer.url), {
+          eventSourceInit: {
+            fetch: (input, init) =>
+              fetch(input, {
+                ...init,
+                headers: serverHeaders
+              }),
+          },
+          requestInit: {
+            headers: serverHeaders
+          }
+        });
+        await client.connect(sseTransport);
+        console.log("Connected using SSE transport");
+      }
+
       const mcpTool = await loadMcpTools(mcpServer.url, client)
       mcpTools.push(...mcpTool)
     } catch (error) {

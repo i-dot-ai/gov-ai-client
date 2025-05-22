@@ -4,6 +4,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import express from "express"
 import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
+import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { z } from "zod";
 
 
@@ -61,6 +62,35 @@ app.get("/sse", async (_, res) => {
     delete transports[transport.sessionId];
   });
   await server.connect(transport);
+});
+
+app.post("/mcp", async (req, res) => {
+  try {
+    //const server = getServer(); 
+    const transport = new StreamableHTTPServerTransport({
+      sessionIdGenerator: undefined,
+    });
+    res.on('close', () => {
+      console.log('Request closed');
+      transport.close();
+      server.close();
+    });
+    await server.connect(transport);
+    console.log("Connected via /mcp");
+    await transport.handleRequest(req, res, req.body);
+  } catch (error) {
+    console.error('Error handling MCP request:', error);
+    if (!res.headersSent) {
+      res.status(500).json({
+        jsonrpc: '2.0',
+        error: {
+          code: -32603,
+          message: 'Internal server error',
+        },
+        id: null,
+      });
+    }
+  }
 });
 
 app.post("/messages", async (req, res) => {
