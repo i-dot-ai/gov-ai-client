@@ -34,16 +34,22 @@ let mcpTools = await getMcpTools(Astro.request.headers.get('x-amzn-oidc-accessto
               <h2 class="govuk-heading-s govuk-!-margin-bottom-0">Select a tool</h2>
             </legend>
             <div class="govuk-radios govuk-radios--small" data-module="govuk-radios">
-              { mcpTools.map((tool) =>
+              <tool-selector>
                 <div class="govuk-radios__item">
-                  <input class="govuk-radios__input" id={ 'tool-' + tool.name } name="tool" type="radio" value={ tool.name } aria-describedby={'tool-hint-' + tool.name } />
-                  <label class="govuk-label govuk-radios__label" for={ 'tool-' + tool.name }>{ tool.name }</label>
-                  { tool.description && 
-                    <div id={'tool-hint-' + tool.name } class="govuk-hint govuk-radios__hint">{ tool.description }</div>
-                  }
+                  <input class="govuk-radios__input" id="tool-none" name="tool" type="radio" value="" checked />
+                  <label class="govuk-label govuk-radios__label" for="tool-name">No tools</label>
                 </div>
-              )}
-            </div>
+                { mcpTools.map((tool) =>
+                  <div class="govuk-radios__item">
+                    <input class="govuk-radios__input" id={ 'tool-' + tool.name } name="tool" type="radio" value={ tool.name } aria-describedby={'tool-hint-' + tool.name } />
+                    <label class="govuk-label govuk-radios__label" for={ 'tool-' + tool.name }>{ tool.name }</label>
+                    { tool.description && 
+                      <div id={'tool-hint-' + tool.name } class="govuk-hint govuk-radios__hint">{ tool.description }</div>
+                    }
+                  </div>
+                )}
+              </div>
+            </tool-selector>
           </fieldset>
         </div>
 
@@ -109,6 +115,7 @@ let mcpTools = await getMcpTools(Astro.request.headers.get('x-amzn-oidc-accessto
     import '../components/message-box.mjs'
     import '../components/message-input.mjs'
     import '../components/tool-info.mjs'
+    import '../components/tool-selector.ts'
   </script>
 
 </Layout>
