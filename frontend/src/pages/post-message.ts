@@ -3,11 +3,13 @@ import type { Message } from '../logic/ai3.ts'
 
 export async function POST({ request, redirect, session }) {
 
-  // get user prompt
+  // get user prompt and selected tool
   let userPrompt = '';
+  let selectedTool = '';
   try {
     const data = await request.formData()
-    userPrompt = data.get('prompt')?.toString() || ''
+    userPrompt = data.get('prompt')?.toString() || '';
+    selectedTool = data.get('tool')?.toString() || '';
   } catch (error) {
     if (error instanceof Error) {
       console.error(error.message)
@@ -28,9 +30,9 @@ export async function POST({ request, redirect, session }) {
   }
 
   // get LLM response
-  let llmResponse
+  let llmResponse;
   if (userPrompt) {
-    llmResponse = await getLlmResponse(messages, request.headers.get('x-amzn-oidc-accesstoken'))
+    llmResponse = await getLlmResponse(messages, selectedTool, request.headers.get('x-amzn-oidc-accesstoken'))
   }
 
   // add LLM response to session data

@@ -21,7 +21,7 @@ export type Message = {
 const MODEL = 'gpt-4o-mini'
 
 
-export const getLlmResponse = async (messages: Message[], authToken: string) => {
+export const getLlmResponse = async (messages: Message[], selectedTool: string, authToken: string) => {
 
   const agentModel = new AzureChatOpenAI({
     openAIApiKey: process.env['AZURE_OPENAI_API_KEY'],
@@ -30,76 +30,28 @@ export const getLlmResponse = async (messages: Message[], authToken: string) => 
     deploymentName: MODEL
   });
 
-  let mcpTools = [];
-
-  for (const mcpServer of MCP_SERVERS) {
-    const serverHeaders: any = {}
-    if (mcpServer.accessToken) {
-      serverHeaders['x-external-access-token'] = mcpServer.accessToken
-    }
-    if (authToken) {
-      serverHeaders['x_amzn_oidc_accesstoken'] = authToken
-      serverHeaders['Authorization'] = `Bearer ${authToken}`;
-    }
-    try {
-      const client = new Client({
-          name: mcpServer.name,
-          version: "1.0.0"
-        });
-      try {
-        const transport: StreamableHTTPClientTransport = new StreamableHTTPClientTransport(new URL(mcpServer.url), {
-          eventSourceInit: {
-            fetch: (input, init) =>
-              fetch(input, {
-                ...init,
-                headers: serverHeaders
-              }),
-          },
-          requestInit: {
-            headers: serverHeaders
-          }
-        })
-        await client.connect(transport)
-        console.log("Connected using Streamable HTTP transport");
-      } catch (error) {
-        console.log("Streamable HTTP connection failed, falling back to SSE transport");
-        const sseTransport = new SSEClientTransport(new URL(mcpServer.url), {
-          eventSourceInit: {
-            fetch: (input, init) =>
-              fetch(input, {
-                ...init,
-                headers: serverHeaders
-              }),
-          },
-          requestInit: {
-            headers: serverHeaders
-          }
-        });
-        await client.connect(sseTransport);
-        console.log("Connected using SSE transport");
-      }
-
-      const mcpTool = await loadMcpTools(mcpServer.url, client)
-      mcpTools.push(...mcpTool)
-    } catch (error) {
-      console.log(`Error trying to access tool: ${mcpServer.name}`, error)
-    }
-  }
+  let tools = await getMcpTools(authToken);
+  tools = tools.filter((tool) => {
+    return tool.name === selectedTool;
+  });
 
   let agent = createReactAgent({
     llm: agentModel,
-    tools: mcpTools
-  })
+    tools: tools
+  });
 
   let systemMessageText: string = `
-  You are a UK civil servant. 
-  If you see a word starting with "@" search for a tool by that name and use it. 
-  Where appropriate cite any responses from tools to support answer, e.g. provide:
-  - source, i.e. link or title (this should be verbatim, do not modify, or invent this)
-  - quotes
-  - etc
-  Reply in British English.
-  `
+    You are a UK civil servant. 
+    If you see a word starting with "@" search for a tool by that name and use it. 
+    Where appropriate cite any responses from tools to support answer, e.g. provide:
+    - source, i.e. link or title (this should be verbatim, do not modify, or invent this)
+    - quotes
+    - etc
+    Reply in British English.
+  `;
+  if (selectedTool) {
+    systemMessageText += `You must call the MCP tool named ${selectedTool}.`;
+  }
 
   let agentMessages: (HumanMessage | AIMessage)[] = [
     new SystemMessage(systemMessageText)
