@@ -12,6 +12,7 @@ on:
     workflows: [build-push]
     types: [completed]
     branches: [main]
+  workflow_dispatch:
 
 jobs:
   set-vars:
