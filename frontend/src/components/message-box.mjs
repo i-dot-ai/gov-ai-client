@@ -139,9 +139,13 @@ export class MessageBox extends LitElement {
 
 
   #copyToClipboard() {
+    /**
+     * Copies the content inside the <markdown-converter> to the clipboard
+     * @param {ClipboardEvent} evt 
+     */
     const listener = (evt) => {
-      evt.clipboardData.setData("text/html", this.querySelector("markdown-converter")?.innerHTML.trim());
-      evt.clipboardData.setData("text/plain", this.querySelector("markdown-converter")?.textContent?.trim());
+      evt.clipboardData?.setData("text/html", this.querySelector("markdown-converter")?.innerHTML.trim() || '');
+      evt.clipboardData?.setData("text/plain", this.querySelector("markdown-converter")?.textContent?.trim() || '');
       evt.preventDefault();
     };
     document.addEventListener("copy", listener);
