@@ -28,13 +28,13 @@ let mcpTools = await getMcpTools(Astro.request.headers.get('x-amzn-oidc-accessto
 
       <form method="POST" action="/post-message" enctype="application/x-www-form-urlencoded">
 
-        <div class="govuk-form-group message-box message-box--user govuk-!-margin-bottom-7">
-          <fieldset class="govuk-fieldset">
-            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-              <h2 class="govuk-heading-s govuk-!-margin-bottom-0">Select a tool</h2>
-            </legend>
-            <div class="govuk-radios govuk-radios--small" data-module="govuk-radios">
-              <tool-selector>
+        <tool-selector class="tool-selector">
+          <div class="govuk-form-group message-box message-box--user govuk-!-margin-bottom-7">
+            <fieldset class="govuk-fieldset">
+              <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+                <h2 class="govuk-heading-s govuk-!-margin-bottom-0">Select a tool</h2>
+              </legend>
+              <div class="govuk-radios govuk-radios--small" data-module="govuk-radios">
                 <div class="govuk-radios__item">
                   <input class="govuk-radios__input" id="tool-none" name="tool" type="radio" value="" checked />
                   <label class="govuk-label govuk-radios__label" for="tool-name">No tools</label>
@@ -49,9 +49,9 @@ let mcpTools = await getMcpTools(Astro.request.headers.get('x-amzn-oidc-accessto
                   </div>
                 )}
               </div>
-            </tool-selector>
-          </fieldset>
-        </div>
+            </fieldset>
+          </div>
+        </tool-selector>
 
         <div class="prompt-box govuk-!-padding-3">
           <message-input>
@@ -122,6 +122,10 @@ let mcpTools = await getMcpTools(Astro.request.headers.get('x-amzn-oidc-accessto
 
 
 <style is:global>
+
+  main:has(message-box) .tool-selector {
+    display: none;
+  }
 
   #loading[tabindex="-1"]:focus-visible {
     border-radius: 0.5rem;
