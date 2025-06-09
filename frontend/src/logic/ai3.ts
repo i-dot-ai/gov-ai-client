@@ -74,7 +74,8 @@ export const getLlmResponse = async (messages: Message[], authToken: string) => 
       serverHeaders['x-external-access-token'] = mcpServer.accessToken
     }
     if (authToken) {
-      serverHeaders['x_amzn_oidc_accesstoken'] = authToken
+      serverHeaders['x-amzn-oidc-accesstoken'] = authToken
+      serverHeaders['Authorization'] = `Bearer ${authToken}`;
     }
     try {
       const client = new Client({
