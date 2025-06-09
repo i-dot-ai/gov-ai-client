@@ -6,13 +6,8 @@ import 'dotenv/config'
 import { createReactAgent } from '@langchain/langgraph/prebuilt'
 import { AzureChatOpenAI } from '@langchain/openai'
 import { AIMessage, HumanMessage, SystemMessage } from '@langchain/core/messages'
-import { Client } from '@modelcontextprotocol/sdk/client/index.js'
-import { SSEClientTransport } from '@modelcontextprotocol/sdk/client/sse.js'
-import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
-import { loadMcpTools } from '@langchain/mcp-adapters'
 import { sendMessage } from '../pages/api/sse'
-import fs from 'fs'
-import YAML from 'yaml'
+import { getMcpTools } from './get-tools'
 
 
 export type Message = {
@@ -24,37 +19,6 @@ export type Message = {
 }
 
 const MODEL = 'gpt-4o-mini'
-
-
-const MCP_SERVERS = (() => {
-  
-  // first try pulling in list from env var
-  const mcpServersStr = process.env['MCP_SERVERS']
-  if (mcpServersStr) {
-    try {
-      const mcpServers = JSON.parse(mcpServersStr)
-      if (Array.isArray(mcpServers.servers)) {
-        return mcpServers.servers
-      } else {
-        console.error('MCP_SERVERS env var needs to be in this format: {\\"servers\\":[]}')
-      }
-    } catch (err) {
-      console.error('MCP_SERVERS env var is invalid JSON')
-    }
-  }
-  
-  // if not, try pulling in list from yaml file
-  try {
-    const file = fs.readFileSync('../.mcp-servers.yaml', 'utf8')
-    return YAML.parse(file).servers
-  } catch (err) {
-    console.error('Missing or invalid .mcp-servers.yaml file - no MCP servers have been added')
-    return []
-  }
-
-})()
-
-console.log('MCP Servers: ', MCP_SERVERS)
 
 
 export const getLlmResponse = async (messages: Message[], authToken: string) => {
@@ -74,7 +38,7 @@ export const getLlmResponse = async (messages: Message[], authToken: string) => 
       serverHeaders['x-external-access-token'] = mcpServer.accessToken
     }
     if (authToken) {
-      serverHeaders['x-amzn-oidc-accesstoken'] = authToken
+      serverHeaders['x_amzn_oidc_accesstoken'] = authToken
       serverHeaders['Authorization'] = `Bearer ${authToken}`;
     }
     try {
