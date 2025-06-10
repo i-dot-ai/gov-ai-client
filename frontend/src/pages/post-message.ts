@@ -5,11 +5,11 @@ export async function POST({ request, redirect, session }) {
 
   // get user prompt and selected tool
   let userPrompt = '';
-  let selectedTool = '';
+  let selectedServers = [];
   try {
     const data = await request.formData()
     userPrompt = data.get('prompt')?.toString() || '';
-    selectedTool = data.get('tool')?.toString() || '';
+    selectedServers = data.getAll('servers');
   } catch (error) {
     if (error instanceof Error) {
       console.error(error.message)
@@ -32,7 +32,7 @@ export async function POST({ request, redirect, session }) {
   // get LLM response
   let llmResponse;
   if (userPrompt) {
-    llmResponse = await getLlmResponse(messages, selectedTool, request.headers.get('x-amzn-oidc-accesstoken'))
+    llmResponse = await getLlmResponse(messages, selectedServers, request.headers.get('x-amzn-oidc-accesstoken'))
   }
 
   // add LLM response to session data

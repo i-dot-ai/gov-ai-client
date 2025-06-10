@@ -8,14 +8,19 @@ const ToolSelector = class extends HTMLElement {
   
   connectedCallback() {
 
-    const preselectedTool = window.localStorage.getItem('selected-tool') || '';
+    const preselectedPlugins = JSON.parse(window.localStorage.getItem('selected-plugins') || '[]');
 
-    (this.querySelectorAll('input[type="radio"]') as NodeListOf<HTMLInputElement>).forEach((radioButton) => {
+    const inputs: NodeListOf<HTMLInputElement> = this.querySelectorAll('input[type="checkbox"]');
+
+    inputs.forEach((input) => {
+
+      input.checked = preselectedPlugins.includes(input.value);
       
-      radioButton.checked = preselectedTool === radioButton.value;
-      
-      radioButton.addEventListener('click', () => {
-        window.localStorage.setItem('selected-tool', radioButton.value);
+      input.addEventListener('click', () => {
+        const selectedInputs = [...inputs]
+          .filter((input) => input.checked)
+          .map((input) => input.value);
+        window.localStorage.setItem(`selected-plugins`, JSON.stringify(selectedInputs));
       });
 
     });

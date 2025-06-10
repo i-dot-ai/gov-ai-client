@@ -7,7 +7,11 @@ import { createReactAgent } from '@langchain/langgraph/prebuilt'
 import { AzureChatOpenAI } from '@langchain/openai'
 import { AIMessage, HumanMessage, SystemMessage } from '@langchain/core/messages'
 import { sendMessage } from '../pages/api/sse'
-import { getMcpTools } from './get-tools'
+import { mcpServers } from './get-servers.ts'
+import { Client } from '@modelcontextprotocol/sdk/client/index.js'
+import { SSEClientTransport } from '@modelcontextprotocol/sdk/client/sse.js'
+import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
+import { loadMcpTools } from '@langchain/mcp-adapters'
 
 
 export type Message = {
@@ -21,7 +25,7 @@ export type Message = {
 const MODEL = 'gpt-4o-mini'
 
 
-export const getLlmResponse = async (messages: Message[], selectedTool: string, authToken: string) => {
+export const getLlmResponse = async (messages: Message[], selectedServers: string[], authToken: string) => {
 
   const agentModel = new AzureChatOpenAI({
     openAIApiKey: process.env['AZURE_OPENAI_API_KEY'],
@@ -30,14 +34,69 @@ export const getLlmResponse = async (messages: Message[], selectedTool: string, 
     deploymentName: MODEL
   });
 
-  let tools = await getMcpTools(authToken);
-  tools = tools.filter((tool) => {
-    return tool.name === selectedTool;
-  });
+  // filter out any unselected MCP servers
+  const selectedMcpServers = mcpServers.filter((server: {name: string}) => selectedServers.includes(server.name));
+
+  // Get mcpTools for all servers
+  let mcpTools = [];
+  
+  for (const mcpServer of selectedMcpServers) {
+    const serverHeaders: any = {};
+    if (mcpServer.accessToken) {
+      serverHeaders['x-external-access-token'] = mcpServer.accessToken;
+    }
+    if (authToken) {
+      serverHeaders['x_amzn_oidc_accesstoken'] = authToken;
+    }
+    try {
+      const client = new Client({
+          name: mcpServer.name,
+          version: "1.0.0"
+        });
+      try {
+        const transport: StreamableHTTPClientTransport = new StreamableHTTPClientTransport(new URL(mcpServer.url), {
+          eventSourceInit: {
+            fetch: (input, init) =>
+              fetch(input, {
+                ...init,
+                headers: serverHeaders
+              }),
+          },
+          requestInit: {
+            headers: serverHeaders
+          }
+        });
+        await client.connect(transport);
+        console.log("Connected using Streamable HTTP transport");
+      } catch (error) {
+        console.log("Streamable HTTP connection failed, falling back to SSE transport");
+        const sseTransport = new SSEClientTransport(new URL(mcpServer.url), {
+          eventSourceInit: {
+            fetch: (input, init) =>
+              fetch(input, {
+                ...init,
+                headers: serverHeaders
+              }),
+          },
+          requestInit: {
+            headers: serverHeaders
+          }
+        });
+        await client.connect(sseTransport);
+        console.log("Connected using SSE transport");
+      }
+
+      const mcpTool = await loadMcpTools(mcpServer.url, client);
+
+      mcpTools.push(...mcpTool, ...mcpServer);
+    } catch (error) {
+      console.log(`Error trying to access tool: ${mcpServer.name}`, error);
+    }
+  }
 
   let agent = createReactAgent({
     llm: agentModel,
-    tools: tools
+    tools: mcpTools
   });
 
   let systemMessageText: string = `
@@ -48,10 +107,8 @@ export const getLlmResponse = async (messages: Message[], selectedTool: string, 
     - quotes
     - etc
     Reply in British English.
+    You should call an MCP tool if one is available.
   `;
-  if (selectedTool) {
-    systemMessageText += `You must call the MCP tool named ${selectedTool}.`;
-  }
 
   let agentMessages: (HumanMessage | AIMessage)[] = [
     new SystemMessage(systemMessageText)
