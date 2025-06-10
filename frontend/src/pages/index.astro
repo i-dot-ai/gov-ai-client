@@ -27,18 +27,19 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
       <form method="POST" action="/post-message" enctype="application/x-www-form-urlencoded">
 
         <tool-selector class="tool-selector">
-          <div class="govuk-form-group message-box message-box--user govuk-!-margin-bottom-7">
-            <fieldset class="govuk-fieldset">
+          <div class="govuk-form-group message-box message-box--user govuk-!-margin-bottom-7 govuk-!-margin-right-0">
+            <fieldset class="govuk-fieldset" aria-describedby="servers-hint">
               <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-                <h2 class="govuk-heading-s govuk-!-margin-bottom-0">Select a plugin</h2>
+                <h2 class="govuk-heading-s govuk-!-margin-bottom-0">Select plugins</h2>
               </legend>
-              <div class="govuk-checkboxes govuk-checkboxes--small" data-module="govuk-checkboxes">
+              <div id="servers-hint" class="govuk-hint">Plugins allow the AI to connect to external sources before giving a response</div>
+              <div class="govuk-checkboxes govuk-checkboxes--small govuk-checkboxes" data-module="govuk-checkboxes">
                 { mcpServers.map((server) =>
-                  <div class="govuk-checkboxes__item">
+                  <div class="govuk-checkboxes__item govuk-!-margin-top-1">
                     <input class="govuk-checkboxes__input" id={ 'tool-' + server.name } name="servers" type="checkbox" value={ server.name } aria-describedby={'tool-hint-' + server.name } />
                     <label class="govuk-label govuk-checkboxes__label" for={ 'tool-' + server.name }>{ server.name }</label>
                     { server.description && 
-                      <div id={'tool-hint-' + server.name } class="govuk-hint govuk-checkboxes__hint">{ server.description }</div>
+                      <div id={'tool-hint-' + server.name } class="govuk-hint govuk-checkboxes__hint" style="font-size: 1rem;">{ server.description }</div>
                     }
                   </div>
                 )}

@@ -2,7 +2,7 @@
 
 
 /**
- * Stores radio button selection in localStorage
+ * Stores MCP Server selection in localStorage
  */
 const ToolSelector = class extends HTMLElement {
   
