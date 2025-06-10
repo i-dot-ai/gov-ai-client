@@ -8,13 +8,14 @@ const ToolSelector = class extends HTMLElement {
   
   connectedCallback() {
 
-    const preselectedPlugins = JSON.parse(window.localStorage.getItem('selected-plugins') || '[]');
+    const localStorageStr = window.localStorage.getItem('selected-plugins');
+    const preselectedPlugins = JSON.parse(localStorageStr || '[]');
 
     const inputs: NodeListOf<HTMLInputElement> = this.querySelectorAll('input[type="checkbox"]');
 
     inputs.forEach((input) => {
 
-      input.checked = preselectedPlugins.includes(input.value);
+      input.checked = !localStorageStr || preselectedPlugins.includes(input.value);
       
       input.addEventListener('click', () => {
         const selectedInputs = [...inputs]
