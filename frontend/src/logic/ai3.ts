@@ -47,6 +47,7 @@ export const getLlmResponse = async (messages: Message[], selectedServers: strin
     }
     if (authToken) {
       serverHeaders['x_amzn_oidc_accesstoken'] = authToken;
+      serverHeaders['Authorization'] = `Bearer ${authToken}`;
     }
     try {
       const client = new Client({
@@ -88,7 +89,7 @@ export const getLlmResponse = async (messages: Message[], selectedServers: strin
 
       const mcpTool = await loadMcpTools(mcpServer.url, client);
 
-      mcpTools.push(...mcpTool, ...mcpServer);
+      mcpTools.push(...mcpTool);
     } catch (error) {
       console.log(`Error trying to access tool: ${mcpServer.name}`, error);
     }
