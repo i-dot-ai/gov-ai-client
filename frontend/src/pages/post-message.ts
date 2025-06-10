@@ -3,7 +3,7 @@ import type { Message } from '../logic/ai3.ts'
 
 export async function POST({ request, redirect, session }) {
 
-  // get user prompt and selected tool
+  // get user prompt and selected MCP servers
   let userPrompt = '';
   let selectedServers = [];
   try {
