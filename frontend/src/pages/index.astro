@@ -1,12 +1,10 @@
 ---
-import Layout from '../layouts/Layout.astro'
-import LitWrapper from '../components/lit-wrapper.astro'
-import type { Message } from '../logic/ai3.ts'
-import { getMcpTools } from '../logic/get-tools.ts'
+import Layout from '../layouts/Layout.astro';
+import LitWrapper from '../components/lit-wrapper.astro';
+import type { Message } from '../logic/ai3.ts';
+import { mcpServers } from '../logic/get-servers.ts';
 
-let messages: Message[] | undefined = await Astro.session?.get('messages')
-
-let mcpTools = await getMcpTools(Astro.request.headers.get('x-amzn-oidc-accesstoken') || '')
+let messages: Message[] | undefined = await Astro.session?.get('messages');
 
 ---
 
@@ -32,19 +30,15 @@ let mcpTools = await getMcpTools(Astro.request.headers.get('x-amzn-oidc-accessto
           <div class="govuk-form-group message-box message-box--user govuk-!-margin-bottom-7">
             <fieldset class="govuk-fieldset">
               <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-                <h2 class="govuk-heading-s govuk-!-margin-bottom-0">Select a tool</h2>
+                <h2 class="govuk-heading-s govuk-!-margin-bottom-0">Select a plugin</h2>
               </legend>
-              <div class="govuk-radios govuk-radios--small" data-module="govuk-radios">
-                <div class="govuk-radios__item">
-                  <input class="govuk-radios__input" id="tool-none" name="tool" type="radio" value="" checked />
-                  <label class="govuk-label govuk-radios__label" for="tool-name">No tools</label>
-                </div>
-                { mcpTools.map((tool) =>
-                  <div class="govuk-radios__item">
-                    <input class="govuk-radios__input" id={ 'tool-' + tool.name } name="tool" type="radio" value={ tool.name } aria-describedby={'tool-hint-' + tool.name } />
-                    <label class="govuk-label govuk-radios__label" for={ 'tool-' + tool.name }>{ tool.name }</label>
-                    { tool.description && 
-                      <div id={'tool-hint-' + tool.name } class="govuk-hint govuk-radios__hint">{ tool.description }</div>
+              <div class="govuk-checkboxes govuk-checkboxes--small" data-module="govuk-checkboxes">
+                { mcpServers.map((server) =>
+                  <div class="govuk-checkboxes__item">
+                    <input class="govuk-checkboxes__input" id={ 'tool-' + server.name } name="servers" type="checkbox" value={ server.name } aria-describedby={'tool-hint-' + server.name } />
+                    <label class="govuk-label govuk-checkboxes__label" for={ 'tool-' + server.name }>{ server.name }</label>
+                    { server.description && 
+                      <div id={'tool-hint-' + server.name } class="govuk-hint govuk-checkboxes__hint">{ server.description }</div>
                     }
                   </div>
                 )}

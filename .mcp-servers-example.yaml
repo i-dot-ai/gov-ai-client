@@ -4,8 +4,10 @@
 servers:
 
   - name: test-mcp-server
+    description: An optional description can appear here
     url: http://localhost:3210/sse
 
   - name: Caddy
+    description: Try to add a description if possible, so users know what this does
     url: [add URL here]
     accessToken: [optional access token]
