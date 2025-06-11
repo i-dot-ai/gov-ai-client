@@ -7,7 +7,7 @@ import { getTools } from '../logic/get-tools.ts';
 
 let messages: Message[] | undefined = await Astro.session?.get('messages');
 
-const mcpTools = await getTools(mcpServers, Astro.request.headers.get('x-amzn-oidc-accesstoken') || '');
+const { mcpTools, serversWithFailedConnections } = await getTools(mcpServers, Astro.request.headers.get('x-amzn-oidc-accesstoken') || '');
 
 ---
 
@@ -38,23 +38,30 @@ const mcpTools = await getTools(mcpServers, Astro.request.headers.get('x-amzn-oi
               <div id="servers-hint" class="govuk-hint">Plugins allow the AI to connect to external sources before giving a response</div>
               <div class="govuk-checkboxes govuk-checkboxes--small govuk-checkboxes" data-module="govuk-checkboxes">
                 { mcpServers.map((server) =>
-                  <div class="govuk-checkboxes__item govuk-!-margin-top-1">
+                  <div class="govuk-checkboxes__item govuk-!-margin-top-3">
                     <input class="govuk-checkboxes__input" id={ 'tool-' + server.name } name="servers" type="checkbox" value={ server.name } aria-describedby={'tool-hint-' + server.name } />
-                    <label class="govuk-label govuk-checkboxes__label" for={ 'tool-' + server.name }>{ server.name }</label>
-                    <div id={'tool-hint-' + server.name } class="tool-selector__tools govuk-hint govuk-checkboxes__hint" style="font-size: 1rem;">
-                      <details class="govuk-details">
-                        <summary class="govuk-details__summary">
-                          <span class="govuk-details__summary-text govuk-body-s govuk-!-font-weight-bold">Tools:</span>
-                        </summary>
-                        <div class="govuk-details__text">
-                          <ul class="govuk-list govuk-list--bullet govuk-!-margin-bottom-0">
-                            { mcpTools.filter((tool) => tool.serverName === server.name).map((tool) =>
-                              <li class="govuk-body-s govuk-!-margin-top-1"><strong>{ tool.name }</strong>: { tool.description }</li>
-                            )}
-                          </ul>
-                        </div>
-                      </details>
-                    </div>
+                    <label class="govuk-label govuk-checkboxes__label" for={ 'tool-' + server.name }>
+                      { server.name }
+                      { serversWithFailedConnections.includes(server.name) && 
+                        <strong class="govuk-tag govuk-tag--red"><!--<span class="tool-selector__exclamation" aria-hidden="true">&excl;</span> -->Error</strong>
+                      }
+                    </label>
+                    { !serversWithFailedConnections.includes(server.name) && 
+                      <div id={'tool-hint-' + server.name } class="tool-selector__tools govuk-hint govuk-checkboxes__hint" style="font-size: 1rem;">
+                        <details class="govuk-details govuk-!-margin-bottom-0">
+                          <summary class="govuk-details__summary">
+                            <span class="govuk-details__summary-text govuk-body-s govuk-!-font-weight-bold">Tools</span>
+                          </summary>
+                          <div class="govuk-details__text">
+                            <ul class="govuk-list govuk-list--bullet govuk-!-margin-bottom-0">
+                              { mcpTools.filter((tool) => tool.serverName === server.name).map((tool) =>
+                                <li class="govuk-body-s govuk-!-margin-top-1"><strong>{ tool.name }</strong>: { tool.description }</li>
+                              )}
+                            </ul>
+                          </div>
+                        </details>
+                      </div>
+                    }
                   </div>
                 )}
               </div>
@@ -147,6 +154,18 @@ const mcpTools = await getTools(mcpServers, Astro.request.headers.get('x-amzn-oi
     li {
       color: #505a5f;
     }
+  }
+  .tool-selector__exclamation {
+    align-items: center;
+    border: 1px solid;
+    border-radius: 100%;
+    display: inline-flex;
+    font-size: 14px;
+    font-weight: bold;
+    height: 12px;
+    justify-content: center;
+    padding: 3px;
+    width: 12px;
   }
 
 
