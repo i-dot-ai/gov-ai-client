@@ -64,7 +64,7 @@ export class MessageBox extends LitElement {
           `)}
 
           ${this.content ? html`
-            <markdown-converter class="govuk-body" content=${this.content}></markdown-converter>
+            <markdown-converter id=${'message-' + this.messageIndex} class="govuk-body" content=${this.content}></markdown-converter>
           ` : nothing}
 
           ${this.streamingInProgress ? html`
@@ -72,10 +72,10 @@ export class MessageBox extends LitElement {
           ` : nothing}
 
           ${!this.streamingInProgress ? html`
-            <button class="copy-button govuk-button govuk-!-margin-top-3 govuk-!-margin-bottom-0" @click="${this.#copyToClipboard}">
+            <copy-button class="govuk-!-display-block govuk-!-margin-top-2" copy=${'message-' + this.messageIndex}>
               Copy
               <span class="govuk-visually-hidden">response ${this.messageIndex}</span>
-            </button>
+            </copy-button>
           ` : nothing}
 
         ` : nothing}
@@ -135,22 +135,6 @@ export class MessageBox extends LitElement {
       window.setTimeout(this.#stream, 500)
     }
     
-  }
-
-
-  #copyToClipboard() {
-    /**
-     * Copies the content inside the <markdown-converter> to the clipboard
-     * @param {ClipboardEvent} evt 
-     */
-    const listener = (evt) => {
-      evt.clipboardData?.setData("text/html", this.querySelector("markdown-converter")?.innerHTML.trim() || '');
-      evt.clipboardData?.setData("text/plain", this.querySelector("markdown-converter")?.textContent?.trim() || '');
-      evt.preventDefault();
-    };
-    document.addEventListener("copy", listener);
-    document.execCommand("copy");
-    document.removeEventListener("copy", listener);
   }
 
 }
