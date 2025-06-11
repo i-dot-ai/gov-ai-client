@@ -22,7 +22,7 @@ export type Message = {
   }
 }
 
-const MODEL = 'gpt-4o-mini'
+const MODEL = 'o4-mini';
 
 
 export const getLlmResponse = async (messages: Message[], selectedServers: string[], authToken: string) => {
@@ -108,8 +108,10 @@ export const getLlmResponse = async (messages: Message[], selectedServers: strin
     - quotes
     - etc
     Reply in British English.
-    You should call an MCP tool if one is available.
   `;
+  if (selectedMcpServers.length) {
+    systemMessageText += 'You should call an MCP tool if one is available.';
+  }
 
   let agentMessages: (HumanMessage | AIMessage)[] = [
     new SystemMessage(systemMessageText)
