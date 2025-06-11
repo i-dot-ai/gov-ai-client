@@ -12,25 +12,16 @@ const { mcpTools, serversWithFailedConnections } = await getTools(mcpServers, As
 ---
 
 <Layout>
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-three-quarters-from-desktop">
 
-      <h1 class="govuk-visually-hidden">Gov AI MCP Client Chat</h1>
+  <h1 class="govuk-visually-hidden">Gov AI MCP Client Chat</h1>
 
-      <div id="message-container">
+  <form method="POST" action="/post-message" enctype="application/x-www-form-urlencoded">
+  
+    <div class="govuk-grid-row">
 
-        { messages?.map((message) =>
-          <LitWrapper>
-            <message-box type={ message.type } content={ message.response.content } tool-calls={ JSON.stringify(message.response.tool_calls) }></message-box>
-          </LitWrapper>
-        )}
-
-      </div>
-
-      <form method="POST" action="/post-message" enctype="application/x-www-form-urlencoded">
-
+      <div class="govuk-grid-column-one-quarter-from-desktop">
         <tool-selector class="tool-selector">
-          <div class="govuk-form-group message-box message-box--user govuk-!-margin-bottom-7 govuk-!-margin-right-0">
+          <div class="govuk-form-group govuk-!-padding-3" style="border: 1px solid #b1b4b6;">
             <fieldset class="govuk-fieldset" aria-describedby="servers-hint">
               <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
                 <h2 class="govuk-heading-s govuk-!-margin-bottom-0">Select plugins</h2>
@@ -40,22 +31,25 @@ const { mcpTools, serversWithFailedConnections } = await getTools(mcpServers, As
                 { mcpServers.map((server) =>
                   <div class="govuk-checkboxes__item govuk-!-margin-top-3">
                     <input class="govuk-checkboxes__input" id={ 'tool-' + server.name } name="servers" type="checkbox" value={ server.name } aria-describedby={'tool-hint-' + server.name } />
-                    <label class="govuk-label govuk-checkboxes__label" for={ 'tool-' + server.name }>
+                    <label class="govuk-label govuk-checkboxes__label govuk-!-padding-right-0" for={ 'tool-' + server.name }>
                       { server.name }
                       { serversWithFailedConnections.includes(server.name) && 
                         <strong class="govuk-tag govuk-tag--red"><!--<span class="tool-selector__exclamation" aria-hidden="true">&excl;</span> -->Error</strong>
                       }
                     </label>
                     { !serversWithFailedConnections.includes(server.name) && 
-                      <div id={'tool-hint-' + server.name } class="tool-selector__tools govuk-hint govuk-checkboxes__hint" style="font-size: 1rem;">
+                      <div id={'tool-hint-' + server.name } class="tool-selector__tools govuk-hint govuk-checkboxes__hint govuk-!-margin-top-1 govuk-!-padding-0" style="font-size: 1rem;">
                         <details class="govuk-details govuk-!-margin-bottom-0">
                           <summary class="govuk-details__summary">
                             <span class="govuk-details__summary-text govuk-body-s govuk-!-font-weight-bold">Tools</span>
                           </summary>
                           <div class="govuk-details__text">
-                            <ul class="govuk-list govuk-list--bullet govuk-!-margin-bottom-0">
+                            <ul class="govuk-list govuk-!-margin-bottom-0">
                               { mcpTools.filter((tool) => tool.serverName === server.name).map((tool) =>
-                                <li class="govuk-body-s govuk-!-margin-top-1"><strong>{ tool.name }</strong>: { tool.description }</li>
+                                <li class="govuk-body-s govuk-!-margin-top-2">
+                                  <strong class="govuk-!-display-block">{ tool.name }:</strong>
+                                  { tool.description }
+                                </li>
                               )}
                             </ul>
                           </div>
@@ -68,6 +62,21 @@ const { mcpTools, serversWithFailedConnections } = await getTools(mcpServers, As
             </fieldset>
           </div>
         </tool-selector>
+      </div>
+
+      <div class="govuk-grid-column-three-quarters-from-desktop">
+
+        <h2 class="govuk-visually-hidden">Messages</h2>
+
+        <div id="message-container">
+
+          { messages?.map((message) =>
+            <LitWrapper>
+              <message-box type={ message.type } content={ message.response.content } tool-calls={ JSON.stringify(message.response.tool_calls) }></message-box>
+            </LitWrapper>
+          )}
+
+        </div>
 
         <div class="prompt-box govuk-!-padding-3">
           <message-input>
@@ -84,10 +93,11 @@ const { mcpTools, serversWithFailedConnections } = await getTools(mcpServers, As
           </div>
         </div>
 
-      </form>
-
+      </div>
     </div>
-  </div>
+
+  </form>
+
 
   <script>
     
@@ -139,8 +149,10 @@ const { mcpTools, serversWithFailedConnections } = await getTools(mcpServers, As
 
 <style is:global>
 
-  main:has(message-box) .tool-selector {
-    display: none;
+  .tool-selector {
+    label {
+      max-width: none;
+    }
   }
   .tool-selector__tools {
     summary::before {
@@ -153,6 +165,7 @@ const { mcpTools, serversWithFailedConnections } = await getTools(mcpServers, As
     }
     li {
       color: #505a5f;
+      word-wrap: break-word;
     }
   }
   .tool-selector__exclamation {
