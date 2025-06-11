@@ -3,8 +3,11 @@ import Layout from '../layouts/Layout.astro';
 import LitWrapper from '../components/lit-wrapper.astro';
 import type { Message } from '../logic/ai3.ts';
 import { mcpServers } from '../logic/get-servers.ts';
+import { getTools } from '../logic/get-tools.ts';
 
 let messages: Message[] | undefined = await Astro.session?.get('messages');
+
+const mcpTools = await getTools(mcpServers, Astro.request.headers.get('x-amzn-oidc-accesstoken') || '');
 
 ---
 
@@ -38,9 +41,14 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
                   <div class="govuk-checkboxes__item govuk-!-margin-top-1">
                     <input class="govuk-checkboxes__input" id={ 'tool-' + server.name } name="servers" type="checkbox" value={ server.name } aria-describedby={'tool-hint-' + server.name } />
                     <label class="govuk-label govuk-checkboxes__label" for={ 'tool-' + server.name }>{ server.name }</label>
-                    { server.description && 
-                      <div id={'tool-hint-' + server.name } class="govuk-hint govuk-checkboxes__hint" style="font-size: 1rem;">{ server.description }</div>
-                    }
+                    <div id={'tool-hint-' + server.name } class="govuk-hint govuk-checkboxes__hint" style="font-size: 1rem;">
+                      <h3 class="govuk-body-s govuk-!-font-weight-bold govuk-!-margin-top-2 govuk-!-margin-bottom-0">Tools:</h3>
+                      <ul class="govuk-list govuk-list--bullet govuk-!-margin-bottom-0">
+                        { mcpTools.filter((tool) => tool.server.name === server.name).map((tool) =>
+                          <li class="govuk-body-s govuk-!-margin-top-1">{ tool.name } : { tool.description }</li>
+                        )}
+                      </ul>
+                    </div>
                   </div>
                 )}
               </div>

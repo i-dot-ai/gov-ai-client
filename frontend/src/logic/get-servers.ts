@@ -4,7 +4,7 @@ import fs from 'fs';
 import YAML from 'yaml';
 
 
-type MCP_SERVER = {
+export type MCP_SERVER = {
   name: string,
   description?: string,
   url: string,
