@@ -56,11 +56,12 @@ export const getTools = async (servers: MCP_SERVER[], authToken: string ) => {
         console.log("Connected using SSE transport");
       }
 
-      const mcpTool = await loadMcpTools(mcpServer.url, client);
-      console.log(mcpTool);
+      const serverMcpTools = await loadMcpTools(mcpServer.url, client);
+      serverMcpTools.forEach((tool) => {
+        tool.serverName = mcpServer.name;
+      });
 
-      mcpTools.push(...mcpTool);
-      mcpTools[mcpTools.length - 1].server = mcpServer;
+      mcpTools.push(...serverMcpTools);
     } catch (error) {
       console.log(`Error trying to access tool: ${mcpServer.name}`, error);
     }

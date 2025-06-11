@@ -41,13 +41,19 @@ const mcpTools = await getTools(mcpServers, Astro.request.headers.get('x-amzn-oi
                   <div class="govuk-checkboxes__item govuk-!-margin-top-1">
                     <input class="govuk-checkboxes__input" id={ 'tool-' + server.name } name="servers" type="checkbox" value={ server.name } aria-describedby={'tool-hint-' + server.name } />
                     <label class="govuk-label govuk-checkboxes__label" for={ 'tool-' + server.name }>{ server.name }</label>
-                    <div id={'tool-hint-' + server.name } class="govuk-hint govuk-checkboxes__hint" style="font-size: 1rem;">
-                      <h3 class="govuk-body-s govuk-!-font-weight-bold govuk-!-margin-top-2 govuk-!-margin-bottom-0">Tools:</h3>
-                      <ul class="govuk-list govuk-list--bullet govuk-!-margin-bottom-0">
-                        { mcpTools.filter((tool) => tool.server.name === server.name).map((tool) =>
-                          <li class="govuk-body-s govuk-!-margin-top-1">{ tool.name } : { tool.description }</li>
-                        )}
-                      </ul>
+                    <div id={'tool-hint-' + server.name } class="tool-selector__tools govuk-hint govuk-checkboxes__hint" style="font-size: 1rem;">
+                      <details class="govuk-details">
+                        <summary class="govuk-details__summary">
+                          <span class="govuk-details__summary-text govuk-body-s govuk-!-font-weight-bold">Tools:</span>
+                        </summary>
+                        <div class="govuk-details__text">
+                          <ul class="govuk-list govuk-list--bullet govuk-!-margin-bottom-0">
+                            { mcpTools.filter((tool) => tool.serverName === server.name).map((tool) =>
+                              <li class="govuk-body-s govuk-!-margin-top-1"><strong>{ tool.name }</strong>: { tool.description }</li>
+                            )}
+                          </ul>
+                        </div>
+                      </details>
                     </div>
                   </div>
                 )}
@@ -129,6 +135,20 @@ const mcpTools = await getTools(mcpServers, Astro.request.headers.get('x-amzn-oi
   main:has(message-box) .tool-selector {
     display: none;
   }
+  .tool-selector__tools {
+    summary::before {
+      color: #505a5f;
+      left: 3px;
+    };
+    summary span {
+      color: #505a5f;
+      position: relative; top: -2px;
+    }
+    li {
+      color: #505a5f;
+    }
+  }
+
 
   #loading[tabindex="-1"]:focus-visible {
     border-radius: 0.5rem;
