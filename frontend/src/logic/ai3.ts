@@ -36,7 +36,6 @@ export const getLlmResponse = async (messages: Message[], selectedServers: strin
 
   // Get mcpTools for all servers
   let mcpTools = await getTools(selectedMcpServers, authToken);
-  console.log(mcpTools);
 
   let agent = createReactAgent({
     llm: agentModel,
