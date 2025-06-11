@@ -8,6 +8,7 @@ import type { MCP_SERVER } from './get-servers';
 export const getTools = async (servers: MCP_SERVER[], authToken: string ) => {
 
   let mcpTools = [];
+  let serversWithFailedConnections = [];
 
   for (const mcpServer of servers) {
     const serverHeaders: any = {};
@@ -64,9 +65,10 @@ export const getTools = async (servers: MCP_SERVER[], authToken: string ) => {
       mcpTools.push(...serverMcpTools);
     } catch (error) {
       console.log(`Error trying to access tool: ${mcpServer.name}`, error);
+      serversWithFailedConnections.push(mcpServer.name);
     }
   }
 
-  return mcpTools;
+  return { mcpTools, serversWithFailedConnections };
 
 };
