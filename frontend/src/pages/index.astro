@@ -44,7 +44,7 @@ const { mcpTools, serversWithFailedConnections } = await getTools(mcpServers, As
                             <span class="govuk-details__summary-text govuk-body-s govuk-!-font-weight-bold">Tools</span>
                           </summary>
                           <div class="govuk-details__text">
-                            <ul class="govuk-list govuk-list--bullet govuk-!-margin-bottom-0">
+                            <ul class="govuk-list govuk-!-margin-bottom-0">
                               { mcpTools.filter((tool) => tool.serverName === server.name).map((tool) =>
                                 <li class="govuk-body-s govuk-!-margin-top-2">
                                   <strong class="govuk-!-display-block">{ tool.name }:</strong>
