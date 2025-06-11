@@ -53,7 +53,9 @@ export const getTools = async (servers: MCP_SERVER[], authToken: string ) => {
             headers: serverHeaders
           }
         });
-        await client.connect(sseTransport);
+        await client.connect(sseTransport, {
+          timeout: 2000,
+        });
         console.log("Connected using SSE transport");
       }
 
