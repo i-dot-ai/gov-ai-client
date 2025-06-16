@@ -12,10 +12,39 @@ const MarkdownConverter = class extends LitElement {
   };
 
   /**
+   * Ensures any links are properly rendered 
+   * @param {string} input
+   */
+  #linkifyMarkdown(input) {
+    
+    // Temporarily protect existing Markdown links/images (![alt](url) or [text](url))
+    /** @type {string[]} */
+    const placeholders = [];
+    const protectedText = input.replace(/(!?\[.*?\]\(.*?\))/g, (match) => {
+      placeholders.push(match);
+      return `@@LINK_${placeholders.length - 1}@@`;
+    });
+
+    // Wrap any remaining http(s) URLs
+    const linked = protectedText.replace(
+      /(https?:\/\/[^\s<]+[^<.,:;"')\]\s])/g,
+      (url) => `[${url}](${url})`
+    );
+
+    // Restore the original Markdown links/images
+    return linked.replace(/@@LINK_(\d+)@@/g, (_, index) => placeholders[index]);
+
+  }
+
+  /**
    * @param {string} markdown 
    * @returns {string}
    */
   convert(markdown) {
+
+    // ensure any URLs are rendered as links
+    markdown = this.#linkifyMarkdown(markdown);
+
     let converter = new Showdown.Converter({
       disableForced4SpacesIndentedSublists: true,
       headerLevelStart: 3,
