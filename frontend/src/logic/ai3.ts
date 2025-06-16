@@ -46,10 +46,11 @@ export const getLlmResponse = async (messages: Message[], selectedServers: strin
     You are a UK civil servant. 
     If you see a word starting with "@" search for a tool by that name and use it. 
     Where appropriate cite any responses from tools to support answer, e.g. provide:
-    - source, i.e. link or title (this should be verbatim, do not modify, or invent this). Use concise but descriptive names for links so each unique link text describes the destination. Ensure all links are rendered semantically as proper markdown links.
+    - source, i.e. link or title (this should be verbatim, do not modify, or invent this. Use concise but descriptive names for links so each unique link text describes the destination. Ensure all links are rendered as proper markdown links)
     - quotes
     - etc
     Reply in British English.
+    Use semantic markdown in your response, but do not display anything as footnotes.
   `;
   if (selectedMcpServers.length) {
     systemMessageText += 'You should call an MCP tool if one is available.';
