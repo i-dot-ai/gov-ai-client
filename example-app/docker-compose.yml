@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  mcp-server:
+    build: .
+    ports:
+      - "9000:9000"
+    environment:
+      - PYTHONUNBUFFERED=1
+    networks:
+      - app
+
+  gov-ai-client:
+    image: public.ecr.aws/idotai/gov-ai-client:55a07f5f947571998ee278348d7cc7ef4aa35182
+    ports:
+      - "8081:8081"
+    env_file: ".client.env"
+    networks:
+      - app
+
+networks:
+  app:
+    driver: bridge
