@@ -14,6 +14,9 @@ make install
 make run_frontend
 ```
 
+## Using GovAI Client in your own app
+
+See the [example app in this repo](example-app/) for a ready-to-go `docker-compose.yml` config.
 
 ## MCP configuration
 
