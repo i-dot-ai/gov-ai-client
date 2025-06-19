@@ -159,7 +159,14 @@ export class MessageInput extends HTMLElement {
           }
         });
         cb(allTools);
-      }
+      },
+      noMatchTemplate: () => {
+        const message = 'No tools found - you can add more by selecting plugins';
+        window.setTimeout(() => {
+          announcement.textContent = message;
+        }, 1000);
+        return `<span>${message}</span>`;
+      },
     });
     this.tribute.attach(this.textarea);
 
