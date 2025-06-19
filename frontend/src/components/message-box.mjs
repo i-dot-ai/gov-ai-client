@@ -72,7 +72,7 @@ export class MessageBox extends LitElement {
           ` : nothing}
 
           ${!this.streamingInProgress ? html`
-            <copy-button class="govuk-!-display-block govuk-!-margin-top-2" copy=${'message-' + this.messageIndex}>
+            <copy-button class="govuk-!-margin-top-2" copy=${'message-' + this.messageIndex}>
               Copy
               <span class="govuk-visually-hidden">response ${this.messageIndex}</span>
             </copy-button>

@@ -73,6 +73,13 @@ const { mcpTools, serversWithFailedConnections } = await getTools(mcpServers, As
 
         <div id="message-container">
 
+          <LitWrapper>
+            <message-box type="llm" content=`
+              <h3 class="govuk-heading-s">Welcome to GovAI Client</h3> 
+              I am a dedicated chat assistant for securely connecting to external plugins. Make selections via the plugins panel and run a query. Each plugin may contain multiple tools. Please let me know how I can assist you today!
+            `></message-box>
+          </LitWrapper>
+
           { messages?.map((message) =>
             <LitWrapper>
               <message-box type={ message.type } content={ message.response.content } tool-calls={ JSON.stringify(message.response.tool_calls) }></message-box>
@@ -291,6 +298,13 @@ const { mcpTools, serversWithFailedConnections } = await getTools(mcpServers, As
     75% {
       opacity: 1;
     }
+  }
+
+  message-box copy-button {
+    display: block;
+  }
+  message-box:first-child copy-button {
+    display: none;
   }
 
   pre {
