@@ -116,7 +116,7 @@ export class MessageBox extends LitElement {
 
       // It's a tool
       if (response.type === 'tool') {
-        this.toolCalls.push(response.data[0])
+        this.toolCalls = [...this.toolCalls, response.data[0]]
 
       // It's the text response
       } else if (response.type === 'content') {        
