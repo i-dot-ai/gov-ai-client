@@ -160,6 +160,25 @@ const { mcpTools, serversWithFailedConnections } = await getTools(mcpServers, As
   }
   .tribute-container {
     font-family: 'Inter', sans-serif;
+
+    li {
+      border: 1px solid #b1b4b6;
+      border-top-width: 0;
+      padding: 7px !important;
+    }
+    li:first-child {
+      border-top-width: 1px;
+    }
+    li:nth-child(odd) {
+      background-color: #f3f2f1;
+    }
+    li:nth-child(even) {
+      background-color: white;
+    }
+    li.highlight {
+      background: var(--iai-pink) !important;
+      color: white;
+    }
   }
 
 
