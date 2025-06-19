@@ -48,6 +48,7 @@ const MarkdownConverter = class extends LitElement {
     let converter = new Showdown.Converter({
       disableForced4SpacesIndentedSublists: true,
       headerLevelStart: 3,
+      literalMidWordUnderscores: true, // to prevent links with underscores being displayed as italics
       tables: true,
     });
     return converter.makeHtml(markdown);
