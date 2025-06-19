@@ -88,6 +88,12 @@ export class MessageBox extends LitElement {
   #stream() {
 
     this.streamingInProgress = true
+
+    window.setTimeout(() => {
+      /** @type { HTMLElement | null } */
+      const messageBox = this.querySelector('.message-box');
+      messageBox?.focus()
+    }, 100);
     
     // get message in view
     window.setTimeout(() => {
