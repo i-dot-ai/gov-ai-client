@@ -13,6 +13,8 @@ const { mcpTools, serversWithFailedConnections } = await getTools(mcpServers, As
 
 <Layout>
 
+  <link rel="stylesheet" href="https://zurb.github.io/tribute/example/tribute.css" />
+
   <h1 class="govuk-visually-hidden">Gov AI MCP Client Chat</h1>
 
   <form method="POST" action="/post-message" enctype="application/x-www-form-urlencoded">
@@ -50,7 +52,7 @@ const { mcpTools, serversWithFailedConnections } = await getTools(mcpServers, As
                             <ul class="govuk-list govuk-!-margin-bottom-0">
                               { mcpTools.filter((tool) => tool.serverName === server.name).map((tool) =>
                                 <li class="govuk-body-xs govuk-!-margin-top-2">
-                                  <strong class="govuk-!-display-block">{ tool.name }:</strong>
+                                  <strong class="govuk-!-display-block js-tool">{ tool.name }:</strong>
                                   { tool.description }
                                 </li>
                               )}
@@ -92,9 +94,12 @@ const { mcpTools, serversWithFailedConnections } = await getTools(mcpServers, As
           <message-input>
             <label class="govuk-label govuk-label--s" for="prompt">Ask anything</label>
             <div id="prompt-hint" class="govuk-hint govuk-!-font-size-16">
-              AI can make mistakes - check before using its output
+              AI can make mistakes - check before using its output. Type @ to reference specific tools.
             </div>
-            <textarea class="govuk-textarea govuk-!-margin-bottom-3 prompt-box__textarea" id="prompt" name="prompt" rows="3" required aria-describedby="prompt-hint"></textarea>
+            <id id="autocomplete-assistive-hint" style="display: none;">
+              When autocomplete results are available use up and down arrows to review and enter to select. Touch device users, explore by touch or with swipe gestures.
+            </id>
+            <textarea class="govuk-textarea govuk-!-margin-bottom-3 prompt-box__textarea" id="prompt" name="prompt" rows="3" required aria-describedby="prompt-hint autocomplete-assistive-hint"></textarea>
           </message-input>
 
           <div class="govuk-button-group govuk-!-margin-bottom-1">
@@ -158,6 +163,34 @@ const { mcpTools, serversWithFailedConnections } = await getTools(mcpServers, As
 
 
 <style is:global>
+
+  /* Tribute autocomplete */
+  body {
+    position: relative;
+  }
+  .tribute-container {
+    font-family: 'Inter', sans-serif;
+
+    li {
+      border: 1px solid #b1b4b6;
+      border-top-width: 0;
+      padding: 7px !important;
+    }
+    li:first-child {
+      border-top-width: 1px;
+    }
+    li:nth-child(odd) {
+      background-color: #f3f2f1;
+    }
+    li:nth-child(even) {
+      background-color: white;
+    }
+    li.highlight {
+      background: var(--iai-pink) !important;
+      color: white;
+    }
+  }
+
 
   .tool-selector {
     label {
