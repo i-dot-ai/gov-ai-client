@@ -26,27 +26,30 @@ const { mcpTools, serversWithFailedConnections } = await getTools(mcpServers, As
               <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
                 <h2 class="govuk-heading-s govuk-!-margin-bottom-0">Select plugins</h2>
               </legend>
-              <div id="servers-hint" class="govuk-hint">Plugins allow the AI to connect to external sources before giving a response</div>
+              <p id="servers-hint" class="govuk-body-s govuk-!-margin-bottom-3" style="color: #505a5f;">Plugins allow the AI to connect to external sources before giving a response</p>
               <div class="govuk-checkboxes govuk-checkboxes--small govuk-checkboxes" data-module="govuk-checkboxes">
                 { mcpServers.map((server) =>
-                  <div class="govuk-checkboxes__item govuk-!-margin-top-3">
+                  <div class="govuk-checkboxes__item govuk-!-margin-top-2">
                     <input class="govuk-checkboxes__input" id={ 'tool-' + server.name } name="servers" type="checkbox" value={ server.name } aria-describedby={'tool-hint-' + server.name } />
                     <label class="govuk-label govuk-checkboxes__label govuk-!-padding-right-0" for={ 'tool-' + server.name }>
-                      { server.name }
+                      <span class="govuk-body-s">{ server.name }</span>
                       { serversWithFailedConnections.includes(server.name) && 
-                        <strong class="govuk-tag govuk-tag--red"><!--<span class="tool-selector__exclamation" aria-hidden="true">&excl;</span> -->Error</strong>
+                        <strong class="govuk-tag govuk-tag--red govuk-!-padding-left-1 govuk-!-padding-right-1 govuk-!-padding-top-0"><span class="govuk-body-xs">Error</span></strong>
+                      }
+                      { !serversWithFailedConnections.includes(server.name) && mcpTools.filter((tool) => tool.serverName === server.name).length === 0 &&
+                        <strong class="govuk-tag govuk-tag--red govuk-!-padding-left-1 govuk-!-padding-right-1 govuk-!-padding-top-0"><span class="govuk-body-xs">No tools found</span></strong>
                       }
                     </label>
-                    { !serversWithFailedConnections.includes(server.name) && 
+                    { !serversWithFailedConnections.includes(server.name) && mcpTools.filter((tool) => tool.serverName === server.name).length > 0 &&
                       <div id={'tool-hint-' + server.name } class="tool-selector__tools govuk-hint govuk-checkboxes__hint govuk-!-margin-top-1 govuk-!-padding-0" style="font-size: 1rem;">
                         <details class="govuk-details govuk-!-margin-bottom-0">
                           <summary class="govuk-details__summary">
-                            <span class="govuk-details__summary-text govuk-body-s govuk-!-font-weight-bold">Tools</span>
+                            <span class="govuk-details__summary-text govuk-body-xs govuk-!-font-weight-bold">Tools</span>
                           </summary>
                           <div class="govuk-details__text">
                             <ul class="govuk-list govuk-!-margin-bottom-0">
                               { mcpTools.filter((tool) => tool.serverName === server.name).map((tool) =>
-                                <li class="govuk-body-s govuk-!-margin-top-2">
+                                <li class="govuk-body-xs govuk-!-margin-top-2">
                                   <strong class="govuk-!-display-block">{ tool.name }:</strong>
                                   { tool.description }
                                 </li>
