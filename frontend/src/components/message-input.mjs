@@ -1,17 +1,52 @@
 // @ts-check
+import accessibleAutocomplete from '../components/accessible-autocomplete/wrapper.jsx';
+
 
 export class MessageInput extends HTMLElement {
 
   constructor() {
     super();
+
+    // setup autocomplete
+    const allTools = [...document.querySelectorAll('.js-tool')].map(element => `@${element.textContent?.replace(':', '')}`);
+    accessibleAutocomplete({
+      element: this.querySelector('#prompt-container'),
+      id: 'prompt',
+      source: allTools,
+      inputClasses: 'govuk-textarea govuk-!-margin-bottom-3 prompt-box__textarea',
+      name: 'prompt',
+      required: true,
+      showNoOptionsFound: false,
+    });
+
     this.textarea = this.querySelector('textarea');
     this.previousPrompt = '';
   }
 
   connectedCallback() {
+
     if (!this.textarea) {
       return;
     }
+
+    // only show prompt box if '@' used
+    /** @type {HTMLElement | null} */
+    /*
+    const suggestions = document.querySelector('#prompt__listbox');
+    if (suggestions) {
+      suggestions.style.display = 'none';
+      this.textarea.addEventListener('keyup', () => {
+        if (!this.textarea) {
+          return;
+        }
+        const showSuggestions = this.textarea.value.charAt(0) === '@'
+        suggestions.style.display = showSuggestions ? 'block' : 'none';
+        if (!showSuggestions) {
+          this.textarea.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+    */
 
     // Submit form on enter-key press (providing shift isn't being pressed)
     this.textarea.addEventListener('keypress', (evt) => {
