@@ -1,24 +1,11 @@
 // @ts-check
-import accessibleAutocomplete from '../components/accessible-autocomplete/wrapper.jsx';
+import Tribute from 'tributejs';
 
 
 export class MessageInput extends HTMLElement {
 
   constructor() {
     super();
-
-    // setup autocomplete
-    const allTools = [...document.querySelectorAll('.js-tool')].map(element => `@${element.textContent?.replace(':', '')}`);
-    accessibleAutocomplete({
-      element: this.querySelector('#prompt-container'),
-      id: 'prompt',
-      source: allTools,
-      inputClasses: 'govuk-textarea govuk-!-margin-bottom-3 prompt-box__textarea',
-      name: 'prompt',
-      required: true,
-      showNoOptionsFound: false,
-    });
-
     this.textarea = this.querySelector('textarea');
     this.previousPrompt = '';
   }
@@ -62,6 +49,8 @@ export class MessageInput extends HTMLElement {
     this.textarea.addEventListener('input', () => {
       this.#adjustHeight();
     });
+
+    this.#setupAutocomplete();
   }
 
   #adjustHeight = () => {
@@ -91,6 +80,25 @@ export class MessageInput extends HTMLElement {
     this.textarea.value = '';
     this.#adjustHeight();
   };
+
+
+  #setupAutocomplete() {
+    if (!this.textarea) {
+      return;
+    }
+    this.tribute = new Tribute({
+      values: (searchText, cb) => {
+        const allTools = [...document.querySelectorAll('input[name="servers"]:checked ~ div .js-tool')].map(element => {
+          const toolName = element.textContent?.replace(':', '');
+          return {
+            key: `@${toolName}`, value: toolName
+          }
+        });
+        cb(allTools);
+      }
+    });
+    this.tribute.attach(this.textarea);
+  }
 
 }
 
