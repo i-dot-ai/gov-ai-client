@@ -15,7 +15,8 @@ export type Message = {
   type: 'user' | 'llm'
   response: {
     content: string,
-    tools?: {}[]
+    tools?: {}[],
+    tool_calls: [],
   }
 }
 

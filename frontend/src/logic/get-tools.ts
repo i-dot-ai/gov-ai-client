@@ -3,11 +3,21 @@ import { SSEClientTransport } from '@modelcontextprotocol/sdk/client/sse.js';
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import { loadMcpTools } from '@langchain/mcp-adapters';
 import type { MCP_SERVER } from './get-servers';
+import type { StructuredToolInterface, ToolInputSchemaBase } from '@langchain/core/tools';
+
+
+export type Tool = StructuredToolInterface<
+  ToolInputSchemaBase,
+  any,
+  any
+> & {
+  serverName: string
+}
 
 
 export const getTools = async (servers: MCP_SERVER[], authToken: string ) => {
 
-  let mcpTools = [];
+  let mcpTools: Tool[] = [];
   let serversWithFailedConnections = [];
 
   for (const mcpServer of servers) {
@@ -59,7 +69,7 @@ export const getTools = async (servers: MCP_SERVER[], authToken: string ) => {
         console.log("Connected using SSE transport");
       }
 
-      const serverMcpTools = await loadMcpTools(mcpServer.url, client);
+      const serverMcpTools = (await loadMcpTools(mcpServer.url, client) as Tool[]);
       serverMcpTools.forEach((tool) => {
         tool.serverName = mcpServer.name;
       });
