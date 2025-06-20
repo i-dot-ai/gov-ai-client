@@ -1,9 +1,10 @@
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
-import { SSEClientTransport } from '@modelcontextprotocol/sdk/client/sse.js';
+import { SSEClientTransport, type SSEClientTransportOptions } from '@modelcontextprotocol/sdk/client/sse.js';
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import { loadMcpTools } from '@langchain/mcp-adapters';
 import type { MCP_SERVER } from './get-servers';
-import type { StructuredToolInterface, ToolInputSchemaBase } from '@langchain/core/tools';
+import type { StructuredToolInterface } from '@langchain/core/tools';
+import type { ToolInputSchemaBase } from '@langchain/core/dist/tools/types';
 
 
 export type Tool = StructuredToolInterface<
@@ -29,44 +30,34 @@ export const getTools = async (servers: MCP_SERVER[], authToken: string ) => {
       serverHeaders['x_amzn_oidc_accesstoken'] = authToken;
       serverHeaders['Authorization'] = `Bearer ${authToken}`;
     }
+    const transportOptions = {
+      eventSourceInit: {
+        fetch: (input: string, init: {}) =>
+          fetch(input, {
+            ...init,
+            headers: serverHeaders
+          }),
+      },
+      requestInit: {
+        headers: serverHeaders
+      }
+    };
     try {
       const client = new Client({
           name: mcpServer.name,
           version: "1.0.0"
         });
       try {
-        const transport: StreamableHTTPClientTransport = new StreamableHTTPClientTransport(new URL(mcpServer.url), {
-          eventSourceInit: {
-            fetch: (input, init) =>
-              fetch(input, {
-                ...init,
-                headers: serverHeaders
-              }),
-          },
-          requestInit: {
-            headers: serverHeaders
-          }
-        });
+        const transport: StreamableHTTPClientTransport = new StreamableHTTPClientTransport(new URL(mcpServer.url), transportOptions);
         await client.connect(transport);
-        console.log("Connected using Streamable HTTP transport");
+        console.log(`${mcpServer.name}: Connected using Streamable HTTP transport`);
       } catch (error) {
-        console.log("Streamable HTTP connection failed, falling back to SSE transport");
-        const sseTransport = new SSEClientTransport(new URL(mcpServer.url), {
-          eventSourceInit: {
-            fetch: (input, init) =>
-              fetch(input, {
-                ...init,
-                headers: serverHeaders
-              }),
-          },
-          requestInit: {
-            headers: serverHeaders
-          }
-        });
+        //console.log(`${mcpServer.name}: Streamable HTTP connection failed, falling back to SSE transport`);
+        const sseTransport = new SSEClientTransport(new URL(mcpServer.url), transportOptions as SSEClientTransportOptions);
         await client.connect(sseTransport, {
           timeout: 2000,
         });
-        console.log("Connected using SSE transport");
+        console.log(`${mcpServer.name}: Connected using SSE transport`);
       }
 
       const serverMcpTools = (await loadMcpTools(mcpServer.url, client) as Tool[]);
@@ -76,7 +67,7 @@ export const getTools = async (servers: MCP_SERVER[], authToken: string ) => {
 
       mcpTools.push(...serverMcpTools);
     } catch (error) {
-      console.log(`Error trying to access tool: ${mcpServer.name}`, error);
+      console.log(`${mcpServer.name}: Error trying to access this server`, error);
       serversWithFailedConnections.push(mcpServer.name);
     }
   }

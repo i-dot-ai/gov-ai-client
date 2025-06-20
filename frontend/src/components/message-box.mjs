@@ -42,7 +42,7 @@ export class MessageBox extends LitElement {
     const messageBoxes = document.querySelectorAll('message-box[type="llm"]')
     messageBoxes.forEach((messageBox, index) => {
       if (messageBox === this) {
-        this.messageIndex = index + 1
+        this.messageIndex = index // should be +1 but we hide the copy button for the intro message
       }
     })
   }

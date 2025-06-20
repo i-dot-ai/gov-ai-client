@@ -109,7 +109,7 @@ export const getLlmResponse = async (messages: Message[], selectedServers: strin
     if (!chunk.length) {
       const response = chunk.agent?.messages ? chunk.agent.messages[0] : {};
       if (response.tool_calls?.length) {
-        const toolCall = response.tool_calls.map((tool) => {
+        const toolCall = response.tool_calls.map((tool: {name: string, args: {request?: string}}) => {
           return {
             name: tool.name,
             args: tool.args.request || tool.args

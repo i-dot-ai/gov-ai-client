@@ -134,8 +134,7 @@ mcpTools.forEach((tool) => {
     form.addEventListener('submit', (evt) => {
       evt.preventDefault()
 
-      const record = Object.fromEntries(new FormData(form).entries()) as Record<string, string>
-      const formData = new URLSearchParams(record).toString()
+      const formData = new URLSearchParams(new FormData(form) as unknown as string[][]).toString()
 
       // set up new message
       let messageBoxUser = document.createElement('message-box')
