@@ -30,8 +30,6 @@ export type Message = {
   }
 }
 
-const MODEL = 'o4-mini';
-
 
 export const getLlmResponse = async (messages: Message[], selectedServers: string[], authToken: string) => {
 
@@ -39,7 +37,7 @@ export const getLlmResponse = async (messages: Message[], selectedServers: strin
     openAIApiKey: process.env['AZURE_OPENAI_API_KEY'],
     openAIApiVersion: process.env['OPENAI_API_VERSION'],
     openAIBasePath: process.env['AZURE_OPENAI_ENDPOINT'],
-    deploymentName: MODEL,
+    deploymentName: 'o4-mini',
     callbackManager,
   });
 
