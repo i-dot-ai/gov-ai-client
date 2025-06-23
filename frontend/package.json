@@ -20,6 +20,7 @@
     "dotenv": "^16.4.7",
     "i.ai-design-system": "^0.7.4",
     "jose": "^6.0.10",
+    "langfuse-langchain": "^3.37.4",
     "lit-html": "^3.2.1",
     "openai": "^4.98.0",
     "showdown": "^2.1.0",
