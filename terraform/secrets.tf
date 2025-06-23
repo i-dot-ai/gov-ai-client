@@ -31,6 +31,16 @@ locals {
     },
 
     {
+      name  = "LANGFUSE_SECRET_KEY"
+      value = var.langfuse_secret_key
+    },
+
+    {
+      name  = "LANGFUSE_PUBLIC_KEY"
+      value = var.langfuse_public_key
+    },
+
+    {
       name  = "EXAMPLE_VAR"
       value = "placeholder" # Update value in SSM - Do not hardcode
     }

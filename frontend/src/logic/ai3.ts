@@ -9,6 +9,16 @@ import { AIMessage, HumanMessage, SystemMessage } from '@langchain/core/messages
 import { sendMessage } from '../pages/api/sse'
 import { mcpServers } from './get-servers.ts'
 import { getTools } from './get-tools.ts'
+import { CallbackManager } from '@langchain/core/callbacks/manager'
+import { CallbackHandler as LangfuseHandler } from "langfuse-langchain"
+
+
+const langfuseHandler = new LangfuseHandler({
+  secretKey: process.env.LANGFUSE_SECRET_KEY,
+  publicKey: process.env.LANGFUSE_PUBLIC_KEY,
+  baseUrl: 'https://cloud.langfuse.com',
+})
+const callbackManager = CallbackManager.fromHandlers(langfuseHandler)
 
 
 export type Message = {
@@ -29,7 +39,8 @@ export const getLlmResponse = async (messages: Message[], selectedServers: strin
     openAIApiKey: process.env['AZURE_OPENAI_API_KEY'],
     openAIApiVersion: process.env['OPENAI_API_VERSION'],
     openAIBasePath: process.env['AZURE_OPENAI_ENDPOINT'],
-    deploymentName: MODEL
+    deploymentName: MODEL,
+    callbackManager,
   });
 
   // filter out any unselected MCP servers
@@ -76,7 +87,8 @@ export const getLlmResponse = async (messages: Message[], selectedServers: strin
   let agentStream;
   try {
     agentStream = await agent.stream(
-      { messages: agentMessages }
+      { messages: agentMessages },
+      { callbacks: [langfuseHandler] },
     )
   } catch (err) {
     console.error('Error connecting to LLM. Check your env vars.')
