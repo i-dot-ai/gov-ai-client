@@ -16,23 +16,46 @@ const MarkdownConverter = class extends LitElement {
    * @param {string} input
    */
   #linkifyMarkdown(input) {
-    
-    // Temporarily protect existing Markdown links/images (![alt](url) or [text](url))
+
+    // 1. Protect fenced code blocks
     /** @type {string[]} */
-    const placeholders = [];
-    const protectedText = input.replace(/(!?\[.*?\]\(.*?\))/g, (match) => {
-      placeholders.push(match);
-      return `@@LINK_${placeholders.length - 1}@@`;
+    const fencedBlocks = [];
+    const noFenced = input.replace(/```[\s\S]*?```/g, match => {
+      const token = `@@FENCED_${fencedBlocks.length}@@`;
+      fencedBlocks.push(match);
+      return token;
     });
 
-    // Wrap any remaining http(s) URLs
-    const linked = protectedText.replace(
+    // 2. Protect inline code (`…`)
+    /** @type {string[]} */
+    const inlineCodes = [];
+    const noInline = noFenced.replace(/`[^`]*`/g, match => {
+      const token = `@@INLINE_${inlineCodes.length}@@`;
+      inlineCodes.push(match);
+      return token;
+    });
+
+    // 3. Protect existing Markdown links and images
+    /** @type {string[]} */
+    const mdLinks = [];
+    const noLinks = noInline.replace(/(!?\[.*?\]\(.*?\))/g, match => {
+      const token = `@@LINK_${mdLinks.length}@@`;
+      mdLinks.push(match);
+      return token;
+    });
+
+    // 4. Wrap any remaining http(s) URLs
+    const linked = noLinks.replace(
       /(https?:\/\/[^\s<]+[^<.,:;"')\]\s])/g,
-      (url) => `[${url}](${url})`
+      url => `[${url}](${url})`
     );
 
-    // Restore the original Markdown links/images
-    return linked.replace(/@@LINK_(\d+)@@/g, (_, index) => placeholders[index]);
+    // 5. Restore links/images, inline code, then fenced code
+    const restoredLinks = linked.replace(/@@LINK_(\d+)@@/g, (_, i) => mdLinks[i]);
+    const restoredInline = restoredLinks.replace(/@@INLINE_(\d+)@@/g, (_, i) => inlineCodes[i]);
+    const restoredFenced = restoredInline.replace(/@@FENCED_(\d+)@@/g, (_, i) => fencedBlocks[i]);
+
+    return restoredFenced;
 
   }
 
