@@ -48,11 +48,11 @@ mcpTools.forEach((tool) => {
                       { serversWithFailedConnections.includes(server.name) && 
                         <strong class="govuk-tag govuk-tag--red govuk-!-padding-left-1 govuk-!-padding-right-1 govuk-!-padding-top-0"><span class="govuk-body-xs">Error</span></strong>
                       }
-                      { !serversWithFailedConnections.includes(server.name) && toolList[server.name].length === 0 &&
+                      { !serversWithFailedConnections.includes(server.name) && toolList[server.name]?.length === 0 &&
                         <strong class="govuk-tag govuk-tag--red govuk-!-padding-left-1 govuk-!-padding-right-1 govuk-!-padding-top-0"><span class="govuk-body-xs">No tools found</span></strong>
                       }
                     </label>
-                    { !serversWithFailedConnections.includes(server.name) && toolList[server.name].length > 0 &&
+                    { !serversWithFailedConnections.includes(server.name) && toolList[server.name]?.length > 0 &&
                       <div id={'tool-hint-' + server.name } class="tool-selector__tools govuk-hint govuk-checkboxes__hint govuk-!-margin-top-1 govuk-!-padding-0" style="font-size: 1rem;">
                         <details class="govuk-details govuk-!-margin-bottom-0">
                           <summary class="govuk-details__summary">
@@ -352,12 +352,6 @@ mcpTools.forEach((tool) => {
   }
   message-box:first-child copy-button {
     display: none;
-  }
-
-  pre {
-    background-color: #f3f2f1;
-    font-size: 1rem;
-    padding: 10px;
   }
 
 </style>
