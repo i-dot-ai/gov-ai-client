@@ -1,4 +1,4 @@
-export function GET({ session, redirect }) {
-  session?.set('messages', [])
-  return redirect('/')
+export async function GET({ session, redirect }) {
+  await session?.set('messages', []);
+  return redirect('/');
 }
