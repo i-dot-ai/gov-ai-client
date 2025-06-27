@@ -8,7 +8,7 @@ module "frontend" {
   # checkov:skip=CKV_SECRET_4:Skip secret check as these have to be used within the Github Action
   # checkov:skip=CKV_TF_1: We're using semantic versions instead of commit hash
   #source                      = "../../i-dot-ai-core-terraform-modules//modules/infrastructure/ecs" # For testing local changes
-  source                       = "git::https://github.com/i-dot-ai/i-dot-ai-core-terraform-modules.git//modules/infrastructure/ecs?ref=v5.0.0-ecs"
+  source                       = "git::https://github.com/i-dot-ai/i-dot-ai-core-terraform-modules.git//modules/infrastructure/ecs?ref=v5.4.0-ecs"
   image_tag                    = var.image_tag
   ecr_repository_uri           = "public.ecr.aws/idotai/gov-ai-client"
   vpc_id                       = data.terraform_remote_state.vpc.outputs.vpc_id
@@ -82,7 +82,7 @@ module "sns_topic" {
 module "frontend-ecs-alarm" {
   # checkov:skip=CKV_TF_1: We're using semantic versions instead of commit hash
   # source                       = "../../i-dot-ai-core-terraform-modules/modules/observability/ecs-alarms"
-  source                       = "git::https://github.com/i-dot-ai/i-dot-ai-core-terraform-modules.git//modules/observability/ecs-alarms?ref=v1.0.1-ecs-alarms"
+  source                       = "git::https://github.com/i-dot-ai/i-dot-ai-core-terraform-modules.git//modules/observability/ecs-alarms?ref=v1.4.1-ecs-alarms"
   name                         = "${local.name}-frontend"
   ecs_service_name             = module.frontend.ecs_service_name
   ecs_cluster_name             = data.terraform_remote_state.platform.outputs.ecs_cluster_name
