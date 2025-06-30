@@ -8,7 +8,11 @@ locals {
     },
     {
       name  = "SENTRY_DSN"
-      value = "placeholder" # Update value in SSM - Do not hardcode - Empty value will disable sentry
+      value = var.SENTRY_DSN
+    },
+    {
+      name  = "SENTRY_AUTH_TOKEN"
+      value = var.SENTRY_AUTH_TOKEN
     },
     {
       name  = "AZURE_OPENAI_API_KEY"

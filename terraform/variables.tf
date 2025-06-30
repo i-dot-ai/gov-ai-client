@@ -106,3 +106,15 @@ variable "langfuse_public_key" {
   description = "Langfuse public key"
   sensitive   = true
 }
+
+variable "SENTRY_DSN" {
+  type        = string
+  description = "DSN for sentry logs"
+  sensitive   = true
+}
+
+variable "SENTRY_AUTH_TOKEN" {
+  type        = string
+  description = "Sentry auth token for log pushing"
+  sensitive   = true
+}
