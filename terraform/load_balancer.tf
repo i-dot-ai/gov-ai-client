@@ -15,7 +15,13 @@ module "load_balancer" {
 module "waf" {
   # checkov:skip=CKV_TF_1: We're using semantic versions instead of commit hash
   #source        = "../../i-dot-ai-core-terraform-modules//modules/infrastructure/waf" # For testing local changes
+<<<<<<< found
   source         = "git::https://github.com/i-dot-ai/i-dot-ai-core-terraform-modules.git//modules/infrastructure/waf?ref=v5.2.0-waf"
+||||||| expected
+  source         = "git::https://github.com/i-dot-ai/i-dot-ai-core-terraform-modules.git//modules/infrastructure/waf?ref=v6.0.0-waf"
+=======
+  source         = "git::https://github.com/i-dot-ai/i-dot-ai-core-terraform-modules.git//modules/infrastructure/waf?ref=v7.1.1-waf"
+>>>>>>> replacement
   name           = local.name
   host           = local.host
   ip_set         = concat(var.internal_ips, var.developer_ips)
