@@ -90,6 +90,19 @@ const MarkdownConverter = class extends LitElement {
     `;
   }
 
+  updated() {
+    this.#formatLinks();
+  }
+
+  #formatLinks() {
+    // set links to open in a new tab
+    this.querySelectorAll('a:not([target="_blank"])').forEach(link => {
+      link.setAttribute('target', '_blank');
+      link.setAttribute('rel', 'noreferrer noopener');
+      link.innerHTML += ' <span class="govuk-visually-hidden">(opens in new tab)</span>';
+    });
+  }
+
 }
 
 customElements.define("markdown-converter", MarkdownConverter);
