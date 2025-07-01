@@ -1,23 +1,11 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Tools from '../components/tools.astro';
 import LitWrapper from '../components/lit-wrapper.astro';
 import type { Message } from '../logic/ai3.ts';
-import { mcpServers } from '../logic/get-servers.ts';
-import { getTools } from '../logic/get-tools.ts';
-import type { Tool } from '../logic/get-tools.ts';
+
 
 let messages: Message[] | undefined = await Astro.session?.get('messages');
-
-const { mcpTools, serversWithFailedConnections } = await getTools(mcpServers, Astro.request.headers.get('x-amzn-oidc-accesstoken') || '');
-
-// create toolList to make it easier to reference tools for a particular server in the template
-let toolList: { [toolName: string]: Tool[] } = {};
-mcpTools.forEach((tool) => {
-  if (!toolList[tool.serverName]) {
-    toolList[tool.serverName] = [];
-  }
-  toolList[tool.serverName].push(tool);
-});
 
 ---
 
@@ -30,54 +18,6 @@ mcpTools.forEach((tool) => {
   <form method="POST" action="/post-message" enctype="application/x-www-form-urlencoded">
   
     <div class="govuk-grid-row">
-
-      <div class="govuk-grid-column-one-quarter-from-desktop">
-        <tool-selector class="tool-selector">
-          <div class="govuk-form-group govuk-!-padding-3" style="border: 1px solid #b1b4b6;">
-            <fieldset class="govuk-fieldset" aria-describedby="servers-hint">
-              <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-                <h2 class="govuk-heading-s govuk-!-margin-bottom-0">Select plugins</h2>
-              </legend>
-              <p id="servers-hint" class="govuk-body-s govuk-!-margin-bottom-3" style="color: #505a5f;">Plugins allow the AI to connect to external sources before giving a response</p>
-              <div class="govuk-checkboxes govuk-checkboxes--small govuk-checkboxes" data-module="govuk-checkboxes">
-                { mcpServers.map((server) =>
-                  <div class="govuk-checkboxes__item govuk-!-margin-top-2">
-                    <input class="govuk-checkboxes__input" id={ 'tool-' + server.name } name="servers" type="checkbox" value={ server.name } aria-describedby={'tool-hint-' + server.name } />
-                    <label class="govuk-label govuk-checkboxes__label govuk-!-padding-right-0" for={ 'tool-' + server.name }>
-                      <span class="govuk-body-s">{ server.name }</span>
-                      { serversWithFailedConnections.includes(server.name) && 
-                        <strong class="govuk-tag govuk-tag--red govuk-!-padding-left-1 govuk-!-padding-right-1 govuk-!-padding-top-0"><span class="govuk-body-xs">Error</span></strong>
-                      }
-                      { !serversWithFailedConnections.includes(server.name) && toolList[server.name]?.length === 0 &&
-                        <strong class="govuk-tag govuk-tag--red govuk-!-padding-left-1 govuk-!-padding-right-1 govuk-!-padding-top-0"><span class="govuk-body-xs">No tools found</span></strong>
-                      }
-                    </label>
-                    { !serversWithFailedConnections.includes(server.name) && toolList[server.name]?.length > 0 &&
-                      <div id={'tool-hint-' + server.name } class="tool-selector__tools govuk-hint govuk-checkboxes__hint govuk-!-margin-top-1 govuk-!-padding-0" style="font-size: 1rem;">
-                        <details class="govuk-details govuk-!-margin-bottom-0">
-                          <summary class="govuk-details__summary">
-                            <span class="govuk-details__summary-text govuk-body-xs govuk-!-font-weight-bold">Tools</span><span class="govuk-body-xs"> ({ toolList[server.name].length })</span>
-                          </summary>
-                          <div class="govuk-details__text">
-                            <ul class="govuk-list govuk-!-margin-bottom-0">
-                              { toolList[server.name].map((tool) =>
-                                <li class="govuk-body-xs govuk-!-margin-top-2">
-                                  <strong class="govuk-!-display-block js-tool">{ tool.name }:</strong>
-                                  { tool.description }
-                                </li>
-                              )}
-                            </ul>
-                          </div>
-                        </details>
-                      </div>
-                    }
-                  </div>
-                )}
-              </div>
-            </fieldset>
-          </div>
-        </tool-selector>
-      </div>
 
       <div class="govuk-grid-column-three-quarters-from-desktop">
 
@@ -119,6 +59,23 @@ mcpTools.forEach((tool) => {
         </div>
 
       </div>
+
+      <div class="govuk-grid-column-one-quarter-from-desktop">
+        <tool-selector class="tool-selector">
+          <div class="govuk-form-group govuk-!-padding-3 govuk-!-margin-bottom-0" style="border: 1px solid #b1b4b6;">
+            <fieldset class="govuk-fieldset" aria-describedby="servers-hint">
+              <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+                <h2 class="govuk-heading-s govuk-!-margin-bottom-0">Select plugins</h2>
+              </legend>
+              <p id="servers-hint" class="govuk-body-s govuk-!-margin-bottom-3" style="color: #505a5f;">Plugins allow the AI to connect to external sources before giving a response</p>
+              <div class="govuk-checkboxes govuk-checkboxes--small govuk-checkboxes" data-module="govuk-checkboxes">
+                <Tools />
+              </div>
+            </fieldset>
+          </div>
+        </tool-selector>
+      </div>
+
     </div>
 
   </form>
@@ -197,39 +154,22 @@ mcpTools.forEach((tool) => {
     }
   }
 
-
+  .govuk-grid-column-one-quarter-from-desktop:has(.tool-selector) {
+    position: sticky;
+    top: 30px;
+  }
   .tool-selector {
+    display: block;
+    margin-top: 20px;
     label {
       max-width: none;
     }
   }
-  .tool-selector__tools {
-    summary::before {
-      color: #505a5f;
-      left: 3px;
-    };
-    summary span {
-      color: #505a5f;
-      position: relative; top: -2px;
-    }
-    li {
-      color: #505a5f;
-      word-wrap: break-word;
+  @media (min-width: 769px) {
+    .tool-selector {
+      margin-top: 0;
     }
   }
-  .tool-selector__exclamation {
-    align-items: center;
-    border: 1px solid;
-    border-radius: 100%;
-    display: inline-flex;
-    font-size: 14px;
-    font-weight: bold;
-    height: 12px;
-    justify-content: center;
-    padding: 3px;
-    width: 12px;
-  }
-
 
   #loading[tabindex="-1"]:focus-visible {
     border-radius: 0.5rem;
