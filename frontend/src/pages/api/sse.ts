@@ -1,12 +1,12 @@
-const encoder = new TextEncoder()
-let controller: ReadableStreamDefaultController<any>
+const encoder = new TextEncoder();
+let controller: ReadableStreamDefaultController<Uint8Array>;
 
 export function sendMessage(message: string) {
-  //console.log('sendMessage: ', message)
+  // console.log('sendMessage: ', message)
   try {
-    controller.enqueue(encoder.encode(`data: ${message}\n\n`))
-  } catch (err) {
-    console.log(err)
+    controller.enqueue(encoder.encode(`data: ${message}\n\n`));
+  } catch(err) {
+    console.log(err);
   }
 }
 
@@ -16,13 +16,14 @@ export async function GET() {
   // Create a streaming response
   const customReadable = new ReadableStream({
     async start(_controller) {
-      controller = _controller
+      controller = _controller;
+
       /*
-      controller.enqueue(encoder.encode(`data: TESTING}\n\n`))
-      controller.close()
-      */
+       *controller.enqueue(encoder.encode(`data: TESTING}\n\n`))
+       *controller.close()
+       */
     },
-  })
+  });
   // Return the stream response and keep the connection alive
   return new Response(customReadable, {
     // Set the headers for Server-Sent Events (SSE)
@@ -32,6 +33,6 @@ export async function GET() {
       'Cache-Control': 'no-cache, no-transform',
       'Content-Type': 'text/event-stream; charset=utf-8',
     },
-  })
+  });
 
 }
