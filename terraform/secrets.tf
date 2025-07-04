@@ -3,6 +3,14 @@ locals {
   # Values must not be hardcoded here - they must either be references or updated in SSM Parameter Store.
   env_secrets = [
     {
+      name = "PROJECT_NAME"
+      value = var.PROJECT_NAME
+    }
+    {
+      name = "DOMAIN_NAME"
+      value = var.DOMAIN_NAME
+    }
+    {
       name  = "DATA_S3_BUCKET"
       value = module.app_bucket.id
     },

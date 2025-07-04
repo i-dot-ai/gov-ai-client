@@ -18,7 +18,7 @@ mcpTools.forEach((tool) => {
 
 { mcpServers.map((server) =>
   <div class="govuk-checkboxes__item govuk-!-margin-top-2">
-    <input class="govuk-checkboxes__input" id={ 'tool-' + server.name } name="servers" type="checkbox" value={ server.name } aria-describedby={'tool-hint-' + server.name } />
+    <input class={ 'govuk-checkboxes__input plausible-event-name=Plugin+Click plausible-event-plugin=' + server.name } id={ 'tool-' + server.name } name="servers" type="checkbox" value={ server.name } aria-describedby={'tool-hint-' + server.name } />
     <label class="govuk-label govuk-checkboxes__label govuk-!-padding-right-0" for={ 'tool-' + server.name }>
       <span class="govuk-body-s">{ server.name }</span>
       { serversWithFailedConnections.includes(server.name) && 
@@ -31,7 +31,7 @@ mcpTools.forEach((tool) => {
     { !serversWithFailedConnections.includes(server.name) && toolList[server.name]?.length > 0 &&
       <div id={'tool-hint-' + server.name } class="tool-selector__tools govuk-hint govuk-checkboxes__hint govuk-!-margin-top-1 govuk-!-padding-0" style="font-size: 1rem;">
         <details class="govuk-details govuk-!-margin-bottom-0">
-          <summary class="govuk-details__summary">
+          <summary class={ 'govuk-details__summary plausible-event-name=Expand+Tool+List plausible-event-plugin=' + server.name }>
             <span class="govuk-details__summary-text govuk-body-xs govuk-!-font-weight-bold">Tools</span><span class="govuk-body-xs"> ({ toolList[server.name].length })</span>
           </summary>
           <div class="govuk-details__text">
