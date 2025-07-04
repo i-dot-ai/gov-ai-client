@@ -11,7 +11,7 @@ import LitWrapper from '../components/lit-wrapper.astro'
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<title>Gov AI MCP Client</title>
-		<script is:inline defer data-domain={ process.env['PROJECT_NAME'] + '.' + process.env['DOMAIN_NAME'] } src="https://plausible.io/js/script.hash.outbound-links.pageview-props.tagged-events.js"></script>
+		<script is:inline defer data-domain={ process.env['DOMAIN'] } src="https://plausible.io/js/script.hash.outbound-links.pageview-props.tagged-events.js"></script>
 		<script is:inline>window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }</script>
 	</head>
 	<body class="govuk-template__body govuk-frontend-supported">
