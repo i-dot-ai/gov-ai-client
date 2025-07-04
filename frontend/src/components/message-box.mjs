@@ -1,50 +1,53 @@
 // @ts-check
 
-import { LitElement, html, nothing } from 'lit'
+import { LitElement, html, nothing } from 'lit';
 
 
 export class MessageBox extends LitElement {
 
   static properties = {
-    type: {type: String, attribute: 'type'},
-    content: {type: String, attribute: 'content'},
-    toolCalls: {type: Array, attribute: 'tool-calls'},
-    streamingInProgress: {type: Boolean, state: true},
-    messageIndex: {type: Number, state: true},
-  }
+    type: { type: String, attribute: 'type' },
+    content: { type: String, attribute: 'content' },
+    toolCalls: { type: Array, attribute: 'tool-calls' },
+    streamingInProgress: { type: Boolean, state: true },
+    messageIndex: { type: Number, state: true },
+  };
 
   constructor() {
-    super()
+    super();
+
     /**
      * @type {'user'|'llm'}
      */
-    this.type = this.type || 'user'
+    this.type = this.type || 'user';
+
     /**
      * @type {string}
      */
-    this.content = this.content || ''
+    this.content = this.content || '';
+
     /**
      * @type { {name: string, args: []}[] }
      */
-    this.toolCalls = this.toolCalls || []
+    this.toolCalls = this.toolCalls || [];
   }
 
   createRenderRoot() {
-    this.innerHTML = ''
-    return this
+    this.innerHTML = '';
+    return this;
   }
 
   connectedCallback() {
-    super.connectedCallback()
+    super.connectedCallback();
     if (!this.content && this.type === 'llm') {
-      this.#stream()
+      this.#stream();
     }
-    const messageBoxes = document.querySelectorAll('message-box[type="llm"]')
+    const messageBoxes = document.querySelectorAll('message-box[type="llm"]');
     messageBoxes.forEach((messageBox, index) => {
       if (messageBox === this) {
-        this.messageIndex = index // should be +1 but we hide the copy button for the intro message
+        this.messageIndex = index; // should be +1 but we hide the copy button for the intro message
       }
-    })
+    });
   }
 
 
@@ -59,7 +62,7 @@ export class MessageBox extends LitElement {
         ${this.type === 'llm' ? html`
           <h2 class="govuk-visually-hidden">AI:</h2>
           
-          ${this.toolCalls.map(tool => html`
+          ${this.toolCalls.map((tool) => html`
             <tool-info name=${tool.name} entries=${JSON.stringify(tool.args)}></tool-info>
           `)}
 
@@ -81,68 +84,69 @@ export class MessageBox extends LitElement {
         ` : nothing}
       
       </div>
-    `
+    `;
   }
 
 
   #stream() {
 
-    this.streamingInProgress = true
+    this.streamingInProgress = true;
 
     window.setTimeout(() => {
+
       /** @type { HTMLElement | null } */
       const messageBox = this.querySelector('.message-box');
-      messageBox?.focus()
+      messageBox?.focus();
     }, 100);
-    
+
     // get message in view
     window.setTimeout(() => {
       this.scrollIntoView({
         block: 'start',
-        behavior: 'instant'
-      })
+        behavior: 'instant',
+      });
     }, 100);
-    /** @type {HTMLElement | null} */(this.querySelector('.message-box'))?.focus()
+    /** @type {HTMLElement | null} */this.querySelector('.message-box')?.focus();
 
     // setup SSE
-    const source = new EventSource('/api/sse')
+    const source = new EventSource('/api/sse');
     source.onmessage = (evt) => {
-      
+
       // parse response data
       /**
        * @type { {type?: 'tool' | 'content' | 'end', data?: any} }
        */
-      let response = {}
+      let response = {};
       try {
-        response = JSON.parse(evt.data)
-      } catch (err) {
-        console.log(err)
-        return
+        response = JSON.parse(evt.data);
+      } catch(err) {
+        console.log(err);
+        return;
       }
 
       // It's a tool
       if (response.type === 'tool') {
-        this.toolCalls = [...this.toolCalls, response.data[0]]
+        this.toolCalls = [...this.toolCalls, response.data[0]];
 
       // It's the text response
-      } else if (response.type === 'content') {        
-        this.content += response.data
+      } else if (response.type === 'content') {
+        this.content += response.data;
 
       } else if (response.type === 'end') {
-        source.close()
-        this.streamingInProgress = false
+        source.close();
+        this.streamingInProgress = false;
       }
 
-    }
+    };
     source.onerror = (err) => {
-      console.log('SSE error:', err)
-      source.close()
-      this.streamingInProgress = false
-      window.setTimeout(this.#stream, 500)
-    }
-    
+      console.log('SSE error:', err);
+      source.close();
+      this.streamingInProgress = false;
+      window.setTimeout(this.#stream, 500);
+    };
+
   }
 
 }
 
-customElements.define("message-box", MessageBox)
+customElements.define('message-box', MessageBox);

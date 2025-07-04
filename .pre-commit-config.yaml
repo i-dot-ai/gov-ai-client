@@ -30,3 +30,21 @@ repos:
         name: Detect AWS account numbers
         language: pygrep
         entry: ':\d{12}:'
+
+  - repo: local
+    hooks:
+      - id: eslint
+        name: ESLint
+        entry: >
+          bash -c '
+            cd frontend;
+            npm install;
+            for file in "$@"; do
+              # remove the leading "frontend/" from each path
+              rel="${file#frontend/}";
+              npx eslint "$rel" --fix || exit $?
+            done
+          ' _
+        language: system
+        pass_filenames: true
+        files: ^frontend/.*\.(?:js|jsx|ts|tsx)$
