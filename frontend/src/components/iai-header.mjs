@@ -4,9 +4,9 @@ import { LitElement, html } from 'lit';
 
 
 const IaiHeader = class extends LitElement {
-  
+
   static properties = {
-    productName: {type: String, attribute: 'product-name'},
+    productName: { type: String, attribute: 'product-name' },
   };
 
   createRenderRoot() {
@@ -29,6 +29,6 @@ const IaiHeader = class extends LitElement {
     `;
   }
 
-}
+};
 
-customElements.define("iai-header", IaiHeader);
+customElements.define('iai-header', IaiHeader);
