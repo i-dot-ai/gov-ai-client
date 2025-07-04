@@ -5,7 +5,7 @@ locals {
     {
       name = "DOMAIN"
       value = local.host
-    }
+    },
     {
       name  = "DATA_S3_BUCKET"
       value = module.app_bucket.id
