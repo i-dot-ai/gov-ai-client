@@ -1,5 +1,5 @@
 // @ts-check
-import { LitElement, html } from "lit";
+import { LitElement, html } from 'lit';
 
 export class LoadingMessage extends LitElement {
 
@@ -7,7 +7,7 @@ export class LoadingMessage extends LitElement {
     this.innerHTML = '';
     return this;
   }
-  
+
   render() {
     return html`
       <div class="loading-ellipsis govuk-body govuk-!-margin-bottom-1">
@@ -20,4 +20,4 @@ export class LoadingMessage extends LitElement {
   }
 
 }
-customElements.define("loading-message", LoadingMessage);
+customElements.define('loading-message', LoadingMessage);

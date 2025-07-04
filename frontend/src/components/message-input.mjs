@@ -83,20 +83,20 @@ export class MessageInput extends HTMLElement {
 
     /**
      * One time setup for the autocomplete list
-     * @param { HTMLUListElement } menu 
+     * @param { HTMLUListElement } menu
      */
     const setupList = (menu) => {
-      
+
       menu.setAttribute('role', 'listbox');
       menu.setAttribute('id', 'tools-list');
-      
+
       const observerList = new MutationObserver(() => {
         menu.querySelectorAll('li').forEach((item) => {
           item.setAttribute('role', 'option');
           item.setAttribute('id', `tools-option-${item.dataset.index}`);
         });
       });
-      observerList.observe(menu, { childList: true, subtree: true});
+      observerList.observe(menu, { childList: true, subtree: true });
 
       const observerListItem = new MutationObserver(() => {
         const highlighted = menu.querySelector('.highlight');
@@ -105,7 +105,7 @@ export class MessageInput extends HTMLElement {
         }
       });
       observerListItem.observe(menu, { subtree: true, attributes: true, attributeFilter: ['class'] });
-      
+
     };
 
     // when the autocomplete list shows
@@ -119,7 +119,7 @@ export class MessageInput extends HTMLElement {
 
       this.textarea?.setAttribute('aria-expanded', 'true');
       window.setTimeout(() => {
-        announcement.textContent = `Expanded'. ${menu?.querySelector('.highlight')?.textContent}, menu item`;   
+        announcement.textContent = `Expanded'. ${menu?.querySelector('.highlight')?.textContent}, menu item`;
       }, 100);
 
     });
@@ -128,35 +128,36 @@ export class MessageInput extends HTMLElement {
     this.textarea.addEventListener('tribute-active-false', () => {
       this.textarea?.setAttribute('aria-expanded', 'false');
       this.textarea?.removeAttribute('aria-activedescendant');
+
       /*
-      The only way to get this to announce is to remove focus from textarea until announcement has finished
-      window.setTimeout(() => {
-        announcement.textContent = 'Collapsed';
-      }, 100);
-      */
+       *The only way to get this to announce is to remove focus from textarea until announcement has finished
+       *window.setTimeout(() => {
+       *  announcement.textContent = 'Collapsed';
+       *}, 100);
+       */
     });
 
     /*
-    When an item is selected
-    The only way to get this to announce is to remove focus from textarea until announcement has finished
-    this.textarea.addEventListener('tribute-replaced', (evt) => {
-      const insertedItem = evt.detail.item.original.value;
-      this.textarea?.blur();
-      announcement.textContent = 'Added';
-      window.setTimeout(() => {
-        this.textarea?.focus();
-      }, 500);
-    });
-    */
+     *When an item is selected
+     *The only way to get this to announce is to remove focus from textarea until announcement has finished
+     *this.textarea.addEventListener('tribute-replaced', (evt) => {
+     *  const insertedItem = evt.detail.item.original.value;
+     *  this.textarea?.blur();
+     *  announcement.textContent = 'Added';
+     *  window.setTimeout(() => {
+     *    this.textarea?.focus();
+     *  }, 500);
+     *});
+     */
 
     // setup tribute
     this.tribute = new Tribute({
       values: (searchText, cb) => {
-        const allTools = [...document.querySelectorAll('input[name="servers"]:checked ~ div .js-tool')].map(element => {
+        const allTools = [...document.querySelectorAll('input[name="servers"]:checked ~ div .js-tool')].map((element) => {
           const toolName = element.textContent?.replace(':', '');
           return {
-            key: `@${toolName}`, value: toolName
-          }
+            key: `@${toolName}`, value: toolName,
+          };
         });
         cb(allTools);
       },

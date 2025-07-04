@@ -17,18 +17,20 @@ if (!process.env.GOVAI_PORT) {
 export default defineConfig({
   server: { port: port, host: true },
   adapter: node({
-    mode: 'standalone'
+    mode: 'standalone',
   }),
   output: 'server',
-  integrations: [sentry({
+  integrations: [
+    sentry({
       environment: process.env.ENVIRONMENT,
       dsn: process.env.SENTRY_DSN,
       tracesSampleRate: 0,
       replaysSessionSampleRate: 0,
       replaysOnErrorSampleRate: 0,
       sourceMapsUploadOptions: {
-        project: "gov-ai-client",
+        project: 'gov-ai-client',
         authToken: process.env.SENTRY_AUTH_TOKEN,
       },
-    })],
+    }),
+  ],
 });
