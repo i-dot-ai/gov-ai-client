@@ -9,7 +9,7 @@ export class MessageBox extends LitElement {
     type: {type: String, attribute: 'type'},
     content: {type: String, attribute: 'content'},
     toolCalls: {type: Array, attribute: 'tool-calls'},
-    streamingInProgress: {type: Boolean, state: true},
+    isStreaming: {type: Boolean, attribute: 'is-streaming'},
     messageIndex: {type: Number, state: true},
   }
 
@@ -27,6 +27,10 @@ export class MessageBox extends LitElement {
      * @type { {name: string, args: []}[] }
      */
     this.toolCalls = this.toolCalls || []
+    /**
+     * @type {boolean}
+     */
+    this.isStreaming = false
   }
 
   createRenderRoot() {
@@ -36,17 +40,27 @@ export class MessageBox extends LitElement {
 
   connectedCallback() {
     super.connectedCallback()
-    if (!this.content && this.type === 'llm') {
-      this.#stream()
-    }
+    
     const messageBoxes = document.querySelectorAll('message-box[type="llm"]')
     messageBoxes.forEach((messageBox, index) => {
       if (messageBox === this) {
-        this.messageIndex = index // should be +1 but we hide the copy button for the intro message
+        this.messageIndex = index
       }
     })
   }
 
+  attributeChangedCallback(name, oldValue, newValue) {
+    super.attributeChangedCallback(name, oldValue, newValue)
+    
+    if (name === 'tool-calls' && newValue) {
+      try {
+        this.toolCalls = JSON.parse(newValue)
+      } catch (e) {
+        console.warn('Error parsing tool calls:', e)
+        this.toolCalls = []
+      }
+    }
+  }
 
   render() {
     return html`
@@ -59,19 +73,15 @@ export class MessageBox extends LitElement {
         ${this.type === 'llm' ? html`
           <h2 class="govuk-visually-hidden">AI:</h2>
           
-          ${this.toolCalls.map(tool => html`
+          ${this.toolCalls && this.toolCalls.length > 0 ? this.toolCalls.map(tool => html`
             <tool-info name=${tool.name} entries=${JSON.stringify(tool.args)}></tool-info>
-          `)}
+          `) : nothing}
 
           ${this.content ? html`
             <markdown-converter id=${'message-' + this.messageIndex} class="govuk-body" content=${this.content}></markdown-converter>
           ` : nothing}
 
-          ${this.streamingInProgress ? html`
-            <loading-message></loading-message>
-          ` : nothing}
-
-          ${!this.streamingInProgress ? html`
+          ${!this.isStreaming && this.content ? html`
             <copy-button class="govuk-!-margin-top-2" copy=${'message-' + this.messageIndex}>
               Copy
               <span class="govuk-visually-hidden">response ${this.messageIndex}</span>
@@ -82,65 +92,6 @@ export class MessageBox extends LitElement {
       
       </div>
     `
-  }
-
-
-  #stream() {
-
-    this.streamingInProgress = true
-
-    window.setTimeout(() => {
-      /** @type { HTMLElement | null } */
-      const messageBox = this.querySelector('.message-box');
-      messageBox?.focus()
-    }, 100);
-    
-    // get message in view
-    window.setTimeout(() => {
-      this.scrollIntoView({
-        block: 'start',
-        behavior: 'instant'
-      })
-    }, 100);
-    /** @type {HTMLElement | null} */(this.querySelector('.message-box'))?.focus()
-
-    // setup SSE
-    const source = new EventSource('/api/sse')
-    source.onmessage = (evt) => {
-      
-      // parse response data
-      /**
-       * @type { {type?: 'tool' | 'content' | 'end', data?: any} }
-       */
-      let response = {}
-      try {
-        response = JSON.parse(evt.data)
-      } catch (err) {
-        console.log(err)
-        return
-      }
-
-      // It's a tool
-      if (response.type === 'tool') {
-        this.toolCalls = [...this.toolCalls, response.data[0]]
-
-      // It's the text response
-      } else if (response.type === 'content') {        
-        this.content += response.data
-
-      } else if (response.type === 'end') {
-        source.close()
-        this.streamingInProgress = false
-      }
-
-    }
-    source.onerror = (err) => {
-      console.log('SSE error:', err)
-      source.close()
-      this.streamingInProgress = false
-      window.setTimeout(this.#stream, 500)
-    }
-    
   }
 
 }

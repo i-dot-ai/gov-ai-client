@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import Tools from '../components/tools.astro';
 import LitWrapper from '../components/lit-wrapper.astro';
-import type { Message } from '../logic/ai3.ts';
+import type { Message } from '../logic/ai-sdk.ts';
 
 
 let messages: Message[] | undefined = await Astro.session?.get('messages');
@@ -56,6 +56,14 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
             <button class="govuk-button govuk-!-margin-bottom-0 plausible-event-name=Send+Prompt">Send</button>
             <a class="govuk-link govuk-!-font-size-16 govuk-!-margin-bottom-0 plausible-event-name=New+Chat" href="/clear-session">Start a new chat</a>
           </div>
+
+          <div class="govuk-form-group govuk-!-margin-top-3">
+            <label class="govuk-label govuk-label--s" for="provider">AI Provider</label>
+            <select class="govuk-select" id="provider" name="provider">
+              <option value="azure">Azure OpenAI</option>
+              <option value="anthropic">Anthropic Claude</option>
+            </select>
+          </div>
         </div>
 
       </div>
@@ -87,33 +95,127 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
 
     const textArea = document.querySelector('message-input') as MessageInput;
     const form = document.querySelector('form') as HTMLFormElement
+    const providerSelect = document.querySelector('#provider') as HTMLSelectElement
     let container = document.querySelector('#message-container') as HTMLElement
-    form.addEventListener('submit', (evt) => {
+    
+    // Store messages in memory for the session
+    let sessionMessages: Array<{type: 'user' | 'llm', response: {content: string, tool_calls: any[]}}> = []
+    
+    form.addEventListener('submit', async (evt) => {
       evt.preventDefault()
 
-      const formData = new URLSearchParams(new FormData(form) as unknown as string[][]).toString()
+      const formData = new FormData(form)
+      const userPrompt = textArea.getValue()
+      const selectedServers = formData.getAll('servers')
+      const provider = providerSelect.value
 
-      // set up new message
+      // Add user message to session
+      const userMessage = {
+        type: 'user' as const,
+        response: {
+          content: userPrompt,
+          tool_calls: []
+        }
+      }
+      sessionMessages.push(userMessage)
+
+      // set up new message elements
       let messageBoxUser = document.createElement('message-box')
       messageBoxUser.setAttribute('type', 'user')
-      messageBoxUser.setAttribute('content', textArea.getValue().replace(/"/g, '&quot;'))
+      messageBoxUser.setAttribute('content', userPrompt.replace(/"/g, '&quot;'))
       container.appendChild(messageBoxUser)
 
       let messageBoxLLM = document.createElement('message-box')
       messageBoxLLM.setAttribute('type', 'llm')
       container.appendChild(messageBoxLLM)
       
-      // send prompt
-      fetch("/post-message", {
-        method: "POST",
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: formData
-      });
+      // Send the request and handle streaming response
+      try {
+        const response = await fetch("/post-message", {
+          method: "POST",
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            messages: sessionMessages,
+            selectedServers,
+            authToken: null, // Will be set by middleware if needed
+            provider
+          })
+        })
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+
+        // Handle AI SDK data stream protocol
+        const reader = response.body?.getReader()
+        const decoder = new TextDecoder()
+        let llmContent = ''
+        let toolCalls: any[] = []
+
+        if (reader) {
+          while (true) {
+            const { done, value } = await reader.read()
+            if (done) {
+              // Stream is complete
+              break
+            }
+
+            const chunk = decoder.decode(value, { stream: true })
+            const lines = chunk.split('\n').filter(line => line.trim())
+
+            for (const line of lines) {
+              console.log('Stream line:', line) // Debug log
+              if (line.startsWith('0:')) {
+                // Text content from AI SDK (format: 0:"text content")
+                try {
+                  const content = JSON.parse(line.substring(2))
+                  if (content) {
+                    llmContent += content
+                    messageBoxLLM.setAttribute('content', llmContent)
+                  }
+                } catch (e) {
+                  console.warn('Error parsing text content:', e)
+                }
+              } else if (line.startsWith('9:')) {
+                // Tool call part (format: 9:{"toolCallId":"call-123","toolName":"my-tool","args":{"some":"argument"}})
+                try {
+                  const data = JSON.parse(line.substring(2))
+                  if (data.toolCallId && data.toolName) {
+                    toolCalls.push({
+                      name: data.toolName,
+                      args: data.args
+                    })
+                    messageBoxLLM.setAttribute('tool-calls', JSON.stringify(toolCalls))
+                  }
+                } catch (e) {
+                  console.warn('Error parsing tool call data:', e)
+                }
+              } else if (line.startsWith('d:')) {
+                // Stream finished (format: d:{"finishReason":"stop","usage":{"promptTokens":10,"completionTokens":20}})
+                console.log('Stream finished detected!') // Debug log
+                break
+              }
+            }
+          }
+        }
+
+        // Add LLM response to session
+        sessionMessages.push({
+          type: 'llm',
+          response: {
+            content: llmContent,
+            tool_calls: toolCalls
+          }
+        })
+
+      } catch (error) {
+        console.error('Error sending message:', error)
+        messageBoxLLM.setAttribute('content', 'Sorry, there was an error processing your request.')
+      }
 
       textArea.reset()
-
     })
 
   </script>
