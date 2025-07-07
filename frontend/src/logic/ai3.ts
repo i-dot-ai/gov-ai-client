@@ -54,8 +54,17 @@ export const getLlmResponse = async(messages: Message[], selectedServers: string
     tools: mcpTools,
   });
 
+  const currentTime = new Date().toLocaleString('en-GB', {
+    day:     'numeric',
+    month:   'short',
+    year:    'numeric',
+    hour:    'numeric',
+    minute:  '2-digit',
+    hour12:  true
+  });
+  
   let systemMessageText: string = `
-    You are a UK civil servant. 
+    You are a UK civil servant. The current time is ${currentTime}.
     If you see a word starting with "@" search for a tool by that name and use it. 
     Where appropriate cite any responses from tools to support answer, e.g. provide:
     - source, i.e. link or title (this should be verbatim, do not modify, or invent this. Use concise but descriptive names for links so each unique link text describes the destination. Ensure all links are rendered as proper markdown links)
