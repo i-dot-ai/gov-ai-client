@@ -30,16 +30,6 @@ variable "project_name" {
   description = "Name of project"
 }
 
-variable "internal_ips" {
-  type        = list(string)
-  description = "List of internal IPs"
-}
-
-variable "developer_ips" {
-  type        = list(string)
-  description = "List of developer IPs"
-}
-
 variable "team_name" {
   type        = string
   description = "The name of the team"
