@@ -57,13 +57,6 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
             <a class="govuk-link govuk-!-font-size-16 govuk-!-margin-bottom-0 plausible-event-name=New+Chat" href="/clear-session">Start a new chat</a>
           </div>
 
-          <div class="govuk-form-group govuk-!-margin-top-3">
-            <label class="govuk-label govuk-label--s" for="provider">AI Provider</label>
-            <select class="govuk-select" id="provider" name="provider">
-              <option value="azure">Azure OpenAI</option>
-              <option value="anthropic">Anthropic Claude</option>
-            </select>
-          </div>
         </div>
 
       </div>
@@ -78,6 +71,14 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
               <p id="servers-hint" class="govuk-body-s govuk-!-margin-bottom-3" style="color: #505a5f;">Plugins allow the AI to connect to external sources before giving a response</p>
               <div class="govuk-checkboxes govuk-checkboxes--small govuk-checkboxes" data-module="govuk-checkboxes">
                 <Tools />
+              </div>
+
+              <div class="govuk-form-group govuk-!-margin-top-4">
+                <label class="govuk-label govuk-label--s" for="provider">AI Provider</label>
+                <select class="govuk-select" id="provider" name="provider">
+                  <option value="azure">Azure OpenAI</option>
+                  <option value="anthropic">Anthropic Claude</option>
+                </select>
               </div>
             </fieldset>
           </div>
