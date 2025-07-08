@@ -55,14 +55,14 @@ export const getLlmResponse = async(messages: Message[], selectedServers: string
   });
 
   const currentTime = new Date().toLocaleString('en-GB', {
-    day:     'numeric',
-    month:   'short',
-    year:    'numeric',
-    hour:    'numeric',
-    minute:  '2-digit',
-    hour12:  true
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
   });
-  
+
   let systemMessageText: string = `
     You are a UK civil servant. The current time is ${currentTime}.
     If you see a word starting with "@" search for a tool by that name and use it. 
