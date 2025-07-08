@@ -23,12 +23,14 @@ export const getLlmResponse = async (
   messages: Message[], 
   selectedServers: string[], 
   authToken: string,
-  provider: Provider = 'azure'
+  provider: Provider = 'azure',
 ) => {
+
   // Create model based on provider
   const azure = createAzure({
-    resourceName: process.env.AZURE_RESOURCE_NAME,
+    baseURL: process.env.AZURE_OPENAI_ENDPOINT,
     apiKey: process.env.AZURE_OPENAI_API_KEY,
+    apiVersion: process.env.OPENAI_API_VERSION,
   })
   
   const anthropicClient = createAnthropic({
@@ -36,7 +38,7 @@ export const getLlmResponse = async (
   })
 
   const model = provider === 'azure' 
-    ? azure(process.env.AZURE_OPENAI_DEPLOYMENT_NAME || 'gpt-4o-mini')
+    ? azure(process.env.AZURE_OPENAI_DEPLOYMENT_NAME || 'o4-mini')
     : anthropicClient('claude-3-5-sonnet-20241022')
 
   // Filter out any unselected MCP servers

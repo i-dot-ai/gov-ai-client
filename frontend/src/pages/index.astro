@@ -73,6 +73,7 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
                 <Tools />
               </div>
 
+              {/*
               <div class="govuk-form-group govuk-!-margin-top-4">
                 <label class="govuk-label govuk-label--s" for="provider">AI Provider</label>
                 <select class="govuk-select" id="provider" name="provider">
@@ -80,6 +81,8 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
                   <option value="anthropic">Anthropic Claude</option>
                 </select>
               </div>
+               */}
+
             </fieldset>
           </div>
         </tool-selector>
@@ -96,7 +99,7 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
 
     const textArea = document.querySelector('message-input') as MessageInput;
     const form = document.querySelector('form') as HTMLFormElement
-    const providerSelect = document.querySelector('#provider') as HTMLSelectElement
+    const providerSelect = document.querySelector('#provider') as HTMLSelectElement | null;
     let container = document.querySelector('#message-container') as HTMLElement
     
     // Store messages in memory for the session
@@ -108,7 +111,7 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
       const formData = new FormData(form)
       const userPrompt = textArea.getValue()
       const selectedServers = formData.getAll('servers')
-      const provider = providerSelect.value
+      const provider = providerSelect?.value
 
       // Add user message to session
       const userMessage = {
