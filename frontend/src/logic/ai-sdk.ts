@@ -5,6 +5,7 @@ import 'dotenv/config'
 
 import { createAzure } from '@ai-sdk/azure'
 import { createAnthropic } from '@ai-sdk/anthropic'
+import { google } from '@ai-sdk/google'
 import { experimental_createMCPClient as createMCPClient, streamText } from 'ai'
 import { mcpServers } from './get-servers.ts'
 
@@ -17,13 +18,14 @@ export type Message = {
   }
 }
 
-type Provider = 'azure' | 'anthropic'
+type Provider = 'azure' | 'anthropic' | 'google'
 
 export const getLlmResponse = async (
   messages: Message[], 
   selectedServers: string[], 
   authToken: string,
-  provider: Provider = 'azure'
+  provider: Provider = 'azure',
+  modelName?: string
 ) => {
   // Create model based on provider
   const azure = createAzure({
@@ -35,9 +37,14 @@ export const getLlmResponse = async (
     apiKey: process.env.ANTHROPIC_API_KEY,
   })
 
-  const model = provider === 'azure' 
-    ? azure(process.env.AZURE_OPENAI_DEPLOYMENT_NAME || 'gpt-4.1')
-    : anthropicClient('claude-4-sonnet-20250514')
+  let model
+  if (provider === 'azure') {
+    model = azure(modelName || process.env.AZURE_OPENAI_DEPLOYMENT_NAME || 'gpt-4.1')
+  } else if (provider === 'anthropic') {
+    model = anthropicClient(modelName || 'claude-4-sonnet-20250514')
+  } else if (provider === 'google') {
+    model = google(modelName || 'gemini-2.5-pro')
+  }
 
   // Filter out any unselected MCP servers
   const selectedMcpServers = mcpServers.filter((server: {name: string}) => selectedServers.includes(server.name));

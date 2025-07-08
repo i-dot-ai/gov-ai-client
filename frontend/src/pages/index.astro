@@ -62,8 +62,11 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
               <Tools />
             </div>
             <select class="govuk-select model-selector" id="provider" name="provider">
-              <option value="azure">GPT-4.1</option>
-              <option value="anthropic">Claude Sonnet 4</option>
+              <option value="azure:gpt-4.1">gpt-4.1</option>
+              <option value="azure:o4-mini">o4-mini</option>
+              <option value="anthropic:claude-4-sonnet-20250514">Claude Sonnet 4</option>
+              <option value="google:gemini-2.5-pro">Gemini 2.5 Pro</option>
+              <option value="google:gemini-2.5-flash">Gemini 2.5 Flash</option>
             </select>
             <button type="submit" class="send-button" aria-label="Send message">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -101,7 +104,7 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
       const formData = new FormData(form)
       const userPrompt = textArea.getValue()
       const selectedServers = formData.getAll('servers')
-      const provider = providerSelect.value
+      const [provider, modelName] = providerSelect.value.split(':')
 
       // Add user message to session
       const userMessage = {
@@ -142,7 +145,8 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
             messages: sessionMessages,
             selectedServers,
             authToken: null, // Will be set by middleware if needed
-            provider
+            provider,
+            modelName
           })
         })
 

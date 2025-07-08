@@ -6,14 +6,14 @@ export const POST: APIRoute = async ({ request }) => {
     const body = await request.json()
     console.log('Request body:', body) // Debug log
     
-    const { messages, selectedServers, authToken, provider } = body
+    const { messages, selectedServers, authToken, provider, modelName } = body
 
     if (!messages || !Array.isArray(messages)) {
       console.error('Invalid messages format:', messages)
       return new Response('Invalid messages format', { status: 400 })
     }
 
-    const result = await getLlmResponse(messages, selectedServers || [], authToken, provider)
+    const result = await getLlmResponse(messages, selectedServers || [], authToken, provider, modelName)
     
     // Return the streaming response directly
     return result.toDataStreamResponse()
