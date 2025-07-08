@@ -13,24 +13,36 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
 
   <link rel="stylesheet" href="https://zurb.github.io/tribute/example/tribute.css" />
 
-  <h1 class="govuk-visually-hidden">Gov AI MCP Client Chat</h1>
+  <header class="app-header">
+    <h1 class="govuk-visually-hidden">Gov AI MCP Client Chat</h1>
+    <div class="header-content">
+      <div class="header-title">
+        <h2 class="govuk-heading-m govuk-!-margin-bottom-0">GovAI Client</h2>
+      </div>
+      <div class="header-actions">
+        <a class="new-chat-button plausible-event-name=New+Chat" href="/clear-session">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 1V15M1 8H15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          New chat
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <div class="header-description">
+    <p>I am a dedicated chat assistant for securely connecting to external plugins. Make selections via the plugins selector and run a query. Each plugin may contain multiple tools. AI can make mistakes - check before using its output.</p>
+  </div>
 
   <form method="POST" action="/post-message" enctype="application/x-www-form-urlencoded">
   
-    <div class="govuk-grid-row">
+    <div class="main-content">
 
-      <div class="govuk-grid-column-three-quarters-from-desktop">
+      <div class="message-area">
 
         <h2 class="govuk-visually-hidden">Messages</h2>
 
         <div id="message-container">
-
-          <LitWrapper>
-            <message-box type="llm" content=`
-              <h3 class="govuk-heading-s">Welcome to GovAI Client</h3> 
-              I am a dedicated chat assistant for securely connecting to external plugins. Make selections via the plugins panel and run a query. Each plugin may contain multiple tools. Please let me know how I can assist you today!
-            `></message-box>
-          </LitWrapper>
 
           { messages?.map((message) =>
             <LitWrapper>
@@ -40,48 +52,27 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
 
         </div>
 
-        <div class="prompt-box govuk-!-padding-3">
-          <message-input>
-            <label class="govuk-label govuk-label--s" for="prompt">Ask anything</label>
-            <div id="prompt-hint" class="govuk-hint govuk-!-font-size-16">
-              AI can make mistakes - check before using its output. Type @ to reference specific tools.
+        <message-input>
+          <id id="autocomplete-assistive-hint" style="display: none;">
+            When autocomplete results are available use up and down arrows to review and enter to select. Touch device users, explore by touch or with swipe gestures.
+          </id>
+          <div class="message-input-container">
+            <textarea class="message-textarea" id="prompt" name="prompt" rows="3" required aria-describedby="autocomplete-assistive-hint" placeholder="How may I help you today?"></textarea>
+            <div class="tools-selector-container">
+              <Tools />
             </div>
-            <id id="autocomplete-assistive-hint" style="display: none;">
-              When autocomplete results are available use up and down arrows to review and enter to select. Touch device users, explore by touch or with swipe gestures.
-            </id>
-            <textarea class="govuk-textarea govuk-!-margin-bottom-3 prompt-box__textarea" id="prompt" name="prompt" rows="3" required aria-describedby="prompt-hint autocomplete-assistive-hint"></textarea>
-          </message-input>
-
-          <div class="govuk-button-group govuk-!-margin-bottom-1">
-            <button class="govuk-button govuk-!-margin-bottom-0 plausible-event-name=Send+Prompt">Send</button>
-            <a class="govuk-link govuk-!-font-size-16 govuk-!-margin-bottom-0 plausible-event-name=New+Chat" href="/clear-session">Start a new chat</a>
-          </div>
-
-          <div class="govuk-form-group govuk-!-margin-top-3">
-            <label class="govuk-label govuk-label--s" for="provider">AI Provider</label>
-            <select class="govuk-select" id="provider" name="provider">
-              <option value="azure">Azure OpenAI</option>
-              <option value="anthropic">Anthropic Claude</option>
+            <select class="govuk-select model-selector" id="provider" name="provider">
+              <option value="azure">GPT-4.1</option>
+              <option value="anthropic">Claude Sonnet 4</option>
             </select>
+            <button type="submit" class="send-button" aria-label="Send message">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8 0L16 8L8 16L7.3 15.3L13.6 9H0V7H13.6L7.3 0.7L8 0Z" fill="currentColor"/>
+              </svg>
+            </button>
           </div>
-        </div>
+        </message-input>
 
-      </div>
-
-      <div class="govuk-grid-column-one-quarter-from-desktop">
-        <tool-selector class="tool-selector">
-          <div class="govuk-form-group govuk-!-padding-3 govuk-!-margin-bottom-0" style="border: 1px solid #b1b4b6;">
-            <fieldset class="govuk-fieldset" aria-describedby="servers-hint">
-              <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-                <h2 class="govuk-heading-s govuk-!-margin-bottom-0">Select plugins</h2>
-              </legend>
-              <p id="servers-hint" class="govuk-body-s govuk-!-margin-bottom-3" style="color: #505a5f;">Plugins allow the AI to connect to external sources before giving a response</p>
-              <div class="govuk-checkboxes govuk-checkboxes--small govuk-checkboxes" data-module="govuk-checkboxes">
-                <Tools />
-              </div>
-            </fieldset>
-          </div>
-        </tool-selector>
       </div>
 
     </div>
@@ -101,6 +92,9 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
     // Store messages in memory for the session
     let sessionMessages: Array<{type: 'user' | 'llm', response: {content: string, tool_calls: any[]}}> = []
     
+    // Get the textarea element
+    const textarea = document.getElementById('prompt') as HTMLTextAreaElement
+    
     form.addEventListener('submit', async (evt) => {
       evt.preventDefault()
 
@@ -118,6 +112,14 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
         }
       }
       sessionMessages.push(userMessage)
+      
+      // Update placeholder text after first message
+      if (textarea) {
+        textarea.placeholder = 'Reply to GovAI'
+      }
+
+      // Clear the input immediately
+      textArea.reset()
 
       // set up new message elements
       let messageBoxUser = document.createElement('message-box')
@@ -214,8 +216,6 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
         console.error('Error sending message:', error)
         messageBoxLLM.setAttribute('content', 'Sorry, there was an error processing your request.')
       }
-
-      textArea.reset()
     })
 
   </script>
@@ -233,6 +233,112 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
 
 
 <style is:global>
+
+  .govuk-main-wrapper {
+    padding-top: 8px !important;
+  }
+
+  .app-header {
+    background: white;
+    border-bottom: 1px solid #b1b4b6;
+    padding: 6px 24px 12px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    margin-bottom: 24px;
+  }
+
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  .header-description {
+    max-width: 750px;
+    margin: 0 auto 24px;
+    padding: 8px 24px 8px 40px;
+    color: #505a5f;
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .header-description::before {
+    content: '';
+    position: absolute;
+    left: 24px;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background-color: var(--iai-pink);
+  }
+
+  .header-description p {
+    margin: 0;
+    font-size: 14px !important;
+  }
+
+  .header-title h2 {
+    color: #0b0c0c;
+    font-weight: 600;
+    margin: 0;
+    font-size: 1.25rem;
+  }
+
+  .new-chat-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: #f3f2f1;
+    border: 1px solid #b1b4b6;
+    border-radius: 20px;
+    color: #0b0c0c;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+
+  .new-chat-button:hover {
+    background: #e8e8e8;
+    color: #0b0c0c;
+    text-decoration: none;
+  }
+
+  .new-chat-button:focus {
+    outline: 2px solid #ffdd00;
+    outline-offset: 2px;
+    color: #0b0c0c;
+    text-decoration: none;
+  }
+
+  .new-chat-button svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .main-content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 24px;
+    position: relative;
+  }
+
+  .message-area {
+    width: 100%;
+  }
+
+  .tools-selector-container {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    z-index: 1;
+  }
 
   /* Tribute autocomplete */
   body {
@@ -333,12 +439,78 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
     text-align: left;
   }
 
-  .prompt-box {
-    background-color: #f3f2f1;
-    border: 1px solid #b1b4b6;
-  }
-  .prompt-box__textarea {
+  .message-textarea {
+    width: 100%;
     min-height: 86px;
+    padding: 12px;
+    padding-bottom: 48px;
+    border: 1px solid #b1b4b6;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    resize: vertical;
+    box-sizing: border-box;
+  }
+
+  .message-textarea:focus {
+    outline: none;
+    border-color: var(--iai-pink);
+    box-shadow: 0 0 0 2px rgba(201, 8, 120, 0.2);
+  }
+
+  .message-input-container {
+    position: relative;
+  }
+
+  .model-selector {
+    position: absolute;
+    bottom: 12px;
+    right: 56px;
+    background: white;
+    border: 1px solid #b1b4b6;
+    border-radius: 16px;
+    padding: 6px 12px;
+    font-size: 14px;
+    min-width: 120px;
+    height: 32px;
+    z-index: 1;
+  }
+
+  .model-selector:focus {
+    outline: none;
+    border-color: var(--iai-pink);
+    box-shadow: 0 0 0 2px rgba(201, 8, 120, 0.2);
+  }
+
+  .send-button {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    background: var(--iai-pink);
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    z-index: 1;
+  }
+
+  .send-button:hover {
+    background: #a91560;
+  }
+
+  .send-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(201, 8, 120, 0.2);
+  }
+
+  .send-button svg {
+    transform: rotate(-90deg);
   }
 
   .loading-ellipsis span {
@@ -389,10 +561,48 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
     }
   }
 
-  message-box copy-button {
-    display: block;
+  .clipboard-button {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    color: #505a5f;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
   }
-  message-box:first-child copy-button {
+
+  .clipboard-button:hover {
+    background: #f8f8f8;
+    color: var(--iai-pink);
+  }
+
+  .clipboard-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(201, 8, 120, 0.2);
+  }
+
+  .clipboard-button svg {
+    width: 18px;
+    height: 18px;
+    transition: all 0.3s ease;
+  }
+
+  .clipboard-button.copied {
+    color: #28a745;
+  }
+
+  .clipboard-button.copied svg {
+    transform: scale(1.1);
+  }
+
+  message-box:first-child .clipboard-button {
     display: none;
   }
 

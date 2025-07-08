@@ -5,36 +5,141 @@ import { mcpServers } from '../logic/get-servers.ts';
 // So we just show the available servers without pre-fetching tools
 ---
 
-{ mcpServers.map((server) =>
-  <div class="govuk-checkboxes__item govuk-!-margin-top-2">
-    <input class={ 'govuk-checkboxes__input plausible-event-name=Plugin+Click plausible-event-plugin=' + server.name } id={ 'tool-' + server.name } name="servers" type="checkbox" value={ server.name } aria-describedby={'tool-hint-' + server.name } />
-    <label class="govuk-label govuk-checkboxes__label govuk-!-padding-right-0" for={ 'tool-' + server.name }>
-      <span class="govuk-body-s">{ server.name }</span>
-    </label>
-    <div id={'tool-hint-' + server.name } class="tool-selector__tools govuk-hint govuk-checkboxes__hint govuk-!-margin-top-1 govuk-!-padding-0" style="font-size: 1rem;">
-      <span class="govuk-body-xs" style="color: #505a5f;">{ server.description }</span>
+<div class="tools-selector">
+  <button type="button" class="tools-button" id="tools-toggle">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M6.5 2.5L6.5 4.5M6.5 4.5C5.67157 4.5 5 5.17157 5 6C5 6.82843 5.67157 7.5 6.5 7.5M6.5 4.5C7.32843 4.5 8 5.17157 8 6C8 6.82843 7.32843 7.5 6.5 7.5M6.5 7.5L6.5 13.5M11.5 2.5L11.5 8.5M11.5 8.5C10.6716 8.5 10 9.17157 10 10C10 10.8284 10.6716 11.5 11.5 11.5M11.5 8.5C12.3284 8.5 13 9.17157 13 10C13 10.8284 12.3284 11.5 11.5 11.5M11.5 11.5L11.5 13.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    Plugins
+  </button>
+  
+  <div class="tools-dropdown" id="tools-dropdown">
+    <div class="tools-dropdown-content">
+      { mcpServers.map((server) =>
+        <label class="tool-option" for={ 'tool-' + server.name }>
+          <input class="tool-checkbox" id={ 'tool-' + server.name } name="servers" type="checkbox" value={ server.name } />
+          <span class="tool-name">{ server.name }</span>
+          <span class="tool-description">{ server.description }</span>
+        </label>
+      )}
     </div>
   </div>
-)}
+</div>
 
+<script>
+  const toolsButton = document.getElementById('tools-toggle');
+  const toolsDropdown = document.getElementById('tools-dropdown');
+  
+  toolsButton?.addEventListener('click', (e) => {
+    e.preventDefault();
+    toolsDropdown?.classList.toggle('tools-dropdown--open');
+  });
+  
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!toolsButton?.contains(e.target as Node) && !toolsDropdown?.contains(e.target as Node)) {
+      toolsDropdown?.classList.remove('tools-dropdown--open');
+    }
+  });
+</script>
 
 <style>
-  .tool-selector__tools {
-    span {
-      color: #505a5f;
-      position: relative; top: -2px;
-    }
+  .tools-selector {
+    position: relative;
   }
-  .tool-selector__exclamation {
+
+  .tools-button {
+    display: flex;
     align-items: center;
-    border: 1px solid;
-    border-radius: 100%;
-    display: inline-flex;
+    gap: 8px;
+    padding: 6px 12px;
+    background: white;
+    border: 1px solid #b1b4b6;
+    border-radius: 16px;
+    cursor: pointer;
     font-size: 14px;
-    font-weight: bold;
-    height: 12px;
-    justify-content: center;
-    padding: 3px;
-    width: 12px;
+    font-family: 'Inter', sans-serif;
+    color: #0b0c0c;
+    transition: all 0.2s ease;
+    height: 32px;
+    min-width: 80px;
+  }
+
+  .tools-button:hover {
+    background: #f8f8f8;
+    border-color: #999;
+  }
+
+  .tools-button:focus {
+    outline: 2px solid #ffdd00;
+    outline-offset: 2px;
+  }
+
+  .tools-dropdown {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    margin-bottom: 8px;
+    background: white;
+    border: 1px solid #b1b4b6;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    min-width: 280px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(8px);
+    transition: all 0.2s ease;
+    z-index: 100;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .tools-dropdown--open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .tools-dropdown-content {
+    padding: 12px;
+  }
+
+  .tool-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .tool-option:hover {
+    background: #f8f8f8;
+  }
+
+  .tool-checkbox {
+    margin: 2px 0 0 0;
+    width: 16px;
+    height: 16px;
+    accent-color: var(--iai-pink);
+    flex-shrink: 0;
+  }
+
+  .tool-option .tool-name {
+    font-weight: 500;
+    color: #0b0c0c;
+    font-size: 14px;
+    display: block;
+  }
+
+  .tool-option .tool-description {
+    color: #505a5f;
+    font-size: 12px;
+    margin-top: 2px;
+    display: block;
+  }
+
+  .tool-option:has(.tool-checkbox:checked) {
+    background: #fee7f4;
   }
 </style>

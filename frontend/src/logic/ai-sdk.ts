@@ -36,8 +36,8 @@ export const getLlmResponse = async (
   })
 
   const model = provider === 'azure' 
-    ? azure(process.env.AZURE_OPENAI_DEPLOYMENT_NAME || 'gpt-4o-mini')
-    : anthropicClient('claude-3-5-sonnet-20241022')
+    ? azure(process.env.AZURE_OPENAI_DEPLOYMENT_NAME || 'gpt-4.1')
+    : anthropicClient('claude-4-sonnet-20250514')
 
   // Filter out any unselected MCP servers
   const selectedMcpServers = mcpServers.filter((server: {name: string}) => selectedServers.includes(server.name));

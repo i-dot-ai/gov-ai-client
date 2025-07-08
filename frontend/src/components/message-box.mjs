@@ -11,6 +11,7 @@ export class MessageBox extends LitElement {
     toolCalls: {type: Array, attribute: 'tool-calls'},
     isStreaming: {type: Boolean, attribute: 'is-streaming'},
     messageIndex: {type: Number, state: true},
+    copied: {type: Boolean, state: true},
   }
 
   constructor() {
@@ -31,6 +32,10 @@ export class MessageBox extends LitElement {
      * @type {boolean}
      */
     this.isStreaming = false
+    /**
+     * @type {boolean}
+     */
+    this.copied = false
   }
 
   createRenderRoot() {
@@ -47,6 +52,26 @@ export class MessageBox extends LitElement {
         this.messageIndex = index
       }
     })
+  }
+
+  copyContent(event) {
+    event.preventDefault()
+    event.stopPropagation()
+    
+    const messageElement = this.querySelector(`#message-${this.messageIndex}`)
+    if (messageElement) {
+      const textContent = messageElement.textContent || messageElement.innerText
+      navigator.clipboard.writeText(textContent).then(() => {
+        // Show copied state
+        this.copied = true
+        // Reset after 2 seconds
+        setTimeout(() => {
+          this.copied = false
+        }, 2000)
+      }).catch(err => {
+        console.error('Failed to copy content: ', err)
+      })
+    }
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
@@ -66,7 +91,6 @@ export class MessageBox extends LitElement {
     return html`
       <div class=${'message-box message-box--' + this.type} tabindex="-1">
         ${this.type === 'user' ? html`
-          <h2 class="govuk-heading-s govuk-!-font-size-16 govuk-!-margin-bottom-1">You:</h2>
           <p class="govuk-body">${this.content}</p>
         ` : nothing}
 
@@ -82,10 +106,18 @@ export class MessageBox extends LitElement {
           ` : nothing}
 
           ${!this.isStreaming && this.content ? html`
-            <copy-button class="govuk-!-margin-top-2" copy=${'message-' + this.messageIndex}>
-              Copy
-              <span class="govuk-visually-hidden">response ${this.messageIndex}</span>
-            </copy-button>
+            <button type="button" class="clipboard-button ${this.copied ? 'copied' : ''}" @click=${this.copyContent} aria-label="${this.copied ? 'Copied!' : `Copy response ${this.messageIndex}`}">
+              ${this.copied ? html`
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" fill="currentColor"/>
+                </svg>
+              ` : html`
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4 2a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v1h1a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h1V2zm7 1V2H5v1h6zm2 1H3v10h10V4z" fill="currentColor"/>
+                  <path d="M5 6h6v1H5V6zm0 2h6v1H5V8zm0 2h4v1H5v-1z" fill="currentColor"/>
+                </svg>
+              `}
+            </button>
           ` : nothing}
 
         ` : nothing}
