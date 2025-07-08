@@ -47,7 +47,7 @@ jobs:
         run: |
           # prod env from main branch
           if [[ "${{ github.ref_name }}" == main ]]; then
-            export ENVIRONMENT=dev
+            export ENVIRONMENT=prod
           else
             export ENVIRONMENT=$(echo ${{ github.ref_name }} | awk -F- '{ print $2 }')
           fi

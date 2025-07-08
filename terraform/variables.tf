@@ -89,9 +89,32 @@ variable "openai_api_version" {
   description = "Connect to Azure API"
 }
 
-
 variable "mcp_servers" {
   type        = string
   description = "JSON format - this overrides .mcp-servers.yaml"
+  sensitive   = true
+}
+
+variable "langfuse_secret_key" {
+  type        = string
+  description = "Langfuse secret key"
+  sensitive   = true
+}
+
+variable "langfuse_public_key" {
+  type        = string
+  description = "Langfuse public key"
+  sensitive   = true
+}
+
+variable "SENTRY_DSN" {
+  type        = string
+  description = "DSN for sentry logs"
+  sensitive   = true
+}
+
+variable "SENTRY_AUTH_TOKEN" {
+  type        = string
+  description = "Sentry auth token for log pushing"
   sensitive   = true
 }

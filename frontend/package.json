@@ -6,7 +6,8 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "lint": "npx eslint --fix"
   },
   "dependencies": {
     "@astrojs/node": "^9.2.1",
@@ -16,9 +17,10 @@
     "@langchain/openai": "^0.5.10",
     "@lit-labs/ssr": "^3.3.1",
     "@modelcontextprotocol/sdk": "^1.11.4",
+    "@sentry/astro": "^9.33.0",
     "astro": "^5.10.1",
     "dotenv": "^16.4.7",
-    "i.ai-design-system": "^0.7.5",
+    "i.ai-design-system": "^0.7.7",
     "jose": "^6.0.10",
     "langfuse-langchain": "^3.37.4",
     "lit-html": "^3.2.1",
@@ -28,6 +30,14 @@
     "yaml": "^2.7.1"
   },
   "devDependencies": {
-    "@types/showdown": "^2.0.6"
+    "@eslint/css": "^0.9.0",
+    "@eslint/js": "^9.30.1",
+    "@eslint/json": "^0.12.0",
+    "@eslint/markdown": "^6.6.0",
+    "@stylistic/eslint-plugin": "^5.1.0",
+    "@types/showdown": "^2.0.6",
+    "eslint": "^9.30.1",
+    "globals": "^16.3.0",
+    "typescript-eslint": "^8.35.1"
   }
 }

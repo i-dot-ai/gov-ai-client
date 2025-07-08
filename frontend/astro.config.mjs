@@ -3,6 +3,8 @@ import { defineConfig } from 'astro/config';
 
 import node from '@astrojs/node';
 
+import sentry from '@sentry/astro';
+
 let port;
 
 if (!process.env.GOVAI_PORT) {
@@ -15,8 +17,20 @@ if (!process.env.GOVAI_PORT) {
 export default defineConfig({
   server: { port: port, host: true },
   adapter: node({
-    mode: 'standalone'
+    mode: 'standalone',
   }),
-  output: 'server'
+  output: 'server',
+  integrations: [
+    sentry({
+      environment: process.env.ENVIRONMENT,
+      dsn: process.env.SENTRY_DSN?.replaceAll('"', ''),
+      tracesSampleRate: 0,
+      replaysSessionSampleRate: 0,
+      replaysOnErrorSampleRate: 0,
+      sourceMapsUploadOptions: {
+        project: "gov-ai-client",
+        authToken: process.env.SENTRY_AUTH_TOKEN?.replaceAll('"', ''),
+      },
+    }),
+  ],
 });
-
