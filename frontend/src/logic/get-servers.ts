@@ -9,6 +9,7 @@ export type MCP_SERVER = {
   description?: string,
   url: string,
   accessToken?: string,
+  transportType?: 'sse' | 'streamable',
 }
 
 
