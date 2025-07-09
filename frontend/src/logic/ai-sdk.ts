@@ -61,15 +61,16 @@ export const getLlmResponse = async (
         headers['Authorization'] = `Bearer ${authToken}`
       }
 
+      const transportType = (server.url.includes('/sse') || server.transportType === 'sse') ? 'sse' : 'streamable';
       let client;
 
-      if (server.url.includes('/sse') || server.transportType === 'sse') {
-        
+      if (transportType === 'sse') {
+
         client = await createMCPClient({
           transport: {
             type: 'sse',
             url: server.url,
-            headers: headers,
+            headers,
           }
         });
 
@@ -80,11 +81,11 @@ export const getLlmResponse = async (
             fetch: (input: string, init: {}) =>
               fetch(input, {
                 ...init,
-                headers: headers
+                headers,
               }),
           },
           requestInit: {
-            headers: headers
+            headers,
           }
         };
 
@@ -98,7 +99,7 @@ export const getLlmResponse = async (
       allTools = { ...allTools, ...tools }
       mcpClients.push(client)
       
-      console.log(`${server.name}: Connected using AI SDK MCP client`)
+      console.log(`${server.name}: Connected using ${transportType}`)
     } catch (error) {
       console.log(`${server.name}: Error connecting to MCP server`, error)
     }
