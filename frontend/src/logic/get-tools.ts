@@ -13,6 +13,7 @@ export type Tool = StructuredToolInterface<
   unknown
 > & {
   serverName: string,
+  annotations?: {},
 };
 
 
@@ -59,8 +60,10 @@ export const getTools = async(servers: MCP_SERVER[], authToken: string) => {
       }
 
       const serverMcpTools = await loadMcpTools(mcpServer.url, client) as Tool[];
-      serverMcpTools.forEach((tool) => {
+      const toolList = await client.listTools();
+      serverMcpTools.forEach((tool, toolIndex) => {
         tool.serverName = mcpServer.name;
+        tool.annotations = toolList.tools[toolIndex].annotations;
       });
 
       mcpTools.push(...serverMcpTools);
