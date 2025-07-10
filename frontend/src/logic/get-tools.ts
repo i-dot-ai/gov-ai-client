@@ -13,7 +13,7 @@ export type Tool = StructuredToolInterface<
   unknown
 > & {
   serverName: string,
-  annotations?: {},
+  annotations?: object,
 };
 
 
