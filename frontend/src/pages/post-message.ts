@@ -18,8 +18,6 @@ export async function POST({ request, redirect, session }) {
     }
   }
 
-  console.log(selectedTools);
-
   // add user prompt to session data
   let messages: Message[] | undefined = await session?.get('messages');
   if (!messages) {
@@ -36,7 +34,7 @@ export async function POST({ request, redirect, session }) {
   // get LLM response
   let llmResponse;
   if (userPrompt) {
-    llmResponse = await getLlmResponse(messages, selectedServers, request.headers.get('x-amzn-oidc-accesstoken'));
+    llmResponse = await getLlmResponse(messages, selectedServers, selectedTools, request.headers.get('x-amzn-oidc-accesstoken'));
   }
 
   // add LLM response to session data
