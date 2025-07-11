@@ -42,24 +42,26 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
 
         <div class="prompt-box govuk-!-padding-3">
           <message-input>
-            <label class="govuk-label govuk-label--s" for="prompt">Ask anything</label>
-            <div id="prompt-hint" class="govuk-hint govuk-!-font-size-16">
-              AI can make mistakes - check before using its output. Type @ to reference specific tools.
+            <div class="prompt-box__label">
+              <label class="govuk-label govuk-label--s" for="prompt">Ask anything</label>
+              <div id="prompt-hint" class="govuk-hint govuk-!-font-size-16 govuk-!-margin-bottom-1">
+                AI can make mistakes - check before using its output. Type @ to reference specific tools.
+              </div>
+              <id id="autocomplete-assistive-hint" style="display: none;">
+                When autocomplete results are available use up and down arrows to review and enter to select. Touch device users, explore by touch or with swipe gestures.
+              </id>
             </div>
-            <id id="autocomplete-assistive-hint" style="display: none;">
-              When autocomplete results are available use up and down arrows to review and enter to select. Touch device users, explore by touch or with swipe gestures.
-            </id>
-            <textarea class="govuk-textarea govuk-!-margin-bottom-3 prompt-box__textarea" id="prompt" name="prompt" rows="2" required aria-describedby="prompt-hint autocomplete-assistive-hint"></textarea>
+            <textarea class="govuk-textarea govuk-!-margin-top-1 govuk-!-margin-bottom-2 prompt-box__textarea" id="prompt" name="prompt" rows="2" required aria-describedby="prompt-hint autocomplete-assistive-hint"></textarea>
           </message-input>
 
           <div class="prompt-box__buttons">
-            <details class="govuk-details govuk-!-margin-top-2 govuk-!-margin-bottom-3">
+            <details class="govuk-details govuk-!-margin-top-2 govuk-!-margin-bottom-2">
               <summary class="govuk-details__summary govuk-!-padding-left-4 govuk-!-font-size-16 govuk-!-font-weight-bold plausible-event-name=Expand+Plugins">Select Plugins</summary>
               <tool-selector class="tool-selector govuk-details__text">
                 <Tools />
               </tool-selector>
             </details>
-            <div class="govuk-button-group govuk-!-margin-bottom-1">
+            <div class="govuk-button-group govuk-!-margin-bottom-0">
               <a class="govuk-link govuk-!-font-size-16 govuk-!-margin-bottom-0 govuk-!-margin-right-5 plausible-event-name=New+Chat" href="/clear-session">Start a new chat</a>
               <button class="prompt-box__send-button govuk-button govuk-!-margin-bottom-0 plausible-event-name=Send+Prompt">Send</button>
             </div>
@@ -140,11 +142,23 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
   }
 
   /* Sticky prompt area */
-  @media (min-height: 800px) {
-    .govuk-grid-row:first-child {
-      height: calc(100vh - 20rem);
+  .govuk-grid-row:first-child {
+    @media (min-height: 660px) {
+      height: calc(100vh - 23.75rem);
       overflow-y: scroll;
       margin-bottom: 5px;
+    }
+    @media (min-width: 353px) and (min-height: 660px) {
+      height: calc(100vh - 22.5rem);
+    }
+    @media (min-width: 641px) and (min-height: 660px) {
+      height: calc(100vh - 19.75rem);
+    }
+    @media (min-width: 754px) and (min-height: 660px) {
+      height: calc(100vh - 18.5rem);
+    }
+    @media (min-width: 1021px) and (min-height: 660px) {
+      height: calc(100vh - 17.25rem);
     }
   }
 
@@ -246,8 +260,16 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
     border: 1px solid #b1b4b6;
     border-radius: 0.5rem;
   }
+  @media (min-width: 1021px) {
+    .prompt-box__label {
+      align-items: center;
+      display: flex;
+      justify-content: space-between;
+    } 
+  }
   .prompt-box__textarea {
-    min-height: 66px;
+    border-width: 1px;
+    min-height: 64px;
   }
   .prompt-box__buttons {
     position: relative;
