@@ -33,7 +33,7 @@ export type Message = {
 };
 
 
-export const getLlmResponse = async(messages: Message[], selectedServers: string[], authToken: string) => {
+export const getLlmResponse = async(messages: Message[], selectedServers: string[], selectedTools: string[], authToken: string) => {
 
   const agentModel = new AzureChatOpenAI({
     openAIApiKey: process.env['AZURE_OPENAI_API_KEY'],
@@ -47,7 +47,12 @@ export const getLlmResponse = async(messages: Message[], selectedServers: string
   const selectedMcpServers = mcpServers.filter((server: { name: string }) => selectedServers.includes(server.name));
 
   // Get mcpTools for all servers
-  const { mcpTools } = await getTools(selectedMcpServers, authToken);
+  let { mcpTools } = await getTools(selectedMcpServers, authToken);
+
+  // filter out any unselected MCP tools
+  mcpTools = mcpTools.filter((tool) => {
+    return selectedTools.includes(tool.name);
+  });
 
   const agent = createReactAgent({
     llm: agentModel,

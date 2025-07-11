@@ -13,24 +13,18 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
 
   <link rel="stylesheet" href="https://zurb.github.io/tribute/example/tribute.css" />
 
-  <h1 class="govuk-visually-hidden">Gov AI MCP Client Chat</h1>
-
   <form method="POST" action="/post-message" enctype="application/x-www-form-urlencoded">
   
     <div class="govuk-grid-row">
 
       <div class="govuk-grid-column-three-quarters-from-desktop">
 
+        <h1 class="title govuk-heading-xl govuk-!-margin-top-5">Welcome to <span class="title__pink">GovAI</span> Chat</h1>
+        <p class="title__intro govuk-body-l govuk-!-margin-bottom-7">A dedicated assistant for securely connecting to plugins</p>
+
         <h2 class="govuk-visually-hidden">Messages</h2>
 
         <div id="message-container">
-
-          <LitWrapper>
-            <message-box type="llm" content=`
-              <h3 class="govuk-heading-s">Welcome to GovAI Client</h3> 
-              I am a dedicated chat assistant for securely connecting to external plugins. Make selections via the plugins panel and run a query. Each plugin may contain multiple tools. Please let me know how I can assist you today!
-            `></message-box>
-          </LitWrapper>
 
           { messages?.map((message) =>
             <LitWrapper>
@@ -39,43 +33,42 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
           )}
 
         </div>
+      
+      </div>
+    </div>
+
+    <div class="govuk-grid-row govuk-!-margin-bottom-2">
+      <div class="govuk-grid-column-full">
 
         <div class="prompt-box govuk-!-padding-3">
           <message-input>
-            <label class="govuk-label govuk-label--s" for="prompt">Ask anything</label>
-            <div id="prompt-hint" class="govuk-hint govuk-!-font-size-16">
-              AI can make mistakes - check before using its output. Type @ to reference specific tools.
+            <div class="prompt-box__label">
+              <label class="govuk-label govuk-label--s" for="prompt">Ask anything</label>
+              <div id="prompt-hint" class="govuk-hint govuk-!-font-size-16 govuk-!-margin-bottom-1">
+                AI can make mistakes - check before using its output. Type @ to reference specific tools.
+              </div>
+              <id id="autocomplete-assistive-hint" style="display: none;">
+                When autocomplete results are available use up and down arrows to review and enter to select. Touch device users, explore by touch or with swipe gestures.
+              </id>
             </div>
-            <id id="autocomplete-assistive-hint" style="display: none;">
-              When autocomplete results are available use up and down arrows to review and enter to select. Touch device users, explore by touch or with swipe gestures.
-            </id>
-            <textarea class="govuk-textarea govuk-!-margin-bottom-3 prompt-box__textarea" id="prompt" name="prompt" rows="3" required aria-describedby="prompt-hint autocomplete-assistive-hint"></textarea>
+            <textarea class="govuk-textarea govuk-!-margin-top-1 govuk-!-margin-bottom-2 prompt-box__textarea" id="prompt" name="prompt" rows="2" required aria-describedby="prompt-hint autocomplete-assistive-hint"></textarea>
           </message-input>
 
-          <div class="govuk-button-group govuk-!-margin-bottom-1">
-            <button class="govuk-button govuk-!-margin-bottom-0 plausible-event-name=Send+Prompt">Send</button>
-            <a class="govuk-link govuk-!-font-size-16 govuk-!-margin-bottom-0 plausible-event-name=New+Chat" href="/clear-session">Start a new chat</a>
+          <div class="prompt-box__buttons">
+            <details class="govuk-details govuk-!-margin-top-2 govuk-!-margin-bottom-2">
+              <summary class="govuk-details__summary govuk-!-padding-left-4 govuk-!-font-size-16 govuk-!-font-weight-bold plausible-event-name=Expand+Plugins">Select Plugins</summary>
+              <tool-selector class="tool-selector govuk-details__text">
+                <Tools />
+              </tool-selector>
+            </details>
+            <div class="govuk-button-group govuk-!-margin-bottom-0">
+              <a class="govuk-link govuk-!-font-size-16 govuk-!-margin-bottom-0 govuk-!-margin-right-5 plausible-event-name=New+Chat" href="/clear-session">Start a new chat</a>
+              <button class="prompt-box__send-button govuk-button govuk-!-margin-bottom-0 plausible-event-name=Send+Prompt">Send</button>
+            </div>
           </div>
         </div>
 
       </div>
-
-      <div class="govuk-grid-column-one-quarter-from-desktop">
-        <tool-selector class="tool-selector">
-          <div class="govuk-form-group govuk-!-padding-3 govuk-!-margin-bottom-0" style="border: 1px solid #b1b4b6;">
-            <fieldset class="govuk-fieldset" aria-describedby="servers-hint">
-              <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-                <h2 class="govuk-heading-s govuk-!-margin-bottom-0">Select plugins</h2>
-              </legend>
-              <p id="servers-hint" class="govuk-body-s govuk-!-margin-bottom-3" style="color: #505a5f;">Plugins allow the AI to connect to external sources before giving a response</p>
-              <div class="govuk-checkboxes govuk-checkboxes--small govuk-checkboxes" data-module="govuk-checkboxes">
-                <Tools />
-              </div>
-            </fieldset>
-          </div>
-        </tool-selector>
-      </div>
-
     </div>
 
   </form>
@@ -132,6 +125,43 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
 
 <style is:global>
 
+  .title {
+    font-size: 50px;
+    margin-bottom: 15px;
+    text-wrap: balance;
+    @media (min-width: 641px) {
+      font-size: 100px;
+    }
+  }
+  .title__pink {
+    color: var(--iai-pink);
+  }
+  .title__intro {
+    font-size: 34px;
+    text-wrap: balance;
+  }
+
+  /* Sticky prompt area */
+  .govuk-grid-row:first-child {
+    @media (min-height: 660px) {
+      height: calc(100vh - 23.75rem);
+      overflow-y: scroll;
+      margin-bottom: 5px;
+    }
+    @media (min-width: 353px) and (min-height: 660px) {
+      height: calc(100vh - 22.5rem);
+    }
+    @media (min-width: 641px) and (min-height: 660px) {
+      height: calc(100vh - 19.75rem);
+    }
+    @media (min-width: 754px) and (min-height: 660px) {
+      height: calc(100vh - 18.5rem);
+    }
+    @media (min-width: 1021px) and (min-height: 660px) {
+      height: calc(100vh - 17.25rem);
+    }
+  }
+
   /* Tribute autocomplete */
   body {
     position: relative;
@@ -160,14 +190,8 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
   }
   .tool-selector {
     display: block;
-    margin-top: 20px;
     label {
       max-width: none;
-    }
-  }
-  @media (min-width: 769px) {
-    .tool-selector {
-      margin-top: 0;
     }
   }
 
@@ -234,9 +258,44 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
   .prompt-box {
     background-color: #f3f2f1;
     border: 1px solid #b1b4b6;
+    border-radius: 0.5rem;
+  }
+  @media (min-width: 1021px) {
+    .prompt-box__label {
+      align-items: center;
+      display: flex;
+      justify-content: space-between;
+    } 
   }
   .prompt-box__textarea {
-    min-height: 86px;
+    border-width: 1px;
+    min-height: 64px;
+  }
+  .prompt-box__buttons {
+    position: relative;
+
+    @media (min-width: 641px) {
+      display: flex;
+      justify-content: space-between;
+      
+      .govuk-button-group {
+        position: absolute;
+        right: 0;
+      }
+    }
+
+    .govuk-details__summary {
+      color: var(--iai-pink);
+    }
+    .govuk-button-group {
+      flex-shrink: 0;
+    }
+  }
+  .prompt-box__send-button {
+    margin-top: 10px;
+    @media (min-width: 641px) {
+      margin-top: 0;
+    }
   }
 
   .loading-ellipsis span {
@@ -285,13 +344,6 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
     75% {
       opacity: 1;
     }
-  }
-
-  message-box copy-button {
-    display: block;
-  }
-  message-box:first-child copy-button {
-    display: none;
   }
 
 </style>
