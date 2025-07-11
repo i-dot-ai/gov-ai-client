@@ -38,7 +38,7 @@ mcpTools.forEach((tool) => {
         <div class="tool-selector__tools govuk-checkboxes govuk-checkboxes--small govuk-!-margin-bottom-3" data-module="govuk-checkboxes">
           { toolList[server.name].map((tool) =>
             <div class="govuk-checkboxes__item govuk-!-margin-top-1">
-              <input class={ 'govuk-checkboxes__input plausible-event-name=Plugin+Click plausible-event-plugin=' + tool.name } id={ 'tool-' + tool.name } name={ 'tools-' + server.name } type="checkbox" value={ tool.name } aria-describedby={ 'tool-hint-' + tool.name } />
+              <input class={ 'govuk-checkboxes__input plausible-event-name=Plugin+Click plausible-event-plugin=' + tool.name } id={ 'tool-' + tool.name } name="tools" type="checkbox" value={ tool.name } aria-describedby={ 'tool-hint-' + tool.name } />
               <label class="govuk-label govuk-checkboxes__label govuk-!-padding-right-0" for={ 'tool-' + tool.name }>
                 <span class="govuk-body-xs js-tool">{ tool.annotations?.title || tool.name }:</span>
               </label>

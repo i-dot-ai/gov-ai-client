@@ -6,15 +6,19 @@ export async function POST({ request, redirect, session }) {
   // get user prompt and selected MCP servers
   let userPrompt = '';
   let selectedServers = [];
+  let selectedTools = [];
   try {
     const data = await request.formData();
     userPrompt = data.get('prompt')?.toString() || '';
     selectedServers = data.getAll('servers');
+    selectedTools = data.getAll('tools');
   } catch(error) {
     if (error instanceof Error) {
       console.error(error.message);
     }
   }
+
+  console.log(selectedTools);
 
   // add user prompt to session data
   let messages: Message[] | undefined = await session?.get('messages');
