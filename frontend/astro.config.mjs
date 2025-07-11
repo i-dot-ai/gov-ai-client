@@ -28,7 +28,7 @@ export default defineConfig({
       replaysSessionSampleRate: 0,
       replaysOnErrorSampleRate: 0,
       sourceMapsUploadOptions: {
-        project: "gov-ai-client",
+        project: 'gov-ai-client',
         authToken: process.env.SENTRY_AUTH_TOKEN?.replaceAll('"', ''),
       },
     }),

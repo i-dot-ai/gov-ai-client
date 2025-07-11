@@ -16,43 +16,52 @@ mcpTools.forEach((tool) => {
 
 ---
 
-{ mcpServers.map((server) =>
-  <div class="govuk-checkboxes__item govuk-!-margin-top-2">
-    <input class={ 'govuk-checkboxes__input plausible-event-name=Plugin+Click plausible-event-plugin=' + server.name } id={ 'tool-' + server.name } name="servers" type="checkbox" value={ server.name } aria-describedby={'tool-hint-' + server.name } />
-    <label class="govuk-label govuk-checkboxes__label govuk-!-padding-right-0" for={ 'tool-' + server.name }>
-      <span class="govuk-body-s">{ server.name }</span>
-      { serversWithFailedConnections.includes(server.name) && 
-        <strong class="govuk-tag govuk-tag--red govuk-!-padding-left-1 govuk-!-padding-right-1 govuk-!-padding-top-0"><span class="govuk-body-xs">Error</span></strong>
-      }
-      { !serversWithFailedConnections.includes(server.name) && toolList[server.name]?.length === 0 &&
-        <strong class="govuk-tag govuk-tag--red govuk-!-padding-left-1 govuk-!-padding-right-1 govuk-!-padding-top-0"><span class="govuk-body-xs">No tools found</span></strong>
-      }
-    </label>
-    { !serversWithFailedConnections.includes(server.name) && toolList[server.name]?.length > 0 &&
-      <div id={'tool-hint-' + server.name } class="tool-selector__tools govuk-hint govuk-checkboxes__hint govuk-!-margin-top-1 govuk-!-padding-0" style="font-size: 1rem;">
-        <details class="govuk-details govuk-!-margin-bottom-0">
-          <summary class={ 'govuk-details__summary plausible-event-name=Expand+Tool+List plausible-event-plugin=' + server.name }>
-            <span class="govuk-details__summary-text govuk-body-xs govuk-!-font-weight-bold">Tools</span><span class="govuk-body-xs"> ({ toolList[server.name].length })</span>
-          </summary>
-          <div class="govuk-details__text">
-            <ul class="govuk-list govuk-!-margin-bottom-0">
-              { toolList[server.name].map((tool) =>
-                <li class="govuk-body-xs govuk-!-margin-top-2">
-                  <strong class="govuk-!-display-block js-tool">{ tool.annotations?.title || tool.name }:</strong>
-                  { tool.description }
-                </li>
-              )}
-            </ul>
-          </div>
-        </details>
+<div class="govuk-form-group govuk-!-padding-3 govuk-!-margin-bottom-0">
+  <p class="govuk-body-s govuk-!-margin-bottom-3" style="color: #505a5f;">Plugins allow the AI to connect to external sources before giving a response</p>        
+  { mcpServers.map((server) =>
+    <>
+      <div class="tool-selector__server govuk-checkboxes govuk-checkboxes--small govuk-checkboxes" data-module="govuk-checkboxes">  
+        <div class="govuk-checkboxes__item govuk-!-margin-top-1 govuk-!-margin-bottom-1">
+          <input class={ 'govuk-checkboxes__input plausible-event-name=Plugin+Click plausible-event-plugin=' + server.name } id={ 'server-' + server.name } name="servers" type="checkbox" value={ server.name } aria-describedby={'server-hint-' + server.name } />
+          <label class="govuk-label govuk-checkboxes__label govuk-!-padding-right-0" for={ 'server-' + server.name }>
+            <h2 class="govuk-body-s govuk-!-font-weight-bold govuk-!-margin-0">{ server.name }:</h2>
+            { serversWithFailedConnections.includes(server.name) && 
+              <strong class="govuk-tag govuk-tag--red govuk-!-padding-left-1 govuk-!-padding-right-1 govuk-!-padding-top-0"><span class="govuk-body-xs">Error</span></strong>
+            }
+            { !serversWithFailedConnections.includes(server.name) && toolList[server.name]?.length === 0 &&
+              <strong class="govuk-tag govuk-tag--red govuk-!-padding-left-1 govuk-!-padding-right-1 govuk-!-padding-top-0"><span class="govuk-body-xs">No tools found</span></strong>
+            }
+          </label>
+        </div>
       </div>
-    }
-  </div>
-)}
+      { !serversWithFailedConnections.includes(server.name) && toolList[server.name]?.length > 0 &&
+        <div class="tool-selector__tools govuk-checkboxes govuk-checkboxes--small govuk-!-margin-bottom-3" data-module="govuk-checkboxes">
+          { toolList[server.name].map((tool) =>
+            <div class="govuk-checkboxes__item govuk-!-margin-top-1">
+              <input class={ 'govuk-checkboxes__input plausible-event-name=Plugin+Click plausible-event-plugin=' + tool.name } id={ 'tool-' + tool.name } name={ 'tools-' + server.name } type="checkbox" value={ tool.name } aria-describedby={ 'tool-hint-' + tool.name } />
+              <label class="govuk-label govuk-checkboxes__label govuk-!-padding-right-0" for={ 'tool-' + tool.name }>
+                <span class="govuk-body-xs js-tool">{ tool.annotations?.title || tool.name }:</span>
+              </label>
+              <div id={ 'tool-hint-' + tool.name } class="govuk-hint govuk-body-xs govuk-checkboxes__hint">{ tool.description }</div>
+            </div>
+          )}
+        </div>
+      }
+    </>
+  )}
+</div>
 
 
-<style>
+<style is:global>
+  .tool-selector__server {
+    border-top: 1px solid #b1b4b6;
+  }
+  .tool-selector__server:nth-of-type(1) {
+    border-top: 0;
+  }
   .tool-selector__tools {
+    display: none;
+    margin-left: 35px;
     summary::before {
       color: #505a5f;
       left: 3px;
@@ -65,6 +74,9 @@ mcpTools.forEach((tool) => {
       color: #505a5f;
       word-wrap: break-word;
     }
+  }
+  .tool-selector__server:has(input:checked) + .tool-selector__tools {
+    display: block;
   }
   .tool-selector__exclamation {
     align-items: center;

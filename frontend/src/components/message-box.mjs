@@ -56,7 +56,7 @@ export class MessageBox extends LitElement {
       <div class=${'message-box message-box--' + this.type} tabindex="-1">
         ${this.type === 'user' ? html`
           <h2 class="govuk-heading-s govuk-!-font-size-16 govuk-!-margin-bottom-1">You:</h2>
-          <p class="govuk-body">${this.content}</p>
+          <markdown-converter id=${'message-' + this.messageIndex} class="govuk-body" content=${this.content}></markdown-converter>
         ` : nothing}
 
         ${this.type === 'llm' ? html`
