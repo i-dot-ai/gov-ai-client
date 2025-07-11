@@ -19,8 +19,8 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
 
       <div class="govuk-grid-column-three-quarters-from-desktop">
 
-        <h1 class="title govuk-heading-xl">Welcome to <span class="title__pink">GovAI</span> Chat</h1>
-        <p class="title__intro govuk-body-l govuk-!-margin-bottom-7">A dedicated assistant for securely connecting to external plugins</p>
+        <h1 class="title govuk-heading-xl govuk-!-margin-top-5">Welcome to <span class="title__pink">GovAI</span> Chat</h1>
+        <p class="title__intro govuk-body-l govuk-!-margin-bottom-7">A dedicated assistant for securely connecting to plugins</p>
 
         <h2 class="govuk-visually-hidden">Messages</h2>
 
@@ -33,6 +33,12 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
           )}
 
         </div>
+      
+      </div>
+    </div>
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
 
         <div class="prompt-box govuk-!-padding-3">
           <message-input>
@@ -61,7 +67,6 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
         </div>
 
       </div>
-
     </div>
 
   </form>
@@ -132,6 +137,15 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
   .title__intro {
     font-size: 34px;
     text-wrap: balance;
+  }
+
+  /* Sticky prompt area */
+  @media (min-height: 800px) {
+    .govuk-grid-row:first-child {
+      height: calc(100vh - 20rem);
+      overflow-y: scroll;
+      margin-bottom: 5px;
+    }
   }
 
   /* Tribute autocomplete */
