@@ -13,7 +13,7 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
 
   <link rel="stylesheet" href="https://zurb.github.io/tribute/example/tribute.css" />
 
-  <h1 class="govuk-visually-hidden">Gov AI MCP Client Chat</h1>
+  <h1 class="govuk-visually-hidden">Humphrey</h1>
 
   <form method="POST" action="/post-message" enctype="application/x-www-form-urlencoded">
   
@@ -27,8 +27,8 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
 
           <LitWrapper>
             <message-box type="llm" content=`
-              <h3 class="govuk-heading-s">Welcome to GovAI Client</h3> 
-              I am a dedicated chat assistant for securely connecting to external plugins. Make selections via the plugins panel and run a query. Each plugin may contain multiple tools. Please let me know how I can assist you today!
+              <h3 class="govuk-heading-s">Hello I'm Humphrey</h3> 
+              I'm a secure chat assistant tailored for UK government use. Using my plugins I can access useful data sources and tools.  How can I assist you today?
             `></message-box>
           </LitWrapper>
 
