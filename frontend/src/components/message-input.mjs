@@ -153,7 +153,7 @@ export class MessageInput extends HTMLElement {
     // setup tribute
     this.tribute = new Tribute({
       values: (searchText, cb) => {
-        const allTools = [...document.querySelectorAll('input[name="servers"]:checked ~ div .js-tool')].map((element) => {
+        const allTools = [...document.querySelectorAll('.tool-selector__server:has(input:checked) + .tool-selector__tools input:checked + label .js-tool')].map((element) => {
           const toolName = element.textContent?.replace(':', '');
           return {
             key: `@${toolName}`, value: toolName,
