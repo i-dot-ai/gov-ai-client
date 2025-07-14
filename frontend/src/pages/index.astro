@@ -55,12 +55,12 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
           </message-input>
 
           <div class="prompt-box__buttons">
-            <details class="govuk-details govuk-!-margin-top-2 govuk-!-margin-bottom-2">
-              <summary class="govuk-details__summary govuk-!-padding-left-4 govuk-!-font-size-16 govuk-!-font-weight-bold plausible-event-name=Expand+Plugins">Select Plugins</summary>
-              <tool-selector class="tool-selector govuk-details__text">
+            <tool-selector class="tool-selector">
+              <details class="govuk-details govuk-!-margin-top-2 govuk-!-margin-bottom-2">
+                <summary class="govuk-details__summary govuk-!-padding-left-4 govuk-!-font-size-16 govuk-!-font-weight-bold plausible-event-name=Expand+Plugins">Select Plugins</summary>
                 <Tools />
-              </tool-selector>
-            </details>
+              </details>
+            </tool-selector>
             <div class="govuk-button-group govuk-!-margin-bottom-0">
               <a class="govuk-link govuk-!-font-size-16 govuk-!-margin-bottom-0 govuk-!-margin-right-5 plausible-event-name=New+Chat" href="/clear-session">Start a new chat</a>
               <button class="prompt-box__send-button govuk-button govuk-!-margin-bottom-0 plausible-event-name=Send+Prompt">Send</button>
@@ -190,6 +190,10 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
   }
   .tool-selector {
     display: block;
+    .govuk-details__text {
+      max-height: min(40vh, 25rem);
+      overflow-y: scroll;
+    }
     label {
       max-width: none;
     }
