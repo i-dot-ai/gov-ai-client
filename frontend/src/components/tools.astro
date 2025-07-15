@@ -58,6 +58,14 @@ mcpTools.forEach((tool) => {
 <style is:global>
   .tool-selector__server {
     border-top: 1px solid #b1b4b6;
+    label {
+      display: flex;
+      gap: 10px;
+    }
+    .govuk-tag {
+      position: relative;
+      top: -2px;
+    }
   }
   .tool-selector__server:nth-of-type(1) {
     border-top: 0;
