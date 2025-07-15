@@ -33,8 +33,9 @@ export async function POST({ request, redirect, session }) {
 
   // get LLM response
   let llmResponse;
+  const keycloakToken = await session.get('keycloakToken');
   if (userPrompt) {
-    llmResponse = await getLlmResponse(messages, selectedServers, selectedTools, request.headers.get('x-amzn-oidc-accesstoken'));
+    llmResponse = await getLlmResponse(messages, selectedServers, selectedTools, keycloakToken);
   }
 
   // add LLM response to session data

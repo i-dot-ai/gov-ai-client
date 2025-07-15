@@ -109,10 +109,10 @@ export const getLlmResponse = async(messages: Message[], selectedServers: string
     sendMessage(JSON.stringify({
       type: 'content',
       data: msg,
-    }));
+    }), authToken);
     sendMessage(JSON.stringify({
       type: 'end',
-    }));
+    }), authToken);
     return {
       content: msg,
     };
@@ -126,7 +126,7 @@ export const getLlmResponse = async(messages: Message[], selectedServers: string
       sendMessage(JSON.stringify({
         type: 'content',
         data: chunk[0].content,
-      }));
+      }), authToken);
     }
 
     // 'updates' stream
@@ -143,12 +143,12 @@ export const getLlmResponse = async(messages: Message[], selectedServers: string
         sendMessage(JSON.stringify({
           type: 'tool',
           data: toolCall,
-        }));
+        }), authToken);
       } else if (response.content) {
         finalMessage = response.content;
         sendMessage(JSON.stringify({
           type: 'end',
-        }));
+        }), authToken);
       }
     }
   }

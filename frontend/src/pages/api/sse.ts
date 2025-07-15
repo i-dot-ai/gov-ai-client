@@ -1,8 +1,14 @@
-const encoder = new TextEncoder();
-let controller: ReadableStreamDefaultController<Uint8Array>;
+import type { APIContext } from "astro";
 
-export function sendMessage(message: string) {
-  // console.log('sendMessage: ', message)
+const encoder = new TextEncoder();
+let controllers = new Map();
+
+
+export function sendMessage(message: string, token: string) {
+  const controller = controllers.get(token);
+  if (!controller) {
+    return;
+  }
   try {
     controller.enqueue(encoder.encode(`data: ${message}\n\n`));
   } catch(err) {
@@ -11,19 +17,20 @@ export function sendMessage(message: string) {
 }
 
 
-export async function GET() {
+export async function GET(context: APIContext) {
+
+  const token = await context.session?.get('keycloakToken');
 
   // Create a streaming response
   const customReadable = new ReadableStream({
     async start(_controller) {
-      controller = _controller;
-
-      /*
-       *controller.enqueue(encoder.encode(`data: TESTING}\n\n`))
-       *controller.close()
-       */
+      controllers.set(token, _controller);
+      context.request.signal.addEventListener('abort', () => {
+        controllers.delete(token);
+      });
     },
   });
+  
   // Return the stream response and keep the connection alive
   return new Response(customReadable, {
     // Set the headers for Server-Sent Events (SSE)
