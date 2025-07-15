@@ -39,7 +39,7 @@ export const getLlmResponse = async(messages: Message[], selectedServers: string
     openAIApiKey: process.env['LITELLM_GOVAI_CLIENT_OPENAI_API_KEY'],
     openAIApiVersion: process.env['OPENAI_API_VERSION'],
     openAIBasePath: process.env['LLM_GATEWAY_URL'],
-    deploymentName: 'azure/gpt-4o-mini',
+    deploymentName: 'o4-mini',
     callbackManager,
   });
 
