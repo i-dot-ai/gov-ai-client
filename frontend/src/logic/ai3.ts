@@ -36,10 +36,10 @@ export type Message = {
 export const getLlmResponse = async(messages: Message[], selectedServers: string[], selectedTools: string[], authToken: string) => {
 
   const agentModel = new AzureChatOpenAI({
-    openAIApiKey: process.env['AZURE_OPENAI_API_KEY'],
+    openAIApiKey: process.env['LITELLM_GOVAI_CLIENT_OPENAI_API_KEY'],
     openAIApiVersion: process.env['OPENAI_API_VERSION'],
-    openAIBasePath: process.env['AZURE_OPENAI_ENDPOINT'],
-    deploymentName: 'o4-mini',
+    openAIBasePath: process.env['LLM_GATEWAY_URL'],
+    deploymentName: 'azure/gpt-4o-mini',
     callbackManager,
   });
 

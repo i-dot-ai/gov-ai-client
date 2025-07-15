@@ -1,6 +1,7 @@
 locals {
   frontend_port          = 8081
   additional_policy_arns = {for idx, arn in [aws_iam_policy.ecs_exec_custom_policy.arn] : idx => arn}
+  llm_gateway_url = var.env == "dev" || "preprod" ? "https://llm-gateway.${var.env}.i.ai.gov.uk" : "https://llm-gateway.i.ai.gov.uk"
 }
 
 module "frontend" {
@@ -31,6 +32,8 @@ module "frontend" {
     "REPO" : "gov-ai-client",
     "DOCKER_BUILDER_CONTAINER" : "gov-ai-client",
     "AUTH_PROVIDER_PUBLIC_KEY" : data.aws_ssm_parameter.auth_provider_public_key.value,
+    "LITELLM_GOVAI_CLIENT_OPENAI_API_KEY": data.aws_ssm_parameter.litellm_api_key.value
+    "LLM_GATEWAY_URL": local.llm_gateway_url
   }
 
   secrets = [
