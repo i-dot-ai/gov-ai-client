@@ -1,7 +1,7 @@
 locals {
   frontend_port          = 8081
   additional_policy_arns = {for idx, arn in [aws_iam_policy.ecs_exec_custom_policy.arn] : idx => arn}
-  llm_gateway_name =  var.env == "dev" || var.env == "preprod" ? "llm-gateway${var.env}" : "llm-gateway"
+  llm_gateway_name =  var.env == "dev" || var.env == "preprod" ? "llm-gateway.${var.env}" : "llm-gateway"
   llm_gateway_url = "https://${local.llm_gateway_name}.i.ai.gov.uk"
 }
 
