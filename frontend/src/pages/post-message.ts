@@ -1,14 +1,15 @@
+import type { APIContext } from 'astro';
 import { getLlmResponse } from '../logic/ai3.ts';
 import type { Message } from '../logic/ai3.ts';
 
-export async function POST({ request, redirect, session }) {
+export async function POST(context: APIContext) {
 
   // get user prompt and selected MCP servers
   let userPrompt = '';
-  let selectedServers = [];
-  let selectedTools = [];
+  let selectedServers: FormDataEntryValue[] = [];
+  let selectedTools: FormDataEntryValue[] = [];
   try {
-    const data = await request.formData();
+    const data = await context.request.formData();
     userPrompt = data.get('prompt')?.toString() || '';
     selectedServers = data.getAll('servers');
     selectedTools = data.getAll('tools');
@@ -19,7 +20,7 @@ export async function POST({ request, redirect, session }) {
   }
 
   // add user prompt to session data
-  let messages: Message[] | undefined = await session?.get('messages');
+  let messages: Message[] | undefined = await context.session?.get('messages');
   if (!messages) {
     messages = [];
   }
@@ -27,15 +28,17 @@ export async function POST({ request, redirect, session }) {
     messages.push({
       type: 'user', response: {
         content: userPrompt,
+        tool_calls: [],
       },
     });
   }
 
   // get LLM response
+  const sessionToken = context.cookies.get('astro-session')?.value || '';
+  const keycloakToken = context.request.headers.get('x-amzn-oidc-accesstoken') || '';
   let llmResponse;
-  const keycloakToken = await session.get('keycloakToken');
   if (userPrompt) {
-    llmResponse = await getLlmResponse(messages, selectedServers, selectedTools, keycloakToken);
+    llmResponse = await getLlmResponse(messages, selectedServers, selectedTools, keycloakToken, sessionToken);
   }
 
   // add LLM response to session data
@@ -46,7 +49,7 @@ export async function POST({ request, redirect, session }) {
   }
 
   // save session data
-  await session?.set('messages', messages);
+  await context.session?.set('messages', messages);
 
-  return redirect('/');
+  return context.redirect('/');
 }

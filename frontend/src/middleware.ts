@@ -27,9 +27,6 @@ export async function onRequest(context, next) {
       token = context.request.headers.get('x-amzn-oidc-accesstoken');
     }
 
-    // This is used for managing SSE connections
-    context.session.set('keycloakToken', token);
-
     if (!token) {
       console.error(`No auth token found in headers when accessing ${pathname}`);
       return redirectToUnauthorised(context);

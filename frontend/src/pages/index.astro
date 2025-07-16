@@ -4,6 +4,8 @@ import Tools from '../components/tools.astro';
 import LitWrapper from '../components/lit-wrapper.astro';
 import type { Message } from '../logic/ai3.ts';
 
+// initialise session cookie if it doesn't already exist (required for SSE)
+Astro.session?.set('now', Date.now());
 
 let messages: Message[] | undefined = await Astro.session?.get('messages');
 

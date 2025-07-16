@@ -1,7 +1,7 @@
-import type { APIContext } from "astro";
+import type { APIContext } from 'astro';
 
 const encoder = new TextEncoder();
-let controllers = new Map();
+const controllers = new Map();
 
 
 export function sendMessage(message: string, token: string) {
@@ -19,7 +19,10 @@ export function sendMessage(message: string, token: string) {
 
 export async function GET(context: APIContext) {
 
-  const token = await context.session?.get('keycloakToken');
+  const token = context.cookies.get('astro-session')?.value;
+  if (!token) {
+    throw new Error('Astro session cookie not set');
+  }
 
   // Create a streaming response
   const customReadable = new ReadableStream({
@@ -30,7 +33,7 @@ export async function GET(context: APIContext) {
       });
     },
   });
-  
+
   // Return the stream response and keep the connection alive
   return new Response(customReadable, {
     // Set the headers for Server-Sent Events (SSE)
