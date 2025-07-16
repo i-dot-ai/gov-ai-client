@@ -45,7 +45,7 @@ module "frontend" {
     [
       {
         name  = "LITELLM_GOVAI_CLIENT_OPENAI_API_KEY"
-        valueFrom = data.aws_ssm_parameter.litellm_api_key.value
+        valueFrom = data.aws_ssm_parameter.litellm_api_key.arn
   }])
 
   container_port = local.frontend_port
