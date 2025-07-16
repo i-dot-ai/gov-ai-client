@@ -32,8 +32,7 @@ export type Message = {
   },
 };
 
-
-export const getLlmResponse = async (messages: Message[], selectedServers: string[], selectedTools: string[], authToken: string) => {
+export const getLlmResponse = async(messages: Message[], selectedServers: FormDataEntryValue[], selectedTools: FormDataEntryValue[], authToken: string, sessionToken: string) => {
 
   const agentModel = new ChatOpenAI({
     openAIApiKey: process.env['LITELLM_GOVAI_CLIENT_OPENAI_API_KEY'],
@@ -110,10 +109,10 @@ export const getLlmResponse = async (messages: Message[], selectedServers: strin
     sendMessage(JSON.stringify({
       type: 'content',
       data: msg,
-    }));
+    }), sessionToken);
     sendMessage(JSON.stringify({
       type: 'end',
-    }));
+    }), sessionToken);
     return {
       content: msg,
     };
@@ -127,7 +126,7 @@ export const getLlmResponse = async (messages: Message[], selectedServers: strin
       sendMessage(JSON.stringify({
         type: 'content',
         data: chunk[0].content,
-      }));
+      }), sessionToken);
     }
 
     // 'updates' stream
@@ -144,12 +143,12 @@ export const getLlmResponse = async (messages: Message[], selectedServers: strin
         sendMessage(JSON.stringify({
           type: 'tool',
           data: toolCall,
-        }));
+        }), sessionToken);
       } else if (response.content) {
         finalMessage = response.content;
         sendMessage(JSON.stringify({
           type: 'end',
-        }));
+        }), sessionToken);
       }
     }
   }
