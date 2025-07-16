@@ -16,7 +16,8 @@ data "aws_iam_policy_document" "ecs_exec_custom_policy" {
       "ssm:GetParameters",
     ]
     resources = [
-      "arn:aws:ssm:*:${data.aws_caller_identity.current.account_id}:parameter/${local.name}/env_secrets/*"
+      "arn:aws:ssm:*:${data.aws_caller_identity.current.account_id}:parameter/${local.name}/env_secrets/*",
+      "arn:aws:ssm:*:${data.aws_caller_identity.current.account_id}:parameter/${var.team_name}-${var.env}-core-llm-gateway/env_secrets/*",
     ]
   }
 
