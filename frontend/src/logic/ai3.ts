@@ -33,7 +33,7 @@ export type Message = {
 };
 
 
-export const getLlmResponse = async(messages: Message[], selectedServers: string[], selectedTools: string[], authToken: string) => {
+export const getLlmResponse = async(messages: Message[], selectedServers: FormDataEntryValue[], selectedTools: FormDataEntryValue[], authToken: string, sessionToken: string) => {
 
   const agentModel = new AzureChatOpenAI({
     openAIApiKey: process.env['AZURE_OPENAI_API_KEY'],
@@ -109,10 +109,10 @@ export const getLlmResponse = async(messages: Message[], selectedServers: string
     sendMessage(JSON.stringify({
       type: 'content',
       data: msg,
-    }), authToken);
+    }), sessionToken);
     sendMessage(JSON.stringify({
       type: 'end',
-    }), authToken);
+    }), sessionToken);
     return {
       content: msg,
     };
@@ -126,7 +126,7 @@ export const getLlmResponse = async(messages: Message[], selectedServers: string
       sendMessage(JSON.stringify({
         type: 'content',
         data: chunk[0].content,
-      }), authToken);
+      }), sessionToken);
     }
 
     // 'updates' stream
@@ -143,12 +143,12 @@ export const getLlmResponse = async(messages: Message[], selectedServers: string
         sendMessage(JSON.stringify({
           type: 'tool',
           data: toolCall,
-        }), authToken);
+        }), sessionToken);
       } else if (response.content) {
         finalMessage = response.content;
         sendMessage(JSON.stringify({
           type: 'end',
-        }), authToken);
+        }), sessionToken);
       }
     }
   }
