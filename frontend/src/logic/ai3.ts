@@ -6,7 +6,7 @@
 import 'dotenv/config';
 
 import { createReactAgent } from '@langchain/langgraph/prebuilt';
-import { AzureChatOpenAI } from '@langchain/openai';
+import { ChatOpenAI } from '@langchain/openai';
 import { AIMessage, HumanMessage, SystemMessage } from '@langchain/core/messages';
 import { sendMessage } from '../pages/api/sse';
 import { mcpServers } from './get-servers.ts';
@@ -33,13 +33,14 @@ export type Message = {
 };
 
 
-export const getLlmResponse = async(messages: Message[], selectedServers: string[], selectedTools: string[], authToken: string) => {
+export const getLlmResponse = async (messages: Message[], selectedServers: string[], selectedTools: string[], authToken: string) => {
 
-  const agentModel = new AzureChatOpenAI({
+  const agentModel = new ChatOpenAI({
     openAIApiKey: process.env['LITELLM_GOVAI_CLIENT_OPENAI_API_KEY'],
-    openAIApiVersion: process.env['OPENAI_API_VERSION'],
-    openAIBasePath: process.env['LLM_GATEWAY_URL'],
-    deploymentName: 'o4-mini',
+    configuration: {
+      baseURL: process.env['LLM_GATEWAY_URL'],
+    },
+    modelName: 'azure/o4-mini',
     callbackManager,
   });
 
