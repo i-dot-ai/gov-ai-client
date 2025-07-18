@@ -250,6 +250,89 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
     text-align: left;
   }
 
+  tool-info {
+    display: block;
+    margin-bottom: 15px;
+    button {
+      align-items: center;
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      gap: 0.75rem;
+      position: relative;
+      width: 100%;
+    }
+    button[aria-expanded="false"] + div {
+      display: none;
+    }
+    button::after {
+      color: #505a5f;
+      content: '▼';
+      position: absolute;
+      right: 0;
+      top: 10px;
+    }
+    button[aria-expanded="true"]:after {
+      content: '▲';
+    }
+    .tool-info__icon {
+      --size: 1.5rem;
+      align-items: center;
+      background-color: var(--iai-pink);
+      border-radius: 100%;
+      box-sizing: border-box;
+      color: white;
+      display: flex;
+      height: var(--size);
+      justify-content: center;
+      padding-top: 2px;
+      position: relative;
+      width: var(--size);
+      img {
+        position: absolute;
+        top: 0;
+        width: 100%;
+      }
+    }
+    .tool-info__text {
+      text-align: left;
+      span {
+        display: block;
+      }
+      span:nth-child(2) {
+        color: #505a5f;
+      }
+    }
+    .tool-info__expandable {
+      overflow-y: scroll;
+    }
+    table {
+      width: 100%;
+    }
+    td {
+      border: 0 !important;
+      border-top: 1px solid	#b1b4b6 !important;
+      word-wrap: break-word;
+    }
+  }
+  tool-info[has-content="false"]:last-of-type .tool-info__icon::after {
+    animation: spin 1.2s linear infinite;
+    border: 2px solid #ccc;
+    border-top: 2px solid var(--iai-pink);
+    border-radius: 50%;
+    content: ' ';
+    display: block;
+    height: calc(var(--size) + 4px);
+    position: absolute;
+    top: -4px;
+    width: calc(var(--size) + 4px);
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
   .prompt-box {
     background-color: #f3f2f1;
     border: 1px solid #b1b4b6;
