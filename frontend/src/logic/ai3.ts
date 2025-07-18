@@ -136,6 +136,7 @@ export const getLlmResponse = async(messages: Message[], selectedServers: FormDa
         const toolCall = response.tool_calls.map((tool: { name: string; args: { request?: string } }) => {
           return {
             name: tool.name,
+            server: mcpTools.filter(item => item.name === tool.name)[0].serverName,
             args: tool.args.request || tool.args,
           };
         });
