@@ -27,7 +27,7 @@ export class MessageBox extends LitElement {
     this.content = this.content || '';
 
     /**
-     * @type { {name: string, args: []}[] }
+     * @type { {name: string, server: string, args: []}[] }
      */
     this.toolCalls = this.toolCalls || [];
   }
@@ -62,8 +62,8 @@ export class MessageBox extends LitElement {
         ${this.type === 'llm' ? html`
           <h2 class="govuk-visually-hidden">AI:</h2>
           
-          ${this.toolCalls.map((tool) => html`
-            <tool-info name=${tool.name} entries=${JSON.stringify(tool.args)}></tool-info>
+          ${this.toolCalls.map((tool, toolIndex) => html`
+            <tool-info name=${tool.name} server=${tool.server} entries=${JSON.stringify(tool.args)} has-content=${this.content.length ? 'true' : 'false'} ref=${this.messageIndex + '-' + toolIndex}></tool-info>
           `)}
 
           ${this.content ? html`

@@ -3,11 +3,16 @@
 import { LitElement, html } from 'lit';
 
 
+/**
+ * @property ref
+ */
 const ToolInfo = class extends LitElement {
 
   static properties = {
     name: { type: String, attribute: 'name' },
+    server: { type: String, attribute: 'server' },
     entries: { type: Object, attribute: 'entries' },
+    ref: { type: String, attribute: 'ref' },
   };
 
   createRenderRoot() {
@@ -18,24 +23,46 @@ const ToolInfo = class extends LitElement {
   render() {
 
     return html`
-      <div class="govuk-summary-card">
-        <div class="govuk-summary-card__title-wrapper">
-          <h3 class="govuk-summary-card__title govuk-!-font-size-16"><span class="govuk-!-font-weight-regular">Calling: </span> ${this.name}</h3>
-        </div>
-        <div class="govuk-summary-card__content">
-          <dl class="govuk-summary-list">
+      <button class="govuk-!-padding-0" aria-expanded="false" aria-controls="tool-${this.ref}" @click=${this.#toggle} type="button">
+        <span class="tool-info__icon" aria-hidden="true">
+          ${this.server[0].toUpperCase()}
+          <img src="${'/server-logos/' + this.server.toLowerCase() + '.png'}" alt=""/>
+        </span>
+        <span class="tool-info__text">
+          <span class="govuk-body-xs govuk-!-margin-bottom-0">Using the <strong>${this.name}</strong> tool</span>
+          <span class="govuk-body-xs govuk-!-margin-bottom-0">From the <strong>${this.server}</strong> plugin</span>
+        </span>
+      </button>
+      <div class="tool-info__expandable" id="tool-${this.ref}">
+        <table class="govuk-!-margin-top-2">
+          <thead class="govuk-visually-hidden">
+            <tr>
+              <th>Property</th>
+              <th>Value</th>
+            </tr>
+          </thead>
+          <tbody>
             ${this.entries ? html`
               ${Object.entries(this.entries).map(([key, value]) => html`
-                <div class="govuk-summary-list__row">
-                  <dt class="govuk-summary-list__key govuk-!-font-size-16">${key}</dt>
-                  <dd class="govuk-summary-list__value govuk-!-font-size-16">${typeof value === 'string' ? value : JSON.stringify(value)}</dd>
+                <tr>
+                  <td class="govuk-body-xs govuk-!-padding-top-2 govuk-!-padding-bottom-2">${key}:</td>
+                  <td class="govuk-body-xs govuk-!-padding-top-2 govuk-!-padding-bottom-2">${typeof value === 'string' ? value : JSON.stringify(value)}</td>
                 </div>
               `)}
             ` : ''}
-          </dl>
-        </div>
+          </tbody>
+        </table>
       </div>
     `;
+  }
+
+  #toggle() {
+    const btn = this.querySelector('button');
+    if (btn?.getAttribute('aria-expanded') === 'false') {
+      btn.setAttribute('aria-expanded', 'true');
+    } else {
+      btn?.setAttribute('aria-expanded', 'false');
+    }
   }
 
 };
