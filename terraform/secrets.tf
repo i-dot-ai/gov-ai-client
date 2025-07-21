@@ -36,7 +36,7 @@ locals {
     {
       name = "USE_LITE_LLM"
       value = var.use_lite_llm
-    }
+    },
 
     {
       name  = "MCP_SERVERS"
