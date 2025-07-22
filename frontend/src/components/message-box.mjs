@@ -92,21 +92,32 @@ export class MessageBox extends LitElement {
 
     this.streamingInProgress = true;
 
-    window.setTimeout(() => {
-
-      /** @type { HTMLElement | null } */
-      const messageBox = this.querySelector('.message-box');
-      messageBox?.focus();
-    }, 100);
-
-    // get message in view
-    window.setTimeout(() => {
+    // scrolling behaviour - scroll message until it reaches the top of the page - unless the user as overridden it
+    let userHasScrolled = false;
+    let programmaticScroll = false;
+    const scrollMessage = () => {
+      if (userHasScrolled) {
+        return;
+      }
+      programmaticScroll = true;
       this.scrollIntoView({
         block: 'start',
         behavior: 'instant',
       });
+    };
+    window.addEventListener('scroll', () => {
+      if (programmaticScroll) {
+        programmaticScroll = false;
+        return;
+      }
+      userHasScrolled = true;
+    });
+
+    window.setTimeout(() => {
+      scrollMessage();
+      const messageBox = /** @type {HTMLElement | null} */(this.querySelector('.message-box')); /* eslint @stylistic/no-extra-parens: "off" */
+      messageBox?.focus();
     }, 100);
-    /** @type {HTMLElement | null} */this.querySelector('.message-box')?.focus();
 
     // setup SSE
     const source = new EventSource('/api/sse');
@@ -136,6 +147,8 @@ export class MessageBox extends LitElement {
         source.close();
         this.streamingInProgress = false;
       }
+
+      scrollMessage();
 
     };
     source.onerror = (err) => {
