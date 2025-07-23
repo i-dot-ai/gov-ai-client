@@ -13,6 +13,7 @@ const ToolInfo = class extends LitElement {
     server: { type: String, attribute: 'server' },
     entries: { type: Object, attribute: 'entries' },
     ref: { type: String, attribute: 'ref' },
+    inUse: { type: String, attribute: 'in-use' },
   };
 
   createRenderRoot() {
@@ -28,9 +29,13 @@ const ToolInfo = class extends LitElement {
           ${this.server[0].toUpperCase()}
           <img src="${'/server-logos/' + this.server.toLowerCase() + '.png'}" alt=""/>
         </span>
-        <span class="tool-info__text">
-          <span class="govuk-body-xs govuk-!-margin-bottom-0">Using the <strong>${this.name}</strong> tool</span>
-          <span class="govuk-body-xs govuk-!-margin-bottom-0">From the <strong>${this.server}</strong> plugin</span>
+        <span class="tool-info__text" aria-live="polite">
+          ${this.inUse === 'true' ? html`
+            <span class="govuk-body-xs govuk-!-margin-bottom-0">Using the <strong>${this.name}</strong> tool</span>
+            <span class="govuk-body-xs govuk-!-margin-bottom-0">From the <strong>${this.server}</strong> plugin</span>
+          `: html`
+            <span class="govuk-body-xs govuk-!-margin-bottom-0">View the <strong>${this.name}</strong> tool</span>
+          `}
         </span>
       </button>
       <div class="tool-info__expandable" id="tool-${this.ref}">
