@@ -70,7 +70,7 @@ test('MCP call', async ({ page }) => {
   await sendPrompt('@ping-pong What is 6 * 7?', page);
 
   // check the tool call and the response is shown
-  await expect(page.getByText('Calling: ping-pong')).toBeVisible();
+  await expect(page.getByText('View the ping-pong tool')).toBeVisible();
   await waitForResponse(page);
   await expect(page.getByText('42').first()).toBeVisible();
 
@@ -82,7 +82,7 @@ test('MCP call', async ({ page }) => {
   await page.getByLabel('test-mcp-server').uncheck();
   await sendPrompt('@ping-pong What is 6 * 7?', page);
   await waitForResponse(page);
-  await expect(page.getByText('Calling: ping-pong')).toHaveCount(0);
+  await expect(page.getByText('View the ping-pong tool')).toHaveCount(0);
 
 });
 

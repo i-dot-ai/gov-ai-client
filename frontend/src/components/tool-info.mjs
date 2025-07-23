@@ -52,7 +52,7 @@ const ToolInfo = class extends LitElement {
                 <tr>
                   <td class="govuk-body-xs govuk-!-padding-top-2 govuk-!-padding-bottom-2">${key}:</td>
                   <td class="govuk-body-xs govuk-!-padding-top-2 govuk-!-padding-bottom-2">${typeof value === 'string' ? value : JSON.stringify(value)}</td>
-                </div>
+                </tr>
               `)}
             ` : ''}
           </tbody>
