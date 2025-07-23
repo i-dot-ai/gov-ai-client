@@ -34,7 +34,6 @@ Brewfile.lock.json
 # outputs
 *.pdf
 *.jpg
-*.png
 *.pptx
 *.ppt
 *.docx

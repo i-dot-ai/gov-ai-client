@@ -279,7 +279,7 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
     .tool-info__icon {
       --size: 1.5rem;
       align-items: center;
-      background-color: var(--iai-pink);
+      background-color: black;
       border-radius: 100%;
       box-sizing: border-box;
       color: white;
@@ -291,8 +291,8 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
       width: var(--size);
       img {
         position: absolute;
-        top: 0;
-        width: 100%;
+        top: 5%;
+        width: 90%;
       }
     }
     .tool-info__text {
@@ -319,7 +319,7 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
   tool-info[has-content="false"]:last-of-type .tool-info__icon::after {
     animation: spin 1.2s linear infinite;
     border: 2px solid #ccc;
-    border-top: 2px solid var(--iai-pink);
+    border-top: 2px solid black;
     border-radius: 50%;
     content: ' ';
     display: block;
