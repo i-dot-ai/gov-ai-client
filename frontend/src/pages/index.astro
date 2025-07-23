@@ -271,7 +271,7 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
       content: '▼';
       position: absolute;
       right: 0;
-      top: 10px;
+      top: 5px;
     }
     button[aria-expanded="true"]:after {
       content: '▲';
@@ -316,17 +316,22 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
       word-wrap: break-word;
     }
   }
-  tool-info[has-content="false"]:last-of-type .tool-info__icon::after {
-    animation: spin 1.2s linear infinite;
-    border: 2px solid #ccc;
-    border-top: 2px solid black;
-    border-radius: 50%;
-    content: ' ';
-    display: block;
-    height: calc(var(--size) + 4px);
-    position: absolute;
-    top: -4px;
-    width: calc(var(--size) + 4px);
+  tool-info[in-use="true"] {
+    button::after {
+      top: 10px;
+    }
+    .tool-info__icon::after {
+      animation: spin 1.2s linear infinite;
+      border: 2px solid #ccc;
+      border-top: 2px solid black;
+      border-radius: 50%;
+      content: ' ';
+      display: block;
+      height: calc(var(--size) + 4px);
+      position: absolute;
+      top: -4px;
+      width: calc(var(--size) + 4px);
+    }
   }
   @keyframes spin {
     0% { transform: rotate(0deg); }
