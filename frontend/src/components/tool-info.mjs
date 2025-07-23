@@ -27,7 +27,7 @@ const ToolInfo = class extends LitElement {
       <button class="govuk-!-padding-0" aria-expanded="false" aria-controls="tool-${this.ref}" @click=${this.#toggle} type="button">
         <span class="tool-info__icon" aria-hidden="true">
           ${this.server[0].toUpperCase()}
-          <img src="${'/server-logos/' + this.server.toLowerCase() + '.png'}" alt=""/>
+          <img src="${'/server-logos/' + this.server.toLowerCase().replaceAll(' ', '_') + '.png'}" alt=""/>
         </span>
         <span class="tool-info__text" aria-live="polite">
           ${this.inUse === 'true' ? html`
