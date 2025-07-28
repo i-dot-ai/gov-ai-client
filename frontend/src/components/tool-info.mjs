@@ -30,12 +30,8 @@ const ToolInfo = class extends LitElement {
           <img src="${'/server-logos/' + this.server.toLowerCase().replaceAll(' ', '_') + '.png'}" alt=""/>
         </span>
         <span class="tool-info__text" aria-live="polite">
-          ${this.inUse === 'true' ? html`
-            <span class="govuk-body-xs govuk-!-margin-bottom-0">Using the <strong>${this.name}</strong> tool</span>
-            <span class="govuk-body-xs govuk-!-margin-bottom-0">From the <strong>${this.server}</strong> plugin</span>
-          `: html`
-            <span class="govuk-body-xs govuk-!-margin-bottom-0">View the <strong>${this.name}</strong> tool</span>
-          `}
+          <span class="govuk-body-xs govuk-!-margin-bottom-0">${this.inUse === 'true' ? 'Using' : 'View'} the <strong>${this.name}</strong> tool</span>
+          <span class="govuk-body-xs govuk-!-margin-bottom-0">From the <strong>${this.server}</strong> plugin</span>
         </span>
       </button>
       <div class="tool-info__expandable" id="tool-${this.ref}">
