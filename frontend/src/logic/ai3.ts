@@ -169,8 +169,6 @@ export const getLlmResponse = async(messages: Message[], selectedServers: FormDa
 
     // Tool response
     if (chunk.tools?.messages) {
-      console.log('*** RESPONSE ***');
-      console.log(chunk.tools.messages[0].content, chunk.tools.messages[0].tool_call_id);
       toolCalls[toolCalls.length - 1].response = chunk.tools.messages[0].content;
       sendMessage(JSON.stringify({
         type: 'tool-response',
