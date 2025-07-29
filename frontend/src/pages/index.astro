@@ -101,6 +101,7 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
         },
         body: formData
       }).then((response) => {
+        console.log('Post-message response', response);
         if (response.url !== window.location.href) { // an unexpected redirect - likely due to lack of authentication
           window.location.reload();
         }
