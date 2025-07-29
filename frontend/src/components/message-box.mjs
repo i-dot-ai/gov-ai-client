@@ -63,7 +63,7 @@ export class MessageBox extends LitElement {
           <h2 class="govuk-visually-hidden">AI:</h2>
           
           ${this.toolCalls.map((tool, toolIndex) => html`
-            <tool-info name=${tool.name} server=${tool.server} entries=${JSON.stringify(tool.args)} in-use=${toolIndex + 1 < this.toolCalls.length || this.content.length ? 'false' : 'true'} ref=${this.messageIndex + '-' + toolIndex}></tool-info>
+            <tool-info name=${tool.name} server=${tool.server} parameters=${JSON.stringify(tool.args)} response=${tool.response} in-use=${toolIndex + 1 < this.toolCalls.length || this.content.length ? 'false' : 'true'} ref=${this.messageIndex + '-' + toolIndex}></tool-info>
           `)}
 
           ${this.content ? html`
@@ -125,7 +125,7 @@ export class MessageBox extends LitElement {
 
       // parse response data
       /**
-       * @type { {type?: 'tool' | 'content' | 'end', data?: any} }
+       * @type { {type?: 'tool' | 'tool-response' | 'content' | 'end', data?: any} }
        */
       let response = {};
       try {
@@ -135,9 +135,13 @@ export class MessageBox extends LitElement {
         return;
       }
 
-      // It's a tool
+      // It's a tool call
       if (response.type === 'tool') {
         this.toolCalls = [...this.toolCalls, response.data[0]];
+
+      // It's a tool response
+      } else if (response.type === 'tool-response') {
+        this.toolCalls[this.toolCalls.length - 1].response = response.data;
 
       // It's the text response
       } else if (response.type === 'content') {
