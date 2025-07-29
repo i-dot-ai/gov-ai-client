@@ -16,6 +16,13 @@ export class MessageInput extends HTMLElement {
       return;
     }
 
+    // if page reloaded due to authentication
+    const previousPrompt = window.localStorage.getItem('previous-prompt');
+    if (previousPrompt) {
+      this.textarea.value = previousPrompt;
+      window.localStorage.removeItem('previous-prompt');
+    }
+
     // Submit form on enter-key press (providing shift isn't being pressed)
     this.textarea.addEventListener('keypress', (evt) => {
       if (evt.key === 'Enter' && !evt.shiftKey) {
