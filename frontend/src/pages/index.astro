@@ -100,6 +100,10 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
             'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: formData
+      }).then((response) => {
+        if (response.url !== window.location.href) { // an unexpected redirect - likely due to lack of authentication
+          window.location.reload();
+        }
       });
 
       textArea.reset()
