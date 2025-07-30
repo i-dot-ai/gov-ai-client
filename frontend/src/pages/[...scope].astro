@@ -71,7 +71,7 @@ if (Astro.url.pathname !== '/' && !singleServer) {
             When autocomplete results are available use up and down arrows to review and enter to select. Touch device users, explore by touch or with swipe gestures.
           </id>
         </div>
-        <textarea class="govuk-textarea govuk-!-margin-top-1 govuk-!-margin-bottom-2 prompt-box__textarea" id="prompt" name="prompt" rows="2" required aria-describedby="prompt-hint autocomplete-assistive-hint"></textarea>
+        <textarea class="govuk-textarea govuk-!-margin-top-1 govuk-!-margin-bottom-2 prompt-box__textarea bg-white" id="prompt" name="prompt" rows="2" required aria-describedby="prompt-hint autocomplete-assistive-hint"></textarea>
       </message-input>
 
       <div class="prompt-box__buttons">
@@ -317,7 +317,7 @@ if (Astro.url.pathname !== '/' && !singleServer) {
       display: flex;
       height: var(--size);
       justify-content: center;
-      padding-top: 2px;
+      padding: 2px;
       position: relative;
       width: var(--size);
       img {
@@ -360,10 +360,10 @@ if (Astro.url.pathname !== '/' && !singleServer) {
         border-radius: 50%;
         content: ' ';
         display: block;
-        height: calc(var(--size) + 4px);
+        height: calc(var(--size) + 8px);
         position: absolute;
         top: -4px;
-        width: calc(var(--size) + 4px);
+        width: calc(var(--size) + 8px);
       }
     }
   }
