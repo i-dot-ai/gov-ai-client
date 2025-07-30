@@ -38,10 +38,10 @@ if (Astro.url.searchParams.get('clear') === 'true') {
     
       { singleServer ?
         <>
-          <div class="items-center gap-4 grid-cols-[200px_1fr] mt-5 md:grid">
-            <img class="shrink-0 w-40" src={ '/server-logos/colour/' + singleServer.name.toLowerCase().replaceAll(' ', '_') + '.png' } alt="" />
-            <h1 class="title govuk-heading-xl m-0!">Welcome to <span class="title__pink">{ singleServer.name }</span></h1>
-            <p class="title__intro govuk-body-l col-start-2 mb-7! mt-0!" set:html={ singleServer.description }></p>
+          <div class="text-center">
+            <img class="mt-7 mx-auto w-16" src={ '/server-logos/colour/' + singleServer.name.toLowerCase().replaceAll(' ', '_') + '.png' } alt="" />
+            <h1 class="font-bold mx-auto mt-2 text-5xl">Welcome to <span class="title__pink">{ singleServer.name }</span></h1>
+            <p class="govuk-body mb-7! mt-3!" set:html={ singleServer.description }></p>
           </div>
         </> :
         <>
