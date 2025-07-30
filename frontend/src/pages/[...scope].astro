@@ -16,7 +16,13 @@ if (Astro.url.pathname !== '/' && !singleServer) {
   return Astro.redirect('/');
 }
 
-let messages: Message[] | undefined = await Astro.session?.get(`messages-${scope || 'all'}`);
+// clear session data if requested, otherwise fetch existing messages
+let messages: Message[] | undefined = [];
+if (Astro.url.searchParams.get('clear') === 'true') {
+  Astro.session?.set(`messages-${scope || 'all'}`, []);
+} else {
+  messages = await Astro.session?.get(`messages-${scope || 'all'}`);
+}
 
 ---
 
@@ -94,7 +100,7 @@ let messages: Message[] | undefined = await Astro.session?.get(`messages-${scope
           </tool-selector>
         }
         <div class="govuk-button-group govuk-!-margin-bottom-0">
-          <a class="govuk-link govuk-!-font-size-16 govuk-!-margin-bottom-0 govuk-!-margin-right-5 plausible-event-name=New+Chat" href={ '/clear-session?scope=' + (scope || '') }>Start a new chat</a>
+          <a class="govuk-link govuk-!-font-size-16 govuk-!-margin-bottom-0 govuk-!-margin-right-5 plausible-event-name=New+Chat" href={ '/' + (scope || '') + '?clear=true' }>Start a new chat</a>
           <button class="prompt-box__send-button govuk-button govuk-!-margin-bottom-0 plausible-event-name=Send+Prompt">Send</button>
         </div>
       </div>
@@ -154,6 +160,13 @@ let messages: Message[] | undefined = await Astro.session?.get(`messages-${scope
     import '../components/message-input.mjs';
     import '../components/tool-info.mjs';
     import '../components/tool-selector.ts';
+  </script>
+
+  <script>
+    // remove clear=true so page reloads don't inadvertently clear the session
+    if (window.location.search) {
+      window.history.replaceState(null, document.title, `${window.location.origin}${window.location.pathname}`);
+    }
   </script>
 
 </Layout>
