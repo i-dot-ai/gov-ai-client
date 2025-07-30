@@ -12,30 +12,16 @@ const { mcpTools, serversWithFailedConnections } = await getTools(mcpServers, As
     <>
       <div class="tool-selector__server govuk-checkboxes govuk-checkboxes--small govuk-checkboxes" data-module="govuk-checkboxes">  
         <div class="govuk-checkboxes__item govuk-!-margin-top-1 govuk-!-margin-bottom-1">
-          <input class={ 'govuk-checkboxes__input plausible-event-name=Plugin+Click plausible-event-plugin=' + server.name } id={ 'server-' + server.name } name="servers" type="checkbox" value={ server.name } checked aria-describedby={'server-hint-' + server.name } />
-          <label class="govuk-label govuk-checkboxes__label govuk-!-padding-right-0" for={ 'server-' + server.name }>
-            <h2 class="govuk-body-s govuk-!-font-weight-bold govuk-!-margin-0">{ server.name }</h2>
-            { serversWithFailedConnections.includes(server.name) && 
-              <strong class="govuk-tag govuk-tag--red govuk-!-padding-left-1 govuk-!-padding-right-1 govuk-!-padding-top-0"><span class="govuk-body-xs">Error</span></strong>
-            }
-            { !serversWithFailedConnections.includes(server.name) && mcpTools.length === 0 &&
-              <strong class="govuk-tag govuk-tag--red govuk-!-padding-left-1 govuk-!-padding-right-1 govuk-!-padding-top-0"><span class="govuk-body-xs">No tools found</span></strong>
-            }
-          </label>
+          <input class={ 'govuk-checkboxes__input plausible-event-name=Plugin+Click plausible-event-plugin=' + server.name } id={ 'server-' + server.name } name="servers" type="checkbox" value={ server.name } checked  />
+          <label class="govuk-label govuk-checkboxes__label govuk-!-padding-right-0" for={ 'server-' + server.name }>{ server.name }</label>
         </div>
-        { server.description &&
-          <p id={'server-hint-' + server.name } class="govuk-body-xs govuk-!-margin-bottom-3" set:html={ server.description }></p>
-        }
       </div>
       { !serversWithFailedConnections.includes(server.name) && mcpTools.length > 0 &&
         <div class="tool-selector__tools govuk-checkboxes govuk-checkboxes--small govuk-!-margin-bottom-3" data-module="govuk-checkboxes">
           { mcpTools.map((tool) =>
             <div class="govuk-checkboxes__item govuk-!-margin-top-1">
               <input class={ 'govuk-checkboxes__input plausible-event-name=Plugin+Click plausible-event-plugin=' + tool.name } id={ 'tool-' + tool.name } name="tools" type="checkbox" value={ tool.name } checked aria-describedby={ 'tool-hint-' + tool.name } />
-              <label class="govuk-label govuk-checkboxes__label govuk-!-padding-right-0" for={ 'tool-' + tool.name }>
-                <span class="govuk-body-xs js-tool">{ tool.annotations?.title || tool.name }:</span>
-              </label>
-              <div id={ 'tool-hint-' + tool.name } class="govuk-hint govuk-body-xs govuk-checkboxes__hint">{ tool.description }</div>
+              <label class="govuk-label govuk-checkboxes__label govuk-!-padding-right-0" for={ 'tool-' + tool.name }>{ tool.name }</label>
             </div>
           )}
         </div>
