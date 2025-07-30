@@ -9,8 +9,6 @@ import { mcpServers } from '../logic/get-servers.ts';
 // initialise session cookie if it doesn't already exist (required for SSE)
 Astro.session?.set('now', Date.now());
 
-let messages: Message[] | undefined = await Astro.session?.get('messages');
-
 // Scoped pages
 const { scope } = Astro.params;
 const singleServer = mcpServers.find((server) => server.name.toLowerCase() === scope?.toLowerCase());
@@ -18,45 +16,55 @@ if (Astro.url.pathname !== '/' && !singleServer) {
   return Astro.redirect('/');
 }
 
+let messages: Message[] | undefined = await Astro.session?.get(`messages-${scope || 'all'}`);
+
 ---
 
 <Layout>
 
   <link rel="stylesheet" href="https://zurb.github.io/tribute/example/tribute.css" />
 
-  { singleServer ?
-    <>
-      <div class="items-center gap-4 mt-5 md:flex">
-        <img class="shrink-0 w-40" src={ '/server-logos/colour/' + singleServer.name.toLowerCase().replaceAll(' ', '_') + '.png' } alt="" />
-        <h1 class="title govuk-heading-xl m-0!">Welcome to <span class="title__pink">{ singleServer.name }</span></h1>
-      </div>
-      <p class="title__intro govuk-body-l mb-7! mt-5!" set:html={ singleServer.description }></p>
-    </> :
-    <>
-      <h1 class="title govuk-heading-xl govuk-!-margin-top-5">Welcome to <span class="title__pink">GovAI</span> Chat</h1>
-      <p class="title__intro govuk-body-l govuk-!-margin-bottom-7">A dedicated assistant for securely connecting to plugins</p>
-    </>
-  }
-
   <form method="POST" action="/post-message" enctype="application/x-www-form-urlencoded">
+
+    <input type="hidden" name="scope" value={ scope || 'all' } />
+
+    <div class="message-container">
+    
+      { singleServer ?
+        <>
+          <div class="items-center gap-4 grid-cols-[200px_1fr] mt-5 md:grid">
+            <img class="shrink-0 w-40" src={ '/server-logos/colour/' + singleServer.name.toLowerCase().replaceAll(' ', '_') + '.png' } alt="" />
+            <h1 class="title govuk-heading-xl m-0!">Welcome to <span class="title__pink">{ singleServer.name }</span></h1>
+            <p class="title__intro govuk-body-l col-start-2 mb-7! mt-0!" set:html={ singleServer.description }></p>
+          </div>
+        </> :
+        <>
+          <h1 class="title govuk-heading-xl govuk-!-margin-top-5">Welcome to <span class="title__pink">GovAI</span> Chat</h1>
+          <p class="title__intro govuk-body-l govuk-!-margin-bottom-7">A dedicated assistant for securely connecting to plugins</p>
+        </>
+      }
+
+    
   
-    <div class="govuk-grid-row">
+      <div class="govuk-grid-row">
 
-      <div class="govuk-grid-column-three-quarters-from-desktop">
+        <div class="govuk-grid-column-three-quarters-from-desktop">
 
-        <h2 class="govuk-visually-hidden">Messages</h2>
+          <h2 class="govuk-visually-hidden">Messages</h2>
 
-        <div id="message-container">
+          <div id="message-container">
 
-          { messages?.map((message) =>
-            <LitWrapper>
-              <message-box type={ message.type } content={ message.response.content } tool-calls={ JSON.stringify(message.response.tool_calls) }></message-box>
-            </LitWrapper>
-          )}
+            { messages?.map((message) =>
+              <LitWrapper>
+                <message-box type={ message.type } content={ message.response.content } tool-calls={ JSON.stringify(message.response.tool_calls) }></message-box>
+              </LitWrapper>
+            )}
 
+          </div>
+        
         </div>
-      
       </div>
+
     </div>
 
 
@@ -86,7 +94,7 @@ if (Astro.url.pathname !== '/' && !singleServer) {
           </tool-selector>
         }
         <div class="govuk-button-group govuk-!-margin-bottom-0">
-          <a class="govuk-link govuk-!-font-size-16 govuk-!-margin-bottom-0 govuk-!-margin-right-5 plausible-event-name=New+Chat" href={ '/clear-session?return=' + Astro.url.pathname }>Start a new chat</a>
+          <a class="govuk-link govuk-!-font-size-16 govuk-!-margin-bottom-0 govuk-!-margin-right-5 plausible-event-name=New+Chat" href={ '/clear-session?scope=' + (scope || '') }>Start a new chat</a>
           <button class="prompt-box__send-button govuk-button govuk-!-margin-bottom-0 plausible-event-name=Send+Prompt">Send</button>
         </div>
       </div>
@@ -175,7 +183,7 @@ if (Astro.url.pathname !== '/' && !singleServer) {
       height: 100vh;
       overflow-y: scroll;
     }
-    .govuk-grid-row:first-of-type {
+    .message-container {
       min-height: calc(100vh - 280px);
     }
     .prompt-box {
