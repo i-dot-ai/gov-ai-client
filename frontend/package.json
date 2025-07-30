@@ -19,7 +19,7 @@
     "@modelcontextprotocol/sdk": "^1.17.2",
     "@sentry/astro": "^9.33.0",
     "@tailwindcss/vite": "^4.1.11",
-    "astro": "^5.10.1",
+    "astro": "^5.12.5",
     "dotenv": "^16.4.7",
     "i.ai-design-system": "^0.7.7",
     "jose": "^6.0.10",
