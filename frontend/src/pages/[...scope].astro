@@ -1,6 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Tools from '../components/Tools.astro';
+import ToolsAllServers from '../components/ToolsAllServers.astro';
 import ToolsSingleServer from '../components/ToolsSingleServer.astro';
 import LitWrapper from '../components/lit-wrapper.astro';
 import type { Message } from '../logic/ai3.ts';
@@ -24,22 +24,25 @@ if (Astro.url.pathname !== '/' && !singleServer) {
 
   <link rel="stylesheet" href="https://zurb.github.io/tribute/example/tribute.css" />
 
+  { singleServer ?
+    <>
+      <div class="items-center gap-4 mt-5 md:flex">
+        <img class="shrink-0 w-40" src={ '/server-logos/colour/' + singleServer.name.toLowerCase().replaceAll(' ', '_') + '.png' } alt="" />
+        <h1 class="title govuk-heading-xl m-0!">Welcome to <span class="title__pink">{ singleServer.name }</span></h1>
+      </div>
+      <p class="title__intro govuk-body-l mb-7! mt-5!" set:html={ singleServer.description }></p>
+    </> :
+    <>
+      <h1 class="title govuk-heading-xl govuk-!-margin-top-5">Welcome to <span class="title__pink">GovAI</span> Chat</h1>
+      <p class="title__intro govuk-body-l govuk-!-margin-bottom-7">A dedicated assistant for securely connecting to plugins</p>
+    </>
+  }
+
   <form method="POST" action="/post-message" enctype="application/x-www-form-urlencoded">
   
     <div class="govuk-grid-row">
 
       <div class="govuk-grid-column-three-quarters-from-desktop">
-
-        { singleServer ?
-          <>
-            <h1 class="title govuk-heading-xl govuk-!-margin-top-5">Welcome to <span class="title__pink">{ singleServer.name }</span></h1>
-            <p class="title__intro govuk-body-l govuk-!-margin-bottom-7" set:html={ singleServer.description }></p>
-          </> :
-          <>
-            <h1 class="title govuk-heading-xl govuk-!-margin-top-5">Welcome to <span class="title__pink">GovAI</span> Chat</h1>
-            <p class="title__intro govuk-body-l govuk-!-margin-bottom-7">A dedicated assistant for securely connecting to plugins</p>
-          </>
-        }
 
         <h2 class="govuk-visually-hidden">Messages</h2>
 
@@ -68,7 +71,7 @@ if (Astro.url.pathname !== '/' && !singleServer) {
             When autocomplete results are available use up and down arrows to review and enter to select. Touch device users, explore by touch or with swipe gestures.
           </id>
         </div>
-        <textarea class="govuk-textarea govuk-!-margin-top-1 govuk-!-margin-bottom-2 prompt-box__textarea" id="prompt" name="prompt" rows="2" required aria-describedby="prompt-hint autocomplete-assistive-hint"></textarea>
+        <textarea class="govuk-textarea govuk-!-margin-top-1 govuk-!-margin-bottom-2 prompt-box__textarea bg-white" id="prompt" name="prompt" rows="2" required aria-describedby="prompt-hint autocomplete-assistive-hint"></textarea>
       </message-input>
 
       <div class="prompt-box__buttons">
@@ -78,7 +81,7 @@ if (Astro.url.pathname !== '/' && !singleServer) {
           <tool-selector class="tool-selector">
             <details class="govuk-details govuk-!-margin-top-2 govuk-!-margin-bottom-2">
               <summary class="govuk-details__summary govuk-!-padding-left-4 govuk-!-font-size-16 govuk-!-font-weight-bold plausible-event-name=Expand+Plugins">Plugins</summary>
-              <Tools />
+              <ToolsAllServers />
             </details>
           </tool-selector>
         }
@@ -137,12 +140,12 @@ if (Astro.url.pathname !== '/' && !singleServer) {
   </script>
 
   <script>
-    import '../components/loading-message.mjs'
-    import '../components/markdown-converter.mjs'
-    import '../components/message-box.mjs'
-    import '../components/message-input.mjs'
-    import '../components/tool-info.mjs'
-    import '../components/tool-selector.ts'
+    import '../components/loading-message.mjs';
+    import '../components/markdown-converter.mjs';
+    import '../components/message-box.mjs';
+    import '../components/message-input.mjs';
+    import '../components/tool-info.mjs';
+    import '../components/tool-selector.ts';
   </script>
 
 </Layout>
@@ -314,7 +317,7 @@ if (Astro.url.pathname !== '/' && !singleServer) {
       display: flex;
       height: var(--size);
       justify-content: center;
-      padding-top: 2px;
+      padding: 2px;
       position: relative;
       width: var(--size);
       img {
@@ -357,10 +360,10 @@ if (Astro.url.pathname !== '/' && !singleServer) {
         border-radius: 50%;
         content: ' ';
         display: block;
-        height: calc(var(--size) + 4px);
+        height: calc(var(--size) + 8px);
         position: absolute;
         top: -4px;
-        width: calc(var(--size) + 4px);
+        width: calc(var(--size) + 8px);
       }
     }
   }
