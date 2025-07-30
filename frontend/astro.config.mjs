@@ -5,6 +5,8 @@ import node from '@astrojs/node';
 
 import sentry from '@sentry/astro';
 
+import tailwindcss from '@tailwindcss/vite';
+
 let port;
 
 if (!process.env.GOVAI_PORT) {
@@ -16,10 +18,13 @@ if (!process.env.GOVAI_PORT) {
 // https://astro.build/config
 export default defineConfig({
   server: { port: port, host: true },
+
   adapter: node({
     mode: 'standalone',
   }),
+
   output: 'server',
+
   integrations: [
     sentry({
       environment: process.env.ENVIRONMENT,
@@ -33,4 +38,8 @@ export default defineConfig({
       },
     }),
   ],
+
+  vite: {
+    plugins: [tailwindcss()]
+  }
 });

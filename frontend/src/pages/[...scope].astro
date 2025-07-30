@@ -24,22 +24,25 @@ if (Astro.url.pathname !== '/' && !singleServer) {
 
   <link rel="stylesheet" href="https://zurb.github.io/tribute/example/tribute.css" />
 
+  { singleServer ?
+    <>
+      <div class="items-center gap-4 mt-5 md:flex">
+        <img class="shrink-0 w-40" src={ '/server-logos/colour/' + singleServer.name.toLowerCase().replaceAll(' ', '_') + '.png' } alt="" />
+        <h1 class="title govuk-heading-xl m-0!">Welcome to <span class="title__pink">{ singleServer.name }</span></h1>
+      </div>
+      <p class="title__intro govuk-body-l mb-7! mt-5!" set:html={ singleServer.description }></p>
+    </> :
+    <>
+      <h1 class="title govuk-heading-xl govuk-!-margin-top-5">Welcome to <span class="title__pink">GovAI</span> Chat</h1>
+      <p class="title__intro govuk-body-l govuk-!-margin-bottom-7">A dedicated assistant for securely connecting to plugins</p>
+    </>
+  }
+
   <form method="POST" action="/post-message" enctype="application/x-www-form-urlencoded">
   
     <div class="govuk-grid-row">
 
       <div class="govuk-grid-column-three-quarters-from-desktop">
-
-        { singleServer ?
-          <>
-            <h1 class="title govuk-heading-xl govuk-!-margin-top-5">Welcome to <span class="title__pink">{ singleServer.name }</span></h1>
-            <p class="title__intro govuk-body-l govuk-!-margin-bottom-7" set:html={ singleServer.description }></p>
-          </> :
-          <>
-            <h1 class="title govuk-heading-xl govuk-!-margin-top-5">Welcome to <span class="title__pink">GovAI</span> Chat</h1>
-            <p class="title__intro govuk-body-l govuk-!-margin-bottom-7">A dedicated assistant for securely connecting to plugins</p>
-          </>
-        }
 
         <h2 class="govuk-visually-hidden">Messages</h2>
 
