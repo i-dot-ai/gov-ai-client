@@ -4,27 +4,27 @@ const productName = [Astro.props.product];
 
 <side-panel>
 
-  <header class="sidepanel bg-background-grey border-r-1 border-border-grey fixed flex flex-col h-screen justify-between overflow-hidden w-14 z-10 lg:relative">
+  <header class="sidepanel bg-background-grey border-r-1 border-border-grey fixed flex flex-col h-screen justify-between overflow-hidden w-10 z-10 md:w-14 lg:relative">
     
-    <div class="border-b-1 border-border-grey cursor-pointer flex gap-1 items-center justify-between px-2 py-3 w-60 z-20">
+    <div class="border-b-1 border-border-grey cursor-pointer flex gap-1 items-center justify-between px-1 py-3 w-60 z-20 md:px-2">
       <div class="flex gap-1 items-center">
-        <img class="relative w-7 z-10" src="server-logos/colour/caddy.png" alt={ productName.toString() } />
+        <img class="relative w-5 z-10 md:w-7" src="server-logos/colour/caddy.png" alt={ productName.toString() } />
         <span class="font-bold text-xl" aria-hidden="true">{ productName }</span>
       </div>
       <button class="sidepanel__toggle absolute bg-background-grey flex h-6 items-center justify-center right-[-3px] w-6" id="sidepanel__toggle" aria-pressed="false">
         <span class="sr-only">Full menu</span>
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right h-4 w-4">
+        <svg class="w-4 md:w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right h-4 w-4">
           <path d="m9 18 6-6-6-6"></path>
         </svg>
       </button>
     </div>
     
     <nav class="sidepanel__content h-full px-2 py-3 w-60">
-      <p class="sidepanel__hide-on-collapse">Content goes here...</p>
+      <p class="sidepanel__hide-on-collapse govuk-body-s">Content goes here...</p>
     </nav>
     
-    <div class="border-t-1 border-border-grey pl-3 py-3">
-      <svg width="40" viewBox="0 0 286 180" fill="none" aria-label="The Incubator for Artificial Intelligence">
+    <div class="border-t-1 border-border-grey pl-2 py-3 md:pl-3">
+      <svg class="w-6 md:w-8" viewBox="0 0 286 180" fill="none" aria-label="The Incubator for Artificial Intelligence">
         <path d="M18.7828 37.6045C29.1563 37.6045 37.5657 29.1864 37.5657 18.8022C37.5657 8.41804 29.1563 0 18.7828 0C8.40936 0 0 8.41804 0 18.8022C0 29.1864 8.40936 37.6045 18.7828 37.6045Z" fill="black"></path>
         <path d="M62.8599 180C73.2334 180 81.6427 171.582 81.6427 161.198C81.6427 150.814 73.2334 142.396 62.8599 142.396C52.4864 142.396 44.0771 150.814 44.0771 161.198C44.0771 171.582 52.4864 180 62.8599 180Z" fill="black"></path>
         <path d="M37.5657 42.6184V180H0V42.6184H37.5657Z" fill="black"></path>
