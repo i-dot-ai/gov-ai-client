@@ -8,11 +8,13 @@ export async function POST(context: APIContext) {
   let userPrompt = '';
   let selectedServers: FormDataEntryValue[] = [];
   let selectedTools: FormDataEntryValue[] = [];
+  let scope = '';
   try {
     const data = await context.request.formData();
     userPrompt = data.get('prompt')?.toString() || '';
     selectedServers = data.getAll('servers');
     selectedTools = data.getAll('tools');
+    scope = data.get('scope')?.toString() || 'all';
   } catch(error) {
     if (error instanceof Error) {
       console.error(error.message);
@@ -20,7 +22,7 @@ export async function POST(context: APIContext) {
   }
 
   // add user prompt to session data
-  let messages: Message[] | undefined = await context.session?.get('messages');
+  let messages: Message[] | undefined = await context.session?.get(`messages-${scope}`);
   if (!messages) {
     messages = [];
   }
@@ -49,7 +51,7 @@ export async function POST(context: APIContext) {
   }
 
   // save session data
-  await context.session?.set('messages', messages);
+  await context.session?.set(`messages-${scope}`, messages);
 
   return context.redirect('/');
 }

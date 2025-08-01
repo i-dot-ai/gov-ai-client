@@ -58,7 +58,7 @@ test('Basic prompt-related tasks', async ({ page }) => {
 
   // check that the session can be cleared
   expect(await page.locator('.message-box--llm').count()).toEqual(2);
-  await page.locator('a[href="/clear-session"]').click({ clickCount: 3 });
+  await page.locator('a:has-text("Start a new chat")').click({ clickCount: 3 });
   await page.waitForLoadState('domcontentloaded');
   expect(await page.locator('.message-box--llm').count()).toEqual(0);
  
@@ -77,7 +77,7 @@ test('MCP call', async ({ page }) => {
   await testAccessibility(page);
 
   // check that the tool isn't called when the server is unticked
-  await page.locator('a[href="/clear-session"]').click({ clickCount: 3 });
+  await page.locator('a:has-text("Start a new chat")').click({ clickCount: 3 });
   await page.locator('summary:has-text("Plugins")').click();
   await page.getByLabel('test-mcp-server').uncheck();
   await sendPrompt('@ping-pong What is 6 * 7?', page);

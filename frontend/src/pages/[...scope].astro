@@ -1,13 +1,28 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Tools from '../components/tools.astro';
+import ToolsAllServers from '../components/ToolsAllServers.astro';
+import ToolsSingleServer from '../components/ToolsSingleServer.astro';
 import LitWrapper from '../components/lit-wrapper.astro';
 import type { Message } from '../logic/ai3.ts';
+import { mcpServers } from '../logic/get-servers.ts';
 
 // initialise session cookie if it doesn't already exist (required for SSE)
 Astro.session?.set('now', Date.now());
 
-let messages: Message[] | undefined = await Astro.session?.get('messages');
+// Scoped pages
+const { scope } = Astro.params;
+const singleServer = mcpServers.find((server) => server.name.toLowerCase() === scope?.toLowerCase());
+if (Astro.url.pathname !== '/' && !singleServer) {
+  return Astro.redirect('/');
+}
+
+// clear session data if requested, otherwise fetch existing messages
+let messages: Message[] | undefined = [];
+if (Astro.url.searchParams.get('clear') === 'true') {
+  Astro.session?.set(`messages-${scope || 'all'}`, []);
+} else {
+  messages = await Astro.session?.get(`messages-${scope || 'all'}`);
+}
 
 ---
 
@@ -16,27 +31,46 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
   <link rel="stylesheet" href="https://zurb.github.io/tribute/example/tribute.css" />
 
   <form method="POST" action="/post-message" enctype="application/x-www-form-urlencoded">
+
+    <input type="hidden" name="scope" value={ scope || 'all' } />
+
+    <div class="message-container">
+    
+      { singleServer ?
+        <>
+          <div class="text-center">
+            <img class="mt-7 mx-auto w-16" src={ '/server-logos/colour/' + singleServer.name.toLowerCase().replaceAll(' ', '_') + '.png' } alt="" />
+            <h1 class="font-bold mx-auto pt-2 text-5xl">Welcome to <span class="title__pink">{ singleServer.name }</span></h1>
+            <p class="govuk-body mb-7! mt-3!" set:html={ singleServer.description }></p>
+          </div>
+        </> :
+        <>
+          <h1 class="title govuk-heading-xl pt-5">Welcome to <span class="title__pink">GovAI</span> Chat</h1>
+          <p class="title__intro govuk-body-l govuk-!-margin-bottom-7">A dedicated assistant for securely connecting to plugins</p>
+        </>
+      }
+
+    
   
-    <div class="govuk-grid-row">
+      <div class="govuk-grid-row">
 
-      <div class="govuk-grid-column-three-quarters-from-desktop">
+        <div class="govuk-grid-column-three-quarters-from-desktop">
 
-        <h1 class="title govuk-heading-xl govuk-!-margin-top-5">Welcome to <span class="title__pink">GovAI</span> Chat</h1>
-        <p class="title__intro govuk-body-l govuk-!-margin-bottom-7">A dedicated assistant for securely connecting to plugins</p>
+          <h2 class="govuk-visually-hidden">Messages</h2>
 
-        <h2 class="govuk-visually-hidden">Messages</h2>
+          <div id="message-container">
 
-        <div id="message-container">
+            { messages?.map((message) =>
+              <LitWrapper>
+                <message-box type={ message.type } content={ message.response.content } tool-calls={ JSON.stringify(message.response.tool_calls) }></message-box>
+              </LitWrapper>
+            )}
 
-          { messages?.map((message) =>
-            <LitWrapper>
-              <message-box type={ message.type } content={ message.response.content } tool-calls={ JSON.stringify(message.response.tool_calls) }></message-box>
-            </LitWrapper>
-          )}
-
+          </div>
+        
         </div>
-      
       </div>
+
     </div>
 
 
@@ -51,18 +85,22 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
             When autocomplete results are available use up and down arrows to review and enter to select. Touch device users, explore by touch or with swipe gestures.
           </id>
         </div>
-        <textarea class="govuk-textarea govuk-!-margin-top-1 govuk-!-margin-bottom-2 prompt-box__textarea" id="prompt" name="prompt" rows="2" required aria-describedby="prompt-hint autocomplete-assistive-hint"></textarea>
+        <textarea class="govuk-textarea govuk-!-margin-top-1 govuk-!-margin-bottom-2 prompt-box__textarea bg-white" id="prompt" name="prompt" rows="2" required aria-describedby="prompt-hint autocomplete-assistive-hint"></textarea>
       </message-input>
 
       <div class="prompt-box__buttons">
-        <tool-selector class="tool-selector">
-          <details class="govuk-details govuk-!-margin-top-2 govuk-!-margin-bottom-2">
-            <summary class="govuk-details__summary govuk-!-padding-left-4 govuk-!-font-size-16 govuk-!-font-weight-bold plausible-event-name=Expand+Plugins">Plugins</summary>
-            <Tools />
-          </details>
-        </tool-selector>
+        { singleServer ?
+          <ToolsSingleServer server={ singleServer } />
+        :
+          <tool-selector class="tool-selector">
+            <details class="govuk-details govuk-!-margin-top-2 govuk-!-margin-bottom-2">
+              <summary class="govuk-details__summary govuk-!-padding-left-4 govuk-!-font-size-16 govuk-!-font-weight-bold plausible-event-name=Expand+Plugins">Plugins</summary>
+              <ToolsAllServers />
+            </details>
+          </tool-selector>
+        }
         <div class="govuk-button-group govuk-!-margin-bottom-0">
-          <a class="govuk-link govuk-!-font-size-16 govuk-!-margin-bottom-0 govuk-!-margin-right-5 plausible-event-name=New+Chat" href="/clear-session">Start a new chat</a>
+          <a class="govuk-link govuk-!-font-size-16 govuk-!-margin-bottom-0 govuk-!-margin-right-5 plausible-event-name=New+Chat" href={ '/' + (scope || '') + '?clear=true' }>Start a new chat</a>
           <button class="prompt-box__send-button govuk-button govuk-!-margin-bottom-0 plausible-event-name=Send+Prompt">Send</button>
         </div>
       </div>
@@ -116,12 +154,19 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
   </script>
 
   <script>
-    import '../components/loading-message.mjs'
-    import '../components/markdown-converter.mjs'
-    import '../components/message-box.mjs'
-    import '../components/message-input.mjs'
-    import '../components/tool-info.mjs'
-    import '../components/tool-selector.ts'
+    import '../components/loading-message.mjs';
+    import '../components/markdown-converter.mjs';
+    import '../components/message-box.mjs';
+    import '../components/message-input.mjs';
+    import '../components/tool-info.mjs';
+    import '../components/tool-selector.ts';
+  </script>
+
+  <script>
+    // remove clear=true so page reloads don't inadvertently clear the session
+    if (window.location.search) {
+      window.history.replaceState(null, document.title, `${window.location.origin}${window.location.pathname}`);
+    }
   </script>
 
 </Layout>
@@ -151,7 +196,7 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
       height: 100vh;
       overflow-y: scroll;
     }
-    .govuk-grid-row:first-of-type {
+    .message-container {
       min-height: calc(100vh - 280px);
     }
     .prompt-box {
@@ -293,7 +338,7 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
       display: flex;
       height: var(--size);
       justify-content: center;
-      padding-top: 2px;
+      padding: 2px;
       position: relative;
       width: var(--size);
       img {
@@ -336,10 +381,10 @@ let messages: Message[] | undefined = await Astro.session?.get('messages');
         border-radius: 50%;
         content: ' ';
         display: block;
-        height: calc(var(--size) + 4px);
+        height: calc(var(--size) + 8px);
         position: absolute;
         top: -4px;
-        width: calc(var(--size) + 4px);
+        width: calc(var(--size) + 8px);
       }
     }
   }

@@ -1,0 +1,38 @@
+---
+import { getTools, type Tool } from '../logic/get-tools.ts';
+
+const mcpServers = [Astro.props.server];
+const { mcpTools, serversWithFailedConnections } = await getTools(mcpServers, Astro.request.headers.get('x-amzn-oidc-accesstoken') || '');
+
+---
+
+<p class="govuk-body-s govuk-!-margin-top-2 govuk-!-margin-bottom-0">{ mcpTools.length } tool{ mcpTools.length === 1 ? '' : 's' } enabled</p>
+<div class="govuk-form-group">     
+  { mcpServers.map((server) =>
+    <>
+      <div class="tool-selector__server govuk-checkboxes govuk-checkboxes--small govuk-checkboxes" data-module="govuk-checkboxes">  
+        <div class="govuk-checkboxes__item govuk-!-margin-top-1 govuk-!-margin-bottom-1">
+          <input class={ 'govuk-checkboxes__input plausible-event-name=Plugin+Click plausible-event-plugin=' + server.name } id={ 'server-' + server.name } name="servers" type="checkbox" value={ server.name } checked  />
+          <label class="govuk-label govuk-checkboxes__label govuk-!-padding-right-0" for={ 'server-' + server.name }>{ server.name }</label>
+        </div>
+      </div>
+      { !serversWithFailedConnections.includes(server.name) && mcpTools.length > 0 &&
+        <div class="tool-selector__tools govuk-checkboxes govuk-checkboxes--small govuk-!-margin-bottom-3" data-module="govuk-checkboxes">
+          { mcpTools.map((tool) =>
+            <div class="govuk-checkboxes__item govuk-!-margin-top-1">
+              <input class={ 'govuk-checkboxes__input plausible-event-name=Plugin+Click plausible-event-plugin=' + tool.name } id={ 'tool-' + tool.name } name="tools" type="checkbox" value={ tool.name } checked aria-describedby={ 'tool-hint-' + tool.name } />
+              <label class="govuk-label govuk-checkboxes__label govuk-!-padding-right-0" for={ 'tool-' + tool.name }>{ tool.name }</label>
+            </div>
+          )}
+        </div>
+      }
+    </>
+  )}
+</div>
+
+
+<style>
+  .govuk-form-group {
+    display: none;
+  }
+</style>
