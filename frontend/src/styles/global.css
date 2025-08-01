@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
 @theme {
+  --color-background-grey: #f8f8f8;
   --spacing: 5px;
 }
