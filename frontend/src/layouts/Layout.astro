@@ -2,7 +2,6 @@
 import '../styles/global.css';
 import 'dotenv/config';
 import '../../node_modules/i.ai-design-system/dist/iai-design-system.css';
-import LitWrapper from '../components/lit-wrapper.astro';
 import SidePanel from '../components/SidePanel.astro';
 ---
 
@@ -20,10 +19,12 @@ import SidePanel from '../components/SidePanel.astro';
 
 		<SidePanel product="GovAI Chat" />
 
-		<div class="govuk-width-container lg:mx-auto lg:px-4">
-			<main class="govuk-main-wrapper pb-0 pt-2">
-				<slot />
-			</main>
+		<div class="overflow-y-auto w-full lg:h-screen">
+			<div class="govuk-width-container ml-17! sm:ml-20! lg:mx-auto! lg:px-4">
+				<main class="govuk-main-wrapper pb-0! pt-2">
+					<slot />
+				</main>
+			</div>
 		</div>
 
 		<script>

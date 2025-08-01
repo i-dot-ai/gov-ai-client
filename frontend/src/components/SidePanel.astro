@@ -3,28 +3,35 @@ const productName = [Astro.props.product];
 ---
 
 <side-panel>
-  <header class="sidepanel">
-    <div class="absolute bg-background-grey fixed h-10 w-screen z-10"></div>
-    <div class="absolute fixed flex gap-1 items-center pointer-events-auto px-1 py-2 w-full z-20">
-      <button class="cursor-pointer h-6 mt-[1px] relative w-6" id="sidepanel__toggle" aria-expanded="false" aria-controls="sidepanel-content">
-        <span class="sr-only">Show Menu</span>
-        <span class="mobile-menu__bar mobile-menu__bar--1 absolute bg-black h-[3px] rounded-full w-4"></span>
-        <span class="mobile-menu__bar mobile-menu__bar--2 absolute bg-black h-[3px] rounded-full w-4"></span>
-        <span class="mobile-menu__bar mobile-menu__bar--3 absolute bg-black h-[3px] rounded-full w-4"></span>
-      </button>
-      <span class="font-bold text-xl">{ productName }</span>
-    </div>
-    <div class="sidepanel__panel fixed inset-0 w-60 z-10">
-      <div class="bg-slate-300 duration-300 fixed flex flex-col h-screen justify-between left-0 p-2 pt-10 relative top-0 w-60" id="sidepanel-content">
-        <p>Content goes here...</p>
-        <svg width="50" viewBox="0 0 286 180" fill="none" aria-label="The Incubator for Artificial Intelligence">
-          <path d="M18.7828 37.6045C29.1563 37.6045 37.5657 29.1864 37.5657 18.8022C37.5657 8.41804 29.1563 0 18.7828 0C8.40936 0 0 8.41804 0 18.8022C0 29.1864 8.40936 37.6045 18.7828 37.6045Z" fill="black"></path>
-          <path d="M62.8599 180C73.2334 180 81.6427 171.582 81.6427 161.198C81.6427 150.814 73.2334 142.396 62.8599 142.396C52.4864 142.396 44.0771 150.814 44.0771 161.198C44.0771 171.582 52.4864 180 62.8599 180Z" fill="black"></path>
-          <path d="M37.5657 42.6184V180H0V42.6184H37.5657Z" fill="black"></path>
-          <path fill-rule="evenodd" clip-rule="evenodd" d="M248.434 0H286V178.496H209.116L196.844 144.15H136.238L124.468 178.496H83.6462L148.76 0H185.574L248.434 168.969V0ZM146.757 109.304L167.042 48.1337L186.326 109.304H146.757Z" fill="#C50878"></path>
-        </svg>
+
+  <header class="sidepanel bg-background-grey border-r-1 border-border-grey fixed flex flex-col h-screen justify-between overflow-hidden top-0 w-10 z-10 md:w-14 lg:sticky">
+    
+    <div class="border-b-1 border-border-grey cursor-pointer flex gap-1 items-center justify-between px-1 py-3 w-60 z-20 md:px-2">
+      <div class="flex gap-1 items-center">
+        <img class="relative w-5 z-10 md:w-7" src="server-logos/colour/caddy.png" alt={ productName.toString() } />
+        <span class="font-bold text-xl" aria-hidden="true">{ productName }</span>
       </div>
+      <button class="sidepanel__toggle absolute bg-background-grey flex h-6 items-center justify-center right-[-3px] w-6" id="sidepanel__toggle" aria-pressed="false">
+        <span class="sr-only">Full menu</span>
+        <svg class="w-4 md:w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right h-4 w-4">
+          <path d="m9 18 6-6-6-6"></path>
+        </svg>
+      </button>
     </div>
+    
+    <nav class="sidepanel__content h-full px-2 py-3 w-60">
+      <p class="sidepanel__hide-on-collapse govuk-body-s">Content goes here...</p>
+    </nav>
+    
+    <div class="border-t-1 border-border-grey pl-2 py-3 md:pl-3">
+      <svg class="w-6 md:w-8" viewBox="0 0 286 180" fill="none" aria-label="The Incubator for Artificial Intelligence">
+        <path d="M18.7828 37.6045C29.1563 37.6045 37.5657 29.1864 37.5657 18.8022C37.5657 8.41804 29.1563 0 18.7828 0C8.40936 0 0 8.41804 0 18.8022C0 29.1864 8.40936 37.6045 18.7828 37.6045Z" fill="black"></path>
+        <path d="M62.8599 180C73.2334 180 81.6427 171.582 81.6427 161.198C81.6427 150.814 73.2334 142.396 62.8599 142.396C52.4864 142.396 44.0771 150.814 44.0771 161.198C44.0771 171.582 52.4864 180 62.8599 180Z" fill="black"></path>
+        <path d="M37.5657 42.6184V180H0V42.6184H37.5657Z" fill="black"></path>
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M248.434 0H286V178.496H209.116L196.844 144.15H136.238L124.468 178.496H83.6462L148.76 0H185.574L248.434 168.969V0ZM146.757 109.304L167.042 48.1337L186.326 109.304H146.757Z" fill="#C50878"></path>
+      </svg>
+    </div>
+
   </header>
 </side-panel>
 
@@ -35,23 +42,22 @@ const productName = [Astro.props.product];
       
       // toggle button
       const sidepanelToggle = this.querySelector('#sidepanel__toggle');
-      sidepanelToggle?.addEventListener('click', () => {
-        this.classList.add('transitioned');
-        if (sidepanelToggle.getAttribute('aria-expanded') === 'false') {
-          sidepanelToggle.setAttribute('aria-expanded', 'true');
+      sidepanelToggle.parentElement?.addEventListener('click', () => {
+        if (sidepanelToggle.getAttribute('aria-pressed') === 'false') {
+          sidepanelToggle.setAttribute('aria-pressed', 'true');
         } else {
-          sidepanelToggle.setAttribute('aria-expanded', 'false');
+          sidepanelToggle.setAttribute('aria-pressed', 'false');
         }
       });
 
       // open by default for large screens
       if (window.innerWidth >= 1400) {
-        sidepanelToggle?.setAttribute('aria-expanded', 'true');
+        sidepanelToggle?.setAttribute('aria-pressed', 'true');
       }
       // only add transition after page load
       window.setTimeout(() => {
         this.classList.add('ready');
-      }, 300);
+      }, 500);
 
     }
   };
@@ -60,107 +66,19 @@ const productName = [Astro.props.product];
 </script>
 
 <style>
-  .ready .sidepanel, .ready .sidepanel__panel {
-    transition: all .3s;
-  }
-  .sidepanel:has(#sidepanel__toggle[aria-expanded="false"]) .sidepanel__panel {
-    left: -300px;
-    width: 0;
-  }
-  .sidepanel:has(#sidepanel__toggle[aria-expanded="true"]) {
-    margin-right: 300px;
-  }
-
-  @keyframes menu-bar-opening {
-    50% {
-      left: 5px;
-      top: 13px;
-      transform: rotate(0);
-    }
-    100% {
-      left: 6px;
-      transform: rotate(-45deg);
-      top: 15px;
-    }
-  }
-  @keyframes menu-bar-closing {
-    0% {
-      left: 6px;
-      transform: rotate(-45deg);
-      top: 15px;
-    }
-    50% {
-      left: 5px;
-      top: 13px;
-      transform: rotate(0);
-    }
-    100% {
-      left: 5px;
-      transform: rotate(0);
-      top: 7px;
-    }
-  }
-  .mobile-menu__bar--1 {
-    animation-name: menu-bar-closing;
-  }
-  [aria-expanded="true"] .mobile-menu__bar--1 {
-    animation-name: menu-bar-opening;
-  }
-
-  .mobile-menu__bar--2 {
-    opacity: 1;
-    top: 13px;
-  }
-  [aria-expanded="true"] .mobile-menu__bar--2 {
-    opacity: 0;
-  }
-
-  @keyframes menu-bar-3-opening {
-    50% {
-      left: 5px;
-      top: 13px;
-      transform: rotate(0);
-    }
-    100% {
-      left: 6px;
-      transform: rotate(45deg);
-      top: 10px;
-    }
-  }
-  @keyframes menu-bar-3-closing {
-    0%{
-      left: 6px;
-      transform: rotate(45deg);
-      top: 10px;
-    }
-    50% {
-      left: 5px;
-      top: 13px;
-      transform: rotate(0);
-    }
-    100% {
-      top: 19px;
-    }
-  }
-  .mobile-menu__bar--3 {
-    animation-name: menu-bar-3-closing;
-  }
-  [aria-expanded="true"] .mobile-menu__bar--3 {
-    animation-name: menu-bar-3-opening;
-  }
-
-  .mobile-menu__bar {
-    animation-duration: 0s;
-    animation-fill-mode: forwards;
-    left: 5px;
-    transform-origin: 31% 50%;
-    transition: none;
-  }
   @media (prefers-reduced-motion: no-preference) {
-    .transitioned .mobile-menu__bar {
-      transition: all 0.4s;
-      animation-duration: .3s;
+    .ready .sidepanel, .ready .sidepanel__toggle {
+      transition: all .5s;
     }
   }
-
+  .sidepanel:has(.sidepanel__toggle[aria-pressed="true"]) {
+    width: 300px;
+  }
+  .sidepanel__toggle[aria-pressed="true"] {
+    transform: rotate(180deg);
+    right: 0;
+  }
+  .sidepanel:has(.sidepanel__toggle[aria-pressed="false"]) .sidepanel__hide-on-collapse {
+    display: none;
+  }
 </style>
