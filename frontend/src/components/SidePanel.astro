@@ -1,0 +1,160 @@
+---
+const productName = [Astro.props.product];
+---
+
+<side-panel>
+  <header class="sidepanel">
+    <div class="absolute bg-background-grey fixed h-10 w-screen z-10"></div>
+    <div class="absolute fixed flex gap-1 items-center pointer-events-auto px-1 py-2 w-full z-20">
+      <button class="cursor-pointer h-6 mt-[1px] relative w-6" id="sidepanel__toggle" aria-expanded="false" aria-controls="sidepanel-content">
+        <span class="sr-only">Show Menu</span>
+        <span class="mobile-menu__bar mobile-menu__bar--1 absolute bg-black h-[3px] rounded-full w-4"></span>
+        <span class="mobile-menu__bar mobile-menu__bar--2 absolute bg-black h-[3px] rounded-full w-4"></span>
+        <span class="mobile-menu__bar mobile-menu__bar--3 absolute bg-black h-[3px] rounded-full w-4"></span>
+      </button>
+      <span class="font-bold text-xl">{ productName }</span>
+    </div>
+    <div class="sidepanel__panel fixed inset-0 w-60 z-10">
+      <div class="bg-slate-300 duration-300 fixed h-screen left-0 p-1 pt-10 relative top-0 w-60" id="sidepanel-content">
+        <p>Content goes here...</p>
+      </div>
+    </div>
+  </header>
+</side-panel>
+
+<script is:inline>
+
+  class SidePanel extends HTMLElement {
+    connectedCallback() {
+      
+      // toggle button
+      const sidepanelToggle = this.querySelector('#sidepanel__toggle');
+      sidepanelToggle?.addEventListener('click', () => {
+        this.classList.add('transitioned');
+        if (sidepanelToggle.getAttribute('aria-expanded') === 'false') {
+          sidepanelToggle.setAttribute('aria-expanded', 'true');
+        } else {
+          sidepanelToggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+
+      // open by default for large screens
+      if (window.innerWidth >= 1400) {
+        sidepanelToggle?.setAttribute('aria-expanded', 'true');
+      }
+      // only add transition after page load
+      window.setTimeout(() => {
+        this.classList.add('ready');
+      }, 300);
+
+    }
+  };
+  customElements.define('side-panel', SidePanel);
+
+</script>
+
+<style>
+  .ready .sidepanel, .ready .sidepanel__panel {
+    transition: all .3s;
+  }
+  .sidepanel:has(#sidepanel__toggle[aria-expanded="false"]) .sidepanel__panel {
+    left: -300px;
+    width: 0;
+  }
+  .sidepanel:has(#sidepanel__toggle[aria-expanded="true"]) {
+    margin-right: 300px;
+  }
+
+  @keyframes menu-bar-opening {
+    50% {
+      left: 5px;
+      top: 13px;
+      transform: rotate(0);
+    }
+    100% {
+      left: 6px;
+      transform: rotate(-45deg);
+      top: 15px;
+    }
+  }
+  @keyframes menu-bar-closing {
+    0% {
+      left: 6px;
+      transform: rotate(-45deg);
+      top: 15px;
+    }
+    50% {
+      left: 5px;
+      top: 13px;
+      transform: rotate(0);
+    }
+    100% {
+      left: 5px;
+      transform: rotate(0);
+      top: 7px;
+    }
+  }
+  .mobile-menu__bar--1 {
+    animation-name: menu-bar-closing;
+  }
+  [aria-expanded="true"] .mobile-menu__bar--1 {
+    animation-name: menu-bar-opening;
+  }
+
+  .mobile-menu__bar--2 {
+    opacity: 1;
+    top: 13px;
+  }
+  [aria-expanded="true"] .mobile-menu__bar--2 {
+    opacity: 0;
+  }
+
+  @keyframes menu-bar-3-opening {
+    50% {
+      left: 5px;
+      top: 13px;
+      transform: rotate(0);
+    }
+    100% {
+      left: 6px;
+      transform: rotate(45deg);
+      top: 10px;
+    }
+  }
+  @keyframes menu-bar-3-closing {
+    0%{
+      left: 6px;
+      transform: rotate(45deg);
+      top: 10px;
+    }
+    50% {
+      left: 5px;
+      top: 13px;
+      transform: rotate(0);
+    }
+    100% {
+      top: 19px;
+    }
+  }
+  .mobile-menu__bar--3 {
+    animation-name: menu-bar-3-closing;
+  }
+  [aria-expanded="true"] .mobile-menu__bar--3 {
+    animation-name: menu-bar-3-opening;
+  }
+
+  .mobile-menu__bar {
+    animation-duration: 0s;
+    animation-fill-mode: forwards;
+    left: 5px;
+    transform-origin: 31% 50%;
+    transition: none;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .transitioned .mobile-menu__bar {
+      transition: all 0.4s;
+      animation-duration: .3s;
+    }
+  }
+
+</style>
