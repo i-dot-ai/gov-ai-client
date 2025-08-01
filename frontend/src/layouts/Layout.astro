@@ -1,8 +1,9 @@
 ---
 import '../styles/global.css';
 import 'dotenv/config';
-import '../../node_modules/i.ai-design-system/dist/iai-design-system.css'
-import LitWrapper from '../components/lit-wrapper.astro'
+import '../../node_modules/i.ai-design-system/dist/iai-design-system.css';
+import LitWrapper from '../components/lit-wrapper.astro';
+import SidePanel from '../components/SidePanel.astro';
 ---
 
 <!doctype html>
@@ -15,14 +16,12 @@ import LitWrapper from '../components/lit-wrapper.astro'
 		<script is:inline defer data-domain={ process.env['DOMAIN'] } src="https://plausible.io/js/script.hash.outbound-links.pageview-props.tagged-events.js"></script>
 		<script is:inline>window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }</script>
 	</head>
-	<body class="govuk-frontend-supported bg-[#f8f8f8]">
+	<body class="govuk-frontend-supported bg-background-grey relative lg:flex">
 
-		<LitWrapper>
-			<iai-header product-name="GovAI Chat"></iai-header>
-		</LitWrapper>
+		<SidePanel product="GovAI Chat" />
 
-		<div class="govuk-width-container">
-			<main class="govuk-main-wrapper govuk-!-padding-bottom-0 govuk-!-padding-top-2">
+		<div class="govuk-width-container lg:mx-auto lg:px-4">
+			<main class="govuk-main-wrapper pb-0 pt-2">
 				<slot />
 			</main>
 		</div>
