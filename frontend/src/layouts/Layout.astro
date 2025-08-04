@@ -3,6 +3,9 @@ import '../styles/global.css';
 import 'dotenv/config';
 import '../../node_modules/i.ai-design-system/dist/iai-design-system.css';
 import SidePanel from '../components/SidePanel.astro';
+
+const { mcpServers } = Astro.props;
+
 ---
 
 <!doctype html>
@@ -17,7 +20,7 @@ import SidePanel from '../components/SidePanel.astro';
 	</head>
 	<body class="govuk-frontend-supported bg-background-grey relative lg:flex">
 
-		<SidePanel product="GovAI Chat" />
+		<SidePanel product="GovAI Chat" mcpServers={ mcpServers }/>
 
 		<div class="overflow-y-auto w-full lg:h-screen">
 			<div class="govuk-width-container ml-17! sm:ml-20! lg:mx-auto! lg:px-4">

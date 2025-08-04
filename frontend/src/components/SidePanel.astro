@@ -1,5 +1,7 @@
 ---
 const productName = [Astro.props.product];
+const mcpServers = Astro.props.mcpServers;
+console.log('SIDE PANEL:', mcpServers);
 ---
 
 <side-panel>
@@ -13,14 +15,38 @@ const productName = [Astro.props.product];
       </div>
       <button class="sidepanel__toggle absolute bg-background-grey flex h-6 items-center justify-center right-[-3px] w-6" id="sidepanel__toggle" aria-pressed="false">
         <span class="sr-only">Full menu</span>
-        <svg class="w-4 md:w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right h-4 w-4">
+        <svg class="cursor-pointer w-4 md:w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right h-4 w-4">
           <path d="m9 18 6-6-6-6"></path>
         </svg>
       </button>
     </div>
     
     <nav class="sidepanel__content h-full px-2 py-3 w-60">
-      <p class="sidepanel__hide-on-collapse govuk-body-s">Content goes here...</p>
+      <div class="px-[2px] pb-5 pt-2">
+        <a class="flex gap-3 group items-start rounded-sm" style="text-decoration: none;" href="/">
+          <span class="bg-black decoration-none flex h-5 items-center justify-center relative rounded-full text-sm text-white w-5 md:h-6 md:ml-[6px] md:w-6 group-focus:outline-pink">
+            <span class="no-underline">AI</span>
+            <span class="sr-only">Full Gov AI Client</span>
+          </span>
+          <span class="sidepanel__hide-on-collapse border-b-1 mt-[2px] hover:border-b-3" aria-hidden="true">Full Gov AI Client</span>
+        </a>
+      </div>
+      <h2 class="sidepanel__hide-on-collapse float-left font-bold mt-1 pl-[3px] text-md md:pl-2">Single servers:</h2>
+      <ul class="mt-7">
+        { mcpServers.map((mcpServer) =>
+          <li class="px-[2px] py-2">
+            <a class="flex gap-3 items-start rounded-sm" style="text-decoration: none;" href={ '/' + mcpServer.name.toLowerCase() }>
+              <span class="bg-black decoration-none flex h-5 items-center justify-center relative rounded-full text-sm text-white w-5 md:h-6 md:ml-[6px] md:w-6">
+                <span class="no-underline" aria-hidden="true">{ mcpServer.name[0].toUpperCase() }</span>
+                <img class="absolute w-4" src={ '/server-logos/black/' + mcpServer.name.toLowerCase().replaceAll(' ', '_') + '.png' } alt="" />
+                <span class="sr-only">{ mcpServer.name }</span>
+              </span>
+              <span class="sidepanel__hide-on-collapse border-b-1 mt-[2px] hover:border-b-3" aria-hidden="true">{ mcpServer.name }</span>
+            </a>
+          </li>
+        )}
+      </ul>
+      <!-- <p class="sidepanel__hide-on-collapse govuk-body-s">Content goes here...</p> -->
     </nav>
     
     <div class="border-t-1 border-border-grey pl-2 py-3 md:pl-3">
@@ -81,4 +107,24 @@ const productName = [Astro.props.product];
   .sidepanel:has(.sidepanel__toggle[aria-pressed="false"]) .sidepanel__hide-on-collapse {
     display: none;
   }
+
+  a:focus {
+    background-color: transparent;
+    box-shadow: none;
+    color: var(--iai-pink);
+    outline: none;
+  }
+  .sidepanel:has(.sidepanel__toggle[aria-pressed="false"]) a:focus-visible > span {
+    outline: 1px solid var(--iai-pink);
+    outline-color: var(--iai-pink);
+    outline-width: 2px;
+    outline-offset: 2px;
+  }
+  .sidepanel:has(.sidepanel__toggle[aria-pressed="true"]) a:focus-visible {
+    outline-style: solid;
+    outline-color: var(--iai-pink);
+    outline-width: 2px;
+    outline-offset: 2px;
+  }
+
 </style>
