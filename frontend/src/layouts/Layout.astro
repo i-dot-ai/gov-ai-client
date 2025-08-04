@@ -4,7 +4,7 @@ import 'dotenv/config';
 import '../../node_modules/i.ai-design-system/dist/iai-design-system.css';
 import SidePanel from '../components/SidePanel.astro';
 
-const { mcpServers } = Astro.props;
+const { mcpServers, selectedServer } = Astro.props;
 
 ---
 
@@ -14,13 +14,13 @@ const { mcpServers } = Astro.props;
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<title>Gov AI MCP Client</title>
+		<title>{ (selectedServer ? selectedServer + ' - ' : '') + 'Gov AI MCP Client' }</title>
 		<script is:inline defer data-domain={ process.env['DOMAIN'] } src="https://plausible.io/js/script.hash.outbound-links.pageview-props.tagged-events.js"></script>
 		<script is:inline>window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }</script>
 	</head>
 	<body class="govuk-frontend-supported bg-background-grey relative lg:flex">
 
-		<SidePanel product="GovAI Chat" mcpServers={ mcpServers }/>
+		<SidePanel product="GovAI Chat" mcpServers={ mcpServers } selectedServer={ selectedServer }/>
 
 		<div class="overflow-y-auto w-full lg:h-screen">
 			<div class="govuk-width-container ml-17! sm:ml-20! lg:mx-auto! lg:px-4">
