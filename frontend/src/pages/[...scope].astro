@@ -41,24 +41,17 @@ if (Astro.url.searchParams.get('clear') === 'true') {
         <h1 class="font-bold mx-auto pt-2 text-5xl">Welcome to <span class="text-pink">{ singleServer ? singleServer.name : 'GovAI Chat' }</span></h1>
         <p class="govuk-body mb-7! mt-3!" set:html={ singleServer?.description || 'A dedicated assistant for securely connecting to plugins' }></p>
       </div>
-  
-      <div class="govuk-grid-row">
 
-        <div class="govuk-grid-column-three-quarters-from-desktop">
+      <h2 class="govuk-visually-hidden">Messages</h2>
 
-          <h2 class="govuk-visually-hidden">Messages</h2>
+      <div id="message-container">
 
-          <div id="message-container">
+        { messages?.map((message) =>
+          <LitWrapper>
+            <message-box type={ message.type } content={ message.response.content } tool-calls={ JSON.stringify(message.response.tool_calls) }></message-box>
+          </LitWrapper>
+        )}
 
-            { messages?.map((message) =>
-              <LitWrapper>
-                <message-box type={ message.type } content={ message.response.content } tool-calls={ JSON.stringify(message.response.tool_calls) }></message-box>
-              </LitWrapper>
-            )}
-
-          </div>
-        
-        </div>
       </div>
 
     </div>
