@@ -26,7 +26,7 @@ if (Astro.url.searchParams.get('clear') === 'true') {
 
 ---
 
-<Layout mcpServers={ mcpServers }>
+<Layout mcpServers={ mcpServers } selectedServer={ singleServer?.name }>
 
   <link rel="stylesheet" href="https://zurb.github.io/tribute/example/tribute.css" />
 
@@ -35,22 +35,12 @@ if (Astro.url.searchParams.get('clear') === 'true') {
     <input type="hidden" name="scope" value={ scope || 'all' } />
 
     <div class="message-container">
-    
-      { singleServer ?
-        <>
-          <div class="text-center">
-            <img class="mt-7 mx-auto w-16" src={ '/server-logos/colour/' + singleServer.name.toLowerCase().replaceAll(' ', '_') + '.png' } alt="" />
-            <h1 class="font-bold mx-auto pt-2 text-5xl">Welcome to <span class="title__pink">{ singleServer.name }</span></h1>
-            <p class="govuk-body mb-7! mt-3!" set:html={ singleServer.description }></p>
-          </div>
-        </> :
-        <>
-          <h1 class="title govuk-heading-xl pt-5">Welcome to <span class="title__pink">GovAI</span> Chat</h1>
-          <p class="title__intro govuk-body-l govuk-!-margin-bottom-7">A dedicated assistant for securely connecting to plugins</p>
-        </>
-      }
 
-    
+      <div class="text-center">
+        <img class="mx-auto pt-7 w-16" src={ '/server-logos/colour/' + singleServer?.name.toLowerCase().replaceAll(' ', '_') + '.png' } alt="" />
+        <h1 class="font-bold mx-auto pt-2 text-5xl">Welcome to <span class="text-pink">{ singleServer ? singleServer.name : 'GovAI Chat' }</span></h1>
+        <p class="govuk-body mb-7! mt-3!" set:html={ singleServer?.description || 'A dedicated assistant for securely connecting to plugins' }></p>
+      </div>
   
       <div class="govuk-grid-row">
 
@@ -174,22 +164,6 @@ if (Astro.url.searchParams.get('clear') === 'true') {
 
 <style is:global>
 
-  .title {
-    font-size: 50px;
-    margin-bottom: 15px;
-    text-wrap: balance;
-    @media (min-width: 641px) {
-      font-size: 100px;
-    }
-  }
-  .title__pink {
-    color: var(--iai-pink);
-  }
-  .title__intro {
-    font-size: 34px;
-    text-wrap: balance;
-  }
-
   /* Sticky prompt area */
   @media (min-height: 660px) {
     body {
@@ -197,7 +171,7 @@ if (Astro.url.searchParams.get('clear') === 'true') {
       overflow-y: scroll;
     }
     .message-container {
-      min-height: calc(100vh - 280px);
+      min-height: calc(100vh - 232px);
     }
     .prompt-box {
       bottom: 10px;
