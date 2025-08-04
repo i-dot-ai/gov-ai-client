@@ -1,7 +1,7 @@
 ---
 const productName = [Astro.props.product];
 const mcpServers = Astro.props.mcpServers;
-console.log('SIDE PANEL:', mcpServers);
+const selectedServer = Astro.props.selectedServer;
 ---
 
 <side-panel>
@@ -10,7 +10,7 @@ console.log('SIDE PANEL:', mcpServers);
     
     <div class="border-b-1 border-border-grey cursor-pointer flex gap-1 items-center justify-between px-1 py-3 w-60 z-20 md:px-2">
       <div class="flex gap-1 items-center">
-        <img class="relative w-5 z-10 md:w-7" src="server-logos/colour/caddy.png" alt={ productName.toString() } />
+        <img class="relative w-5 z-10 md:w-7" height="35" width="35" src="server-logos/colour/caddy.png" alt={ productName.toString() } />
         <span class="font-bold text-xl" aria-hidden="true">{ productName }</span>
       </div>
       <button class="sidepanel__toggle absolute bg-background-grey flex h-6 items-center justify-center right-[-3px] w-6" id="sidepanel__toggle" aria-pressed="false">
@@ -23,8 +23,8 @@ console.log('SIDE PANEL:', mcpServers);
     
     <nav class="sidepanel__content h-full px-2 py-3 w-60">
       <div class="px-[2px] pb-5 pt-2">
-        <a class="flex gap-3 group items-start rounded-sm" style="text-decoration: none;" href="/">
-          <span class="bg-black decoration-none flex h-5 items-center justify-center relative rounded-full text-sm text-white w-5 md:h-6 md:ml-[6px] md:w-6 group-focus:outline-pink">
+        <a class="flex gap-3 group items-start rounded-sm" style="text-decoration: none;" href="/" aria-current={ selectedServer ? undefined : 'page' }>
+          <span class="bg-black border-2 border-black border-solid decoration-none flex h-5 items-center justify-center relative rounded-full text-sm text-white w-5 data-current:border-pink md:h-6 md:ml-[6px] md:w-6" data-current={ selectedServer ? undefined : 'page' }>
             <span class="no-underline">AI</span>
             <span class="sr-only">Full Gov AI Client</span>
           </span>
@@ -35,8 +35,8 @@ console.log('SIDE PANEL:', mcpServers);
       <ul class="mt-7">
         { mcpServers.map((mcpServer) =>
           <li class="px-[2px] py-2">
-            <a class="flex gap-3 items-start rounded-sm" style="text-decoration: none;" href={ '/' + mcpServer.name.toLowerCase() }>
-              <span class="bg-black decoration-none flex h-5 items-center justify-center relative rounded-full text-sm text-white w-5 md:h-6 md:ml-[6px] md:w-6">
+            <a class="flex gap-3 items-start rounded-sm" style="text-decoration: none;" href={ '/' + mcpServer.name.toLowerCase() } aria-current={ mcpServer.name === selectedServer ? 'page' : undefined }>
+              <span class="bg-black border-2 border-black border-solid decoration-none flex h-5 items-center justify-center relative rounded-full text-sm text-white w-5 data-current:border-pink md:h-6 md:ml-[6px] md:w-6" data-current={ mcpServer.name === selectedServer ? 'page' : undefined }>
                 <span class="no-underline" aria-hidden="true">{ mcpServer.name[0].toUpperCase() }</span>
                 <img class="absolute w-4" src={ '/server-logos/black/' + mcpServer.name.toLowerCase().replaceAll(' ', '_') + '.png' } alt="" />
                 <span class="sr-only">{ mcpServer.name }</span>
@@ -67,18 +67,16 @@ console.log('SIDE PANEL:', mcpServers);
     connectedCallback() {
       
       // toggle button
-      const sidepanelToggle = this.querySelector('#sidepanel__toggle');
-      sidepanelToggle.parentElement?.addEventListener('click', () => {
-        if (sidepanelToggle.getAttribute('aria-pressed') === 'false') {
-          sidepanelToggle.setAttribute('aria-pressed', 'true');
-        } else {
-          sidepanelToggle.setAttribute('aria-pressed', 'false');
-        }
+      this.sidepanelToggle = this.querySelector('#sidepanel__toggle');
+      this.sidepanelToggle.parentElement?.addEventListener('click', () => {
+        this.#setState(this.sidepanelToggle.getAttribute('aria-pressed') === 'false');
       });
 
+      // remember last state
+      const lastState = window.sessionStorage.getItem('sidepanel');
       // open by default for large screens
-      if (window.innerWidth >= 1400) {
-        sidepanelToggle?.setAttribute('aria-pressed', 'true');
+      if (lastState === 'open' || (!lastState && window.innerWidth >= 1400)) {
+        this.#setState(true);
       }
       // only add transition after page load
       window.setTimeout(() => {
@@ -86,6 +84,18 @@ console.log('SIDE PANEL:', mcpServers);
       }, 500);
 
     }
+
+    #setState(open) {
+      if (open) {
+        this.sidepanelToggle.setAttribute('aria-pressed', 'true');
+        window.sessionStorage.setItem('sidepanel', 'open');
+      } else {
+        this.sidepanelToggle.setAttribute('aria-pressed', 'false');
+        window.sessionStorage.setItem('sidepanel', 'closed');
+      }
+    }
+
+
   };
   customElements.define('side-panel', SidePanel);
 
