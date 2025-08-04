@@ -10,7 +10,7 @@ const selectedServer = Astro.props.selectedServer;
     
     <div class="border-b-1 border-border-grey cursor-pointer flex gap-1 items-center justify-between px-1 py-3 w-60 z-20 md:px-2">
       <div class="flex gap-1 items-center">
-        <img class="relative w-5 z-10 md:w-7" height="35" width="35" src="server-logos/colour/caddy.png" alt={ productName.toString() } />
+        <img class="relative w-5 z-10 md:w-7" height="35" width="35" src="server-logos/colour/govai.png" alt={ productName.toString() } />
         <span class="font-bold text-xl" aria-hidden="true">{ productName }</span>
       </div>
       <button class="sidepanel__toggle absolute bg-background-grey flex h-6 items-center justify-center right-[-3px] w-6" id="sidepanel__toggle" aria-pressed="false">
@@ -25,8 +25,7 @@ const selectedServer = Astro.props.selectedServer;
       <div class="px-[2px] pb-5 pt-2">
         <a class="flex gap-3 group items-start rounded-sm" style="text-decoration: none;" href="/" aria-current={ selectedServer ? undefined : 'page' }>
           <span class="bg-black border-2 border-black border-solid decoration-none flex h-5 items-center justify-center relative rounded-full text-sm text-white w-5 data-current:border-pink md:h-6 md:ml-[6px] md:w-6" data-current={ selectedServer ? undefined : 'page' }>
-            <span class="no-underline">AI</span>
-            <span class="sr-only">Full Gov AI Client</span>
+            <img class="absolute w-4" src="/server-logos/black/govai.png" alt="Full Gov AI Client" />
           </span>
           <span class="sidepanel__hide-on-collapse border-b-1 mt-[2px] hover:border-b-3" aria-hidden="true">Full Gov AI Client</span>
         </a>
@@ -46,7 +45,6 @@ const selectedServer = Astro.props.selectedServer;
           </li>
         )}
       </ul>
-      <!-- <p class="sidepanel__hide-on-collapse govuk-body-s">Content goes here...</p> -->
     </nav>
     
     <div class="border-t-1 border-border-grey pl-2 py-3 md:pl-3">

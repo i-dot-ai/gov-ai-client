@@ -37,7 +37,7 @@ if (Astro.url.searchParams.get('clear') === 'true') {
     <div class="message-container">
 
       <div class="text-center">
-        <img class="mx-auto pt-7 w-16" src={ '/server-logos/colour/' + singleServer?.name.toLowerCase().replaceAll(' ', '_') + '.png' } alt="" />
+        <img class="mx-auto pt-7 w-16" src={ '/server-logos/colour/' + (singleServer?.name.toLowerCase().replaceAll(' ', '_') || 'govai') + '.png' } alt="" />
         <h1 class="font-bold mx-auto pt-2 text-5xl">Welcome to <span class="text-pink">{ singleServer ? singleServer.name : 'GovAI Chat' }</span></h1>
         <p class="govuk-body mb-7! mt-3!" set:html={ singleServer?.description || 'A dedicated assistant for securely connecting to plugins' }></p>
       </div>
@@ -240,15 +240,10 @@ if (Astro.url.searchParams.get('clear') === 'true') {
     position: relative;
   }
   .message-box--llm::before {
-    align-items: center;
-    background-color: var(--iai-pink);
+    background: url('/server-logos/colour/govai.png') no-repeat center/contain;
     border-radius: 100%;
-    color: #fff;
-    content: 'AI';
-    display: flex;
-    font-family: Inter, Arial, sans-serif;
+    content: '';
     height: 2rem;
-    justify-content: center;
     left: -2.75rem;
     position: absolute;
     top: 0.25rem;
