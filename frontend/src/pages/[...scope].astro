@@ -36,8 +36,11 @@ if (Astro.url.searchParams.get('clear') === 'true') {
 
     <div class="message-container">
 
-      <div class="text-center">
-        <img class="mx-auto pt-7 w-16" src={ '/server-logos/colour/' + (singleServer?.name.toLowerCase().replaceAll(' ', '_') || 'govai') + '.png' } alt="" />
+      <div class="pt-7 text-center">
+        <span class="bg-pink flex h-16 items-center justify-center mx-auto relative rounded-full text-white text-3xl w-16" aria-hidden="true">
+          <span>{ singleServer?.name[0].toUpperCase() }</span>
+          <img class="absolute inset-0 mx-auto" src={ '/server-logos/colour/' + (singleServer?.name.toLowerCase().replaceAll(' ', '_') || 'govai') + '.png' } alt="" />
+        </span>
         <h1 class="font-bold mx-auto pt-2 text-5xl">Welcome to <span class="text-pink">{ singleServer ? singleServer.name : 'GovAI Chat' }</span></h1>
         <p class="govuk-body mb-7! mt-3!" set:html={ singleServer? singleServer.description : 'A dedicated assistant for securely connecting to plugins' }></p>
       </div>
@@ -137,12 +140,12 @@ if (Astro.url.searchParams.get('clear') === 'true') {
   </script>
 
   <script>
-    import '../components/loading-message.mjs';
-    import '../components/markdown-converter.mjs';
-    import '../components/message-box.mjs';
-    import '../components/message-input.mjs';
-    import '../components/tool-info.mjs';
-    import '../components/tool-selector.ts';
+    import '../components/loading-message.mjs'
+    import '../components/markdown-converter.mjs'
+    import '../components/message-box.mjs'
+    import '../components/message-input.mjs'
+    import '../components/tool-info.mjs'
+    import '../components/tool-selector.ts'
   </script>
 
   <script>

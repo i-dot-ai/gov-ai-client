@@ -13,7 +13,7 @@ const selectedServer = Astro.props.selectedServer;
         <img class="relative w-5 z-10 md:w-7" height="35" width="35" src="server-logos/colour/govai.png" alt={ productName.toString() } />
         <span class="font-bold text-xl" aria-hidden="true">{ productName }</span>
       </div>
-      <button class="sidepanel__toggle absolute bg-background-grey flex h-6 items-center justify-center right-[-3px] w-6" id="sidepanel__toggle" aria-pressed="false">
+      <button class="sidepanel__toggle absolute bg-background-grey flex h-6 items-center justify-center right-[-3px] w-6 aria-pressed:right-0 aria-pressed:rotate-180" id="sidepanel__toggle" aria-pressed="false">
         <span class="sr-only">Full menu</span>
         <svg class="cursor-pointer w-4 md:w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right h-4 w-4">
           <path d="m9 18 6-6-6-6"></path>
@@ -107,10 +107,6 @@ const selectedServer = Astro.props.selectedServer;
   }
   .sidepanel:has(.sidepanel__toggle[aria-pressed="true"]) {
     width: 300px;
-  }
-  .sidepanel__toggle[aria-pressed="true"] {
-    transform: rotate(180deg);
-    right: 0;
   }
   .sidepanel:has(.sidepanel__toggle[aria-pressed="false"]) .sidepanel__hide-on-collapse {
     display: none;
