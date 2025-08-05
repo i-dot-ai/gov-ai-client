@@ -8,3 +8,7 @@
 }
 
 @custom-variant aria-current (&[aria-current="page"]);
+
+@view-transition {
+  navigation: auto;
+}
