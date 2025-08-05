@@ -1,19 +1,19 @@
 ---
 const productName = [Astro.props.product];
-const mcpServers = Astro.props.mcpServers;
+const mcpServers: {name: string}[] = Astro.props.mcpServers;
 const selectedServer = Astro.props.selectedServer;
 ---
 
 <side-panel>
 
-  <header class="sidepanel bg-background-grey border-r-1 border-border-grey fixed flex flex-col h-screen justify-between overflow-hidden top-0 w-10 z-10 md:w-14 lg:sticky">
+  <header class="sidepanel bg-background-grey border-r-1 border-border-grey fixed flex flex-col h-screen justify-between overflow-hidden top-0 transition-width w-10 z-10 [.ready>&]:motion-safe:duration-500 md:w-14 lg:sticky">
     
     <div class="border-b-1 border-border-grey cursor-pointer flex gap-1 items-center justify-between px-1 py-3 w-60 z-20 md:px-2">
       <div class="flex gap-1 items-center">
         <img class="relative w-5 z-10 md:w-7" height="35" width="35" src="server-logos/colour/govai.png" alt={ productName.toString() } />
         <span class="font-bold text-xl" aria-hidden="true">{ productName }</span>
       </div>
-      <button class="sidepanel__toggle absolute bg-background-grey flex h-6 items-center justify-center right-[-3px] w-6 aria-pressed:right-0 aria-pressed:rotate-180" id="sidepanel__toggle" aria-pressed="false">
+      <button class="sidepanel__toggle absolute bg-background-grey flex h-6 items-center justify-center right-[-3px] transition-transform w-6 aria-pressed:right-0 aria-pressed:rotate-180 [.ready>&]:motion-safe:duration-500 focus:outline-transparent focus-visible:outline-pink" id="sidepanel__toggle" aria-pressed="false">
         <span class="sr-only">Full menu</span>
         <svg class="cursor-pointer w-4 md:w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right h-4 w-4">
           <path d="m9 18 6-6-6-6"></path>
@@ -100,11 +100,7 @@ const selectedServer = Astro.props.selectedServer;
 </script>
 
 <style>
-  @media (prefers-reduced-motion: no-preference) {
-    .ready .sidepanel, .ready .sidepanel__toggle {
-      transition: all .5s;
-    }
-  }
+
   .sidepanel:has(.sidepanel__toggle[aria-pressed="true"]) {
     width: 300px;
   }
