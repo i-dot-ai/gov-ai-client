@@ -52,6 +52,7 @@ export const getTools = async(servers: MCP_SERVER[], authToken: string) => {
         await client.connect(transport);
         console.log(`${mcpServer.name}: Connected using Streamable HTTP transport`);
       } catch(error) { /* eslint @typescript-eslint/no-unused-vars: "off" */
+        console.log(`${mcpServer.name}: Error connecting via StreamableHTTTP`, error);
         const sseTransport = new SSEClientTransport(new URL(mcpServer.url), transportOptions as SSEClientTransportOptions);
         await client.connect(sseTransport, {
           timeout: 2000,
