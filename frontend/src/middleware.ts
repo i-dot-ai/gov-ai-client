@@ -3,6 +3,7 @@ import { isAuthorisedUser } from './auth.ts';
 
 // Define paths that should be public (no authorisation required)
 const PUBLIC_PATHS = [
+  '/server-logos/',
   '/assets/fonts/',
   '/unauthorised',
   '/clear-session',

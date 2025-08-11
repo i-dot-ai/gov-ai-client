@@ -86,7 +86,7 @@ if (Astro.url.searchParams.get('clear') === 'true') {
           </tool-selector>
         }
         <div class="govuk-button-group govuk-!-margin-bottom-0">
-          <a class="govuk-link govuk-!-font-size-16 govuk-!-margin-bottom-0 govuk-!-margin-right-5 plausible-event-name=New+Chat" href={ '/' + (scope || '') + '?clear=true' }>Start a new chat</a>
+          <a class="govuk-link govuk-!-font-size-16 govuk-!-margin-bottom-0 govuk-!-margin-right-5 plausible-event-name=New+Chat" href={ '/' + (scope ? 'scoped/' + scope : '') + '?clear=true' }>Start a new chat</a>
           <button class="prompt-box__send-button govuk-button govuk-!-margin-bottom-0 plausible-event-name=Send+Prompt">Send</button>
         </div>
       </div>

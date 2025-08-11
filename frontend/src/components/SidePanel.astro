@@ -10,7 +10,7 @@ const selectedServer = Astro.props.selectedServer;
     
     <div class="border-b-1 border-border-grey cursor-pointer flex gap-1 items-center justify-between px-1 py-3 w-60 z-20 md:px-2">
       <div class="flex gap-1 items-center">
-        <img class="relative w-5 z-10 md:w-7" height="35" width="35" src="server-logos/colour/govai.png" alt={ productName.toString() } />
+        <img class="relative w-5 z-10 md:w-7" height="35" width="35" src="/server-logos/colour/govai.png" alt={ productName.toString() } />
         <span class="font-bold text-xl" aria-hidden="true">{ productName }</span>
       </div>
       <button class="sidepanel__toggle absolute bg-background-grey flex h-6 items-center justify-center right-[-3px] transition-transform w-6 aria-pressed:right-0 aria-pressed:rotate-180 [.ready>&]:motion-safe:duration-500 focus:outline-transparent focus-visible:outline-pink" id="sidepanel__toggle" aria-pressed="false">
@@ -34,7 +34,7 @@ const selectedServer = Astro.props.selectedServer;
       <ul class="mt-7">
         { mcpServers.map((mcpServer) =>
           <li class="px-[2px] py-2">
-            <a class="flex gap-3 items-start rounded-sm" style="text-decoration: none;" href={ '/' + mcpServer.name.toLowerCase() } aria-current={ mcpServer.name === selectedServer ? 'page' : undefined }>
+            <a class="flex gap-3 items-start rounded-sm" style="text-decoration: none;" href={ '/scoped/' + mcpServer.name.toLowerCase() } aria-current={ mcpServer.name === selectedServer ? 'page' : undefined }>
               <span class="bg-black border-2 border-black border-solid decoration-none flex h-5 items-center justify-center relative rounded-full text-sm text-white w-5 data-current:border-pink md:h-6 md:ml-[6px] md:w-6" data-current={ mcpServer.name === selectedServer ? 'page' : undefined }>
                 <span class="no-underline" aria-hidden="true">{ mcpServer.name[0].toUpperCase() }</span>
                 <img class="absolute" src={ '/server-logos/black/' + mcpServer.name.toLowerCase().replaceAll(' ', '_') + '.png' } alt="" />
