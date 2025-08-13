@@ -22,6 +22,10 @@ locals {
       name  = "AZURE_OPENAI_API_KEY"
       value = var.azure_openai_api_key
     },
+    {
+      name  = "OPENAI_API_KEY"
+      value = var.openai_api_key
+    },
 
     {
       name  = "AZURE_OPENAI_ENDPOINT"

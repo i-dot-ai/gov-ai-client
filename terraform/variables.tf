@@ -69,6 +69,12 @@ variable "azure_openai_api_key" {
   sensitive   = true
 }
 
+variable "openai_api_key" {
+  type        = string
+  description = "Connect to LiteLLM"
+  sensitive   = true
+}
+
 variable "azure_openai_endpoint" {
   type        = string
   description = "Connect to Azure API"
