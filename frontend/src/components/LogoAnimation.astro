@@ -1,0 +1,29 @@
+
+<svg class="absolute inset-0 rotate-[85deg] motion-reduce:hidden" viewBox="0 0 100 100" width="80" height="80">
+  <circle class="animate-[circle_1s_ease-in_forwards] stroke-pink" cx="50" cy="50" r="40" fill="transparent" stroke-width="10" stroke-dasharray="250" stroke-dashoffset="0" />
+</svg>
+
+<div class="absolute animate-[box_0.7s_1s_ease-out_forwards] duration-700 bg-pink h-[50px] top-[20px] rounded-full transition-all w-[30px] motion-reduce:hidden"></div>
+
+
+<style>
+
+  @keyframes circle {
+    99% {
+      opacity: 1;
+      stroke-dashoffset: 251;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes box {
+    to {
+      height: 0;
+    }
+  }
+
+</style>
+
+  
