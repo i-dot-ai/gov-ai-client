@@ -2,36 +2,28 @@
 
 
 /**
- * Stores MCP Server selection in localStorage
+ * Stores selected model in localStorage
  */
-const ToolSelector = class extends HTMLElement {
+const ModelSelector = class extends HTMLElement {
 
   connectedCallback() {
 
-    // Remember selected plugins and tools
-    const localStorageStr = window.localStorage.getItem('selected-tools');
-    const preselectedTools = JSON.parse(localStorageStr || '[]');
-    const inputs: NodeListOf<HTMLInputElement> = this.querySelectorAll('input[type="checkbox"]');
-    inputs.forEach((input) => {
-      input.checked = !localStorageStr || preselectedTools.includes(input.value);
-      input.addEventListener('click', () => {
-        const selectedInputs = [...inputs]
-          .filter((input) => input.checked)
-          .map((input) => input.value);
-        window.localStorage.setItem('selected-tools', JSON.stringify(selectedInputs));
-      });
-    });
+    const select = this.querySelector('select');
+    if (!select) {
+      return;
+    }
 
-    // Scroll down when "Select plugins" expanded
-    const details = document.querySelector('details');
-    details?.addEventListener('toggle', () => {
-      if (details.open) {
-        window.scrollTo(0, document.body.scrollHeight);
-      }
+    const selectedTool = window.localStorage.getItem('selected-model');
+    if (selectedTool) {
+      select.value = selectedTool;
+    }
+
+    select.addEventListener('change', () => {
+      window.localStorage.setItem('selected-model', select.value);
     });
 
   }
 
 };
 
-customElements.define('tool-selector', ToolSelector);
+customElements.define('model-selector', ModelSelector);

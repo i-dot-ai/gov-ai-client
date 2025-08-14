@@ -32,10 +32,10 @@ export type Message = {
   },
 };
 
-const MODEL = 'o4-mini';
 
+export const getLlmResponse = async(messages: Message[], selectedServers: FormDataEntryValue[], selectedTools: FormDataEntryValue[], selectedModel: string, authToken: string, sessionToken: string) => {
 
-export const getLlmResponse = async(messages: Message[], selectedServers: FormDataEntryValue[], selectedTools: FormDataEntryValue[], authToken: string, sessionToken: string) => {
+  const MODEL = selectedModel === 'Fast' ? 'bedrock-claude-3-haiku' : 'azure/o4-mini';
 
   let agentModel;
   if (process.env['USE_LITE_LLM'] === 'true') {
@@ -45,7 +45,7 @@ export const getLlmResponse = async(messages: Message[], selectedServers: FormDa
       configuration: {
         baseURL: process.env['LLM_GATEWAY_URL'],
       },
-      modelName: `azure/${MODEL}`,
+      modelName: `${MODEL}`,
       callbackManager,
     });
   } else {
@@ -53,7 +53,7 @@ export const getLlmResponse = async(messages: Message[], selectedServers: FormDa
       openAIApiKey: process.env['AZURE_OPENAI_API_KEY'],
       openAIApiVersion: process.env['OPENAI_API_VERSION'],
       openAIBasePath: process.env['AZURE_OPENAI_ENDPOINT'],
-      deploymentName: MODEL,
+      deploymentName: MODEL.replace('azure/', ''),
     });
   }
 

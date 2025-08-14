@@ -8,12 +8,14 @@ export async function POST(context: APIContext) {
   let userPrompt = '';
   let selectedServers: FormDataEntryValue[] = [];
   let selectedTools: FormDataEntryValue[] = [];
+  let model = '';
   let scope = '';
   try {
     const data = await context.request.formData();
     userPrompt = data.get('prompt')?.toString() || '';
     selectedServers = data.getAll('servers');
     selectedTools = data.getAll('tools');
+    model = data.get('model')?.toString() || '';
     scope = data.get('scope')?.toString() || 'all';
   } catch(error) {
     if (error instanceof Error) {
@@ -40,7 +42,7 @@ export async function POST(context: APIContext) {
   const keycloakToken = context.request.headers.get('x-amzn-oidc-accesstoken') || '';
   let llmResponse;
   if (userPrompt) {
-    llmResponse = await getLlmResponse(messages, selectedServers, selectedTools, keycloakToken, sessionToken);
+    llmResponse = await getLlmResponse(messages, selectedServers, selectedTools, model, keycloakToken, sessionToken);
   }
 
   // add LLM response to session data
