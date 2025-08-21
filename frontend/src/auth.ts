@@ -2,31 +2,7 @@ import 'dotenv/config';
 import { jwtVerify, decodeJwt, errors, importSPKI } from 'jose';
 
 
-export async function isAuthorisedUser(header: string): Promise<boolean> {
-  if (!process.env.REPO) {
-    console.error('REPO environment variable not set');
-    return false;
-  }
-
-  const parsedToken = await parseAuthToken(header);
-
-  if (!parsedToken) {
-    console.error('No token found for user');
-    return false;
-  }
-
-  /*
-   *Checks the user has the required role for this app
-   *(bypassing for now, as any role is allowed for Gov AI Client)
-   *return parsedToken.roles.some(role =>
-   *  role === process.env.REPO || role === "local-testing"
-   *)
-   */
-  return parsedToken.roles;
-
-}
-
-async function parseAuthToken(header: string) {
+export async function parseAuthToken(header: string) {
   if (!header) {
     console.error('No auth token provided to parse');
     return null;
