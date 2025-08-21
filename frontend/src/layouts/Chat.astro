@@ -7,9 +7,6 @@ import LogoAnimation from '../components/LogoAnimation.astro';
 import type { Message } from '../logic/ai3.ts';
 import { mcpServers } from '../logic/get-servers.ts';
 
-// initialise session cookie if it doesn't already exist (required for SSE)
-Astro.session?.set('now', Date.now());
-
 // Scoped pages
 const { scope } = Astro.params;
 const singleServer = mcpServers.find((server) => server.name.toLowerCase() === scope?.toLowerCase());
