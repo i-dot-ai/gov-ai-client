@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { isAuthorisedUser } from './auth.ts';
+import { parseAuthToken } from './auth.ts';
 
 // Define paths that should be public (no authorisation required)
 const PUBLIC_PATHS = [
@@ -33,7 +33,17 @@ export async function onRequest(context, next) {
       return redirectToUnauthorised(context);
     }
 
-    if (!await isAuthorisedUser(token)) {
+    const { email, roles } = await parseAuthToken(token);
+
+    // If the current user doesn't match the user for the session, destroy existing session data - it may be a shared device
+    const storedUserEmail = await context.session.get('user-email');
+    if (storedUserEmail !== email) {
+      context.session.destroy();
+      context.session.set('user-email', email);
+    }
+
+    // allow any role (rather than the specific role for gov-ai-client)
+    if (!roles) {
       return redirectToUnauthorised(context);
     }
 
