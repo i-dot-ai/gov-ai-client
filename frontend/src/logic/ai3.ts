@@ -82,14 +82,19 @@ export const getLlmResponse = async(messages: Message[], selectedServers: FormDa
     hour12: true,
   });
 
+  const s3_link_example = '[mydocument.pdf](https://my-example-bucket.s3.eu-west-2.amazonaws.com/path/to/mydocument.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIOSFODNN7EXAMPLE%2F20250827%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250827T153045Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEGMaCXVzLWV&X-Amz-Signature=5d41402abc4b2a76b9719d911017c592)'; // pragma: allowlist secret
+
   let systemMessageText: string = `
     You are a UK civil servant. The current time is ${currentTime}.
     If you see a word starting with "@" search for a tool by that name and use it. 
     Where appropriate cite any responses from tools to support answer, e.g. provide:
     - source, i.e. link or title (this should be verbatim, do not modify, or invent this. Use concise but descriptive names for links so each unique link text describes the destination. Ensure all links are rendered as proper markdown links).
-    If the link is an s3 presigned url for downloading the file, obfuscate the link behind the document name, e.g. [test_file.txt](https://test_file_download.com/)
     - quotes
     - etc
+    If the source link is an s3 presigned url for downloading the file, obfuscate the link behind the document name, e.g. 
+    ${s3_link_example}
+    - do not adjust the link or lose any original information from it
+    - do not remove the query string or edit it
     Reply in British English.
     Use semantic markdown in your response, but do not display anything as footnotes.
   `;
