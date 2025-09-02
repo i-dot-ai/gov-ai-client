@@ -17,12 +17,17 @@ export type Tool = StructuredToolInterface<
 };
 
 
+// cache Tools for faster page loads
+const cachedTools: Tool[] = [];
+const cachedServers: string[] = [];
+
+
 export const getTools = async(servers: MCP_SERVER[], authToken: string) => {
 
-  const mcpTools: Tool[] = [];
   const serversWithFailedConnections = [];
 
-  for (const mcpServer of servers) {
+  // loop through any servers that haven't yet been cached
+  for (const mcpServer of servers.filter((server) => !cachedServers.includes(server.name))) {
     const serverHeaders: { [key: string]: string } = {};
     if (mcpServer.accessToken) {
       serverHeaders['x-external-access-token'] = mcpServer.accessToken;
@@ -67,12 +72,18 @@ export const getTools = async(servers: MCP_SERVER[], authToken: string) => {
         tool.annotations = toolList.tools[toolIndex].annotations;
       });
 
-      mcpTools.push(...serverMcpTools);
+      cachedTools.push(...serverMcpTools);
+      cachedServers.push(mcpServer.name);
     } catch(error) {
       console.log(`${mcpServer.name}: Error trying to access this server`, error);
       serversWithFailedConnections.push(mcpServer.name);
     }
   }
+
+  // For single servers - only return the tools for that server
+  const mcpTools = cachedTools.filter((tool) => {
+    return servers.map((server) => server.name).includes(tool.serverName);
+  });
 
   return { mcpTools, serversWithFailedConnections };
 
