@@ -36,12 +36,6 @@ locals {
       name  = "OPENAI_API_VERSION"
       value = var.openai_api_version
     },
-
-    {
-      name = "USE_LITE_LLM"
-      value = var.use_lite_llm
-    },
-
     {
       name  = "MCP_SERVERS"
       value = var.mcp_servers
