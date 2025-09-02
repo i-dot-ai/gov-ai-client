@@ -11,7 +11,8 @@ const ToolInfo = class extends LitElement {
   static properties = {
     name: { type: String, attribute: 'name' },
     server: { type: String, attribute: 'server' },
-    entries: { type: Object, attribute: 'entries' },
+    parameters: { type: Object, attribute: 'parameters' },
+    response: { type: String, attribute: 'response' },
     ref: { type: String, attribute: 'ref' },
     inUse: { type: String, attribute: 'in-use' },
   };
@@ -35,6 +36,7 @@ const ToolInfo = class extends LitElement {
         </span>
       </button>
       <div class="tool-info__expandable" id="tool-${this.ref}">
+        <h3 class="govuk-body-xs govuk-!-font-weight-bold">Parameters</h3>
         <table class="govuk-!-margin-top-2">
           <thead class="govuk-visually-hidden">
             <tr>
@@ -43,8 +45,8 @@ const ToolInfo = class extends LitElement {
             </tr>
           </thead>
           <tbody>
-            ${this.entries ? html`
-              ${Object.entries(this.entries).map(([key, value]) => html`
+            ${this.parameters ? html`
+              ${Object.entries(this.parameters).map(([key, value]) => html`
                 <tr>
                   <td class="govuk-body-xs govuk-!-padding-top-2 govuk-!-padding-bottom-2">${key}:</td>
                   <td class="govuk-body-xs govuk-!-padding-top-2 govuk-!-padding-bottom-2">${typeof value === 'string' ? value : JSON.stringify(value)}</td>
@@ -53,6 +55,8 @@ const ToolInfo = class extends LitElement {
             ` : ''}
           </tbody>
         </table>
+        <h3 class="govuk-body-xs govuk-!-font-weight-bold">Response</h3>
+        <p class="govuk-body-xs">${this.response}</p>
       </div>
     `;
   }

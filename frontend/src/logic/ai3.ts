@@ -172,6 +172,16 @@ export const getLlmResponse = async(messages: Message[], selectedServers: FormDa
         }), sessionToken);
       }
     }
+
+    // Tool response
+    if (chunk.tools?.messages) {
+      toolCalls[toolCalls.length - 1].response = chunk.tools.messages[0].content;
+      sendMessage(JSON.stringify({
+        type: 'tool-response',
+        data: chunk.tools.messages[0].content,
+      }), sessionToken);
+    }
+
   }
 
   return {
