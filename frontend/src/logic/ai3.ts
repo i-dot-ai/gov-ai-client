@@ -9,8 +9,7 @@ import { createReactAgent } from '@langchain/langgraph/prebuilt';
 import { AzureChatOpenAI, ChatOpenAI } from '@langchain/openai';
 import { AIMessage, HumanMessage, SystemMessage } from '@langchain/core/messages';
 import { sendMessage } from '../pages/api/sse';
-import { mcpServers } from './get-servers.ts';
-import { getTools } from './get-tools.ts';
+import { getMcpServers, type Tool } from './get-servers';
 import { CallbackManager } from '@langchain/core/callbacks/manager';
 import { CallbackHandler as LangfuseHandler } from 'langfuse-langchain';
 
@@ -58,14 +57,14 @@ export const getLlmResponse = async(messages: Message[], selectedServers: FormDa
   }
 
   // filter out any unselected MCP servers
-  const selectedMcpServers = mcpServers.filter((server: { name: string }) => selectedServers.includes(server.name));
-
-  // Get mcpTools for all servers
-  let { mcpTools } = await getTools(selectedMcpServers, authToken);
-
-  // filter out any unselected MCP tools
-  mcpTools = mcpTools.filter((tool) => {
-    return selectedTools.includes(tool.name);
+  const mcpTools: Tool[] = [];
+  const mcpServers = await getMcpServers(authToken);
+  mcpServers.filter((server: { name: string }) => selectedServers.includes(server.name)).forEach((server) => {
+    server.tools.forEach((tool) => {
+      if (selectedTools.includes(tool.name)) {
+        mcpTools.push(tool);
+      }
+    });
   });
 
   const agent = createReactAgent({
@@ -98,7 +97,7 @@ export const getLlmResponse = async(messages: Message[], selectedServers: FormDa
     Reply in British English.
     Use semantic markdown in your response, but do not display anything as footnotes.
   `;
-  if (selectedMcpServers.length) {
+  if (mcpTools.length) {
     systemMessageText += 'You should call an MCP tool if one is available.';
   }
 

@@ -5,21 +5,24 @@ import ToolsSingleServer from '../components/ToolsSingleServer.astro';
 import LitWrapper from '../components/lit-wrapper.astro';
 import LogoAnimation from '../components/LogoAnimation.astro';
 import type { Message } from '../logic/ai3.ts';
-import { mcpServers } from '../logic/get-servers.ts';
+import { getMcpServers } from '../logic/get-servers.ts';
 
-// Scoped pages
-const { scope } = Astro.params;
-const singleServer = mcpServers.find((server) => server.name.toLowerCase() === scope?.toLowerCase());
-if (Astro.url.pathname !== '/' && !singleServer) {
-  return Astro.redirect('/');
-}
 
 // clear session data if requested, otherwise fetch existing messages
+const { scope } = Astro.params;
 let messages: Message[] | undefined = [];
 if (Astro.url.searchParams.get('clear') === 'true') {
   Astro.session?.set(`messages-${scope || 'all'}`, []);
 } else {
   messages = await Astro.session?.get(`messages-${scope || 'all'}`);
+}
+
+const mcpServers = await getMcpServers(Astro.request.headers.get('x-amzn-oidc-accesstoken') || '');
+
+// Scoped pages
+const singleServer = mcpServers.find((server) => server.name.toLowerCase() === scope?.toLowerCase());
+if (Astro.url.pathname !== '/' && !singleServer) {
+  return Astro.redirect('/');
 }
 
 ---
@@ -82,8 +85,8 @@ if (Astro.url.searchParams.get('clear') === 'true') {
           :
             <tool-selector class="tool-selector">
               <details class="mb-2 md:mb-0">
-                <summary class="border-1 border-pink border-solid cursor-pointer px-2 py-1 rounded-sm text-[16px] text-pink w-18 plausible-event-name=Expand+Plugins">Plugins</summary>
-                <ToolsAllServers />
+                <summary class="border-1 border-pink border-solid cursor-pointer px-2 py-1 rounded-sm text-[16px] text-pink w-[92px] plausible-event-name=Expand+Plugins">Plugins</summary>
+                <ToolsAllServers servers={ mcpServers } />
               </details>
             </tool-selector>
           }
