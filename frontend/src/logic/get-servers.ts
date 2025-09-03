@@ -121,14 +121,13 @@ let caddyServer: MCP_SERVER | undefined;
 
 
 // Cache all servers except Caddy
-(() => {
+(async() => {
   const servers = getServerList();
   caddyServer = servers.find((server) => server.name === 'Caddy');
-  // TO DO: LOOP ASYNC
-  servers.filter((server) => server.name !== 'Caddy').forEach(async(server) => {
+  for (const server of servers.filter((server) => server.name !== 'Caddy')) {
     server.tools = await getTools(server);
     cachedServers.push(server);
-  });
+  }
 })();
 
 
