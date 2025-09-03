@@ -1,9 +1,8 @@
 ---
-import { getTools, type Tool } from '../logic/get-tools.ts';
+import type { MCP_SERVER } from "../logic/get-servers";
 
-const mcpServers = [Astro.props.server];
-const { mcpTools, serversWithFailedConnections } = await getTools(mcpServers, Astro.request.headers.get('x-amzn-oidc-accesstoken') || '');
-
+const mcpServers: MCP_SERVER[] = [Astro.props.server];
+const serversWithFailedConnections: string[] = [];
 ---
 
 {/* <p class="govuk-body-s govuk-!-margin-top-2 govuk-!-margin-bottom-0">{ mcpTools.length } tool{ mcpTools.length === 1 ? '' : 's' } enabled</p> */}
@@ -14,9 +13,9 @@ const { mcpTools, serversWithFailedConnections } = await getTools(mcpServers, As
         <input id={ 'server-' + server.name } name="servers" type="checkbox" value={ server.name } checked  />
         <label for={ 'server-' + server.name }>{ server.name }</label>
       </div>
-      { !serversWithFailedConnections.includes(server.name) && mcpTools.length > 0 &&
+      { !serversWithFailedConnections.includes(server.name) && server.tools.length > 0 &&
         <div class="tool-selector__tools">
-          { mcpTools.map((tool) =>
+          { server.tools.map((tool) =>
             <>
               <input id={ 'tool-' + tool.name } name="tools" type="checkbox" value={ tool.name } checked />
               <label for={ 'tool-' + tool.name }>
