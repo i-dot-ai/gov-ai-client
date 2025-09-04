@@ -56,12 +56,26 @@ locals {
       name  = "LANGFUSE_PUBLIC_KEY"
       value = var.langfuse_public_key
     },
-
     {
-      name  = "EXAMPLE_VAR"
-      value = "placeholder" # Update value in SSM - Do not hardcode
+      name  = "POSTGRES_HOST"
+      value = module.rds.db_instance_address
+    },
+    {
+      name  = "POSTGRES_PORT"
+      value = 5432
+    },
+    {
+      name  = "POSTGRES_DB"
+      value = module.rds.db_instance_name
+    },
+    {
+      name  = "POSTGRES_USER"
+      value = module.rds.rds_instance_username
+    },
+    {
+      name  = "POSTGRES_PASSWORD"
+      value = module.rds.rds_instance_db_password
     }
-
   ]
 }
 

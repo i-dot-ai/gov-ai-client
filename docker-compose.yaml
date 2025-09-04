@@ -11,7 +11,27 @@ services:
       - .env
     networks:
       - gov-ai-client-network
-    
+    depends_on:
+      - postgres
+
+  postgres:
+    image: pgvector/pgvector:pg17
+    ports:
+      - '5432:5432'
+    environment:
+    - POSTGRES_USER=root # because root will execute the init script
+    - POSTGRES_PASSWORD=postgres
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data:Z
+      - ./scripts/postgres-init.sql:/docker-entrypoint-initdb.d/postgres-init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      retries: 10
+      start_period: 60s
+      start_interval: 1s
+    networks:
+      - gov-ai-client-network
 
 networks:
   gov-ai-client-network:
