@@ -17,7 +17,7 @@ import { CallbackHandler as LangfuseHandler } from 'langfuse-langchain';
 const langfuseHandler = new LangfuseHandler({
   secretKey: process.env.LANGFUSE_SECRET_KEY,
   publicKey: process.env.LANGFUSE_PUBLIC_KEY,
-  baseUrl: 'https://cloud.langfuse.com',
+  baseUrl: process.env.LANGFUSE_BASE_URL,
 });
 const callbackManager = CallbackManager.fromHandlers(langfuseHandler);
 

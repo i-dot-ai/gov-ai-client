@@ -108,6 +108,12 @@ variable "langfuse_public_key" {
   sensitive   = true
 }
 
+variable "langfuse_base_url" {
+  type        = string
+  description = "Langfuse base url"
+  sensitive   = true
+}
+
 variable "SENTRY_DSN" {
   type        = string
   description = "DSN for sentry logs"

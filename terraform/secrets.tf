@@ -51,7 +51,10 @@ locals {
       name  = "LANGFUSE_SECRET_KEY"
       value = var.langfuse_secret_key
     },
-
+    {
+      name = "LANGFUSE_BASE_URL",
+      value = var.langfuse_base_url
+    },
     {
       name  = "LANGFUSE_PUBLIC_KEY"
       value = var.langfuse_public_key
