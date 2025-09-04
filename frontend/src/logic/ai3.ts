@@ -166,9 +166,6 @@ export const getLlmResponse = async(messages: Message[], selectedServers: FormDa
         }), sessionToken);
       } else if (response.content) {
         finalMessage = response.content;
-        sendMessage(JSON.stringify({
-          type: 'end',
-        }), sessionToken);
       }
     }
   }

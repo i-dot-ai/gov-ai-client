@@ -20,7 +20,9 @@ const { mcpServers, selectedServer } = Astro.props;
 	</head>
 	<body class="govuk-frontend-supported bg-background-grey relative lg:flex">
 
-		<SidePanel product="GovAI Chat" mcpServers={ mcpServers } selectedServer={ selectedServer }/>
+		{ mcpServers &&
+			<SidePanel product="GovAI Chat" mcpServers={ mcpServers } selectedServer={ selectedServer }/>
+		}
 
 		<div class="overflow-y-auto w-full lg:h-screen">
 			<div class="govuk-width-container ml-17! sm:ml-20! lg:mx-auto! lg:px-4">

@@ -1,0 +1,18 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getChats } from '../logic/database';
+
+const userEmail = await Astro.session?.get('user-email');
+const chats = await getChats(userEmail);
+---
+
+<Layout>
+  <h1 class="font-bold text-3xl">Chat history</h1>
+  <ul class="list-disc mt-4">
+    { chats.map((chat) =>
+      <li class="mt-1">
+        <a href={ (chat.scope === 'all' ? '/' : '/scoped/' + chat.scope) + '?chatid=' + chat.id }>{ chat.title }</a>
+      </li>
+    )}
+  </ul>
+</Layout>
