@@ -119,3 +119,9 @@ variable "SENTRY_AUTH_TOKEN" {
   description = "Sentry auth token for log pushing"
   sensitive   = true
 }
+
+variable "scope" {
+  description = "Scope of the WAF, either 'CLOUDFRONT' or 'REGIONAL'"
+  type        = string
+  default     = "REGIONAL"
+}
