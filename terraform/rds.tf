@@ -6,7 +6,7 @@ module "rds" {
   name                   = local.name
   public_subnet_ids_list = data.terraform_remote_state.vpc.outputs.public_subnets
   service_sg_ids = [
-    module.model.ecs_sg_id,
+    module.frontend.ecs_sg_id,
   ]
   vpc_id                                = data.terraform_remote_state.vpc.outputs.vpc_id
   engine                                = "aurora-postgresql"
