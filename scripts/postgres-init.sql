@@ -1,8 +1,8 @@
-CREATE USER gov-ai WITH PASSWORD 'gov-ai'; -- # pragma: allowlist-secret
-ALTER USER gov-ai CREATEDB;
+CREATE USER govai WITH PASSWORD 'govai'; -- # pragma: allowlist-secret
+ALTER USER govai CREATEDB;
 CREATE DATABASE gov_ai_local;
-GRANT ALL PRIVILEGES ON DATABASE gov_ai_local TO gov-ai;
+GRANT ALL PRIVILEGES ON DATABASE gov_ai_local TO govai;
 
-ALTER DATABASE gov_ai_local OWNER TO gov-ai;
+ALTER DATABASE gov_ai_local OWNER TO govai;
 --needed to create extension
-ALTER ROLE gov-ai SUPERUSER;
+ALTER ROLE govai SUPERUSER;
