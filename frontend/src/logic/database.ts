@@ -61,7 +61,11 @@ export const saveChat = async(userEmail: string, messages: Message[], chatId: st
   if (chatId !== '-1') {
     update = await pool.query('UPDATE chats SET messages = $1, updated = now() WHERE id = $2 RETURNING *;', [messages, parseInt(chatId)]);
   } else {
-    const title = messages[0].response.content.substring(0, 24);
+    const MAX_TITLE_LENGTH = 40;
+    let title = messages[0].response.content.substring(0, MAX_TITLE_LENGTH);
+    if (messages[0].response.content.length > MAX_TITLE_LENGTH) {
+      title += '...';
+    }
     update = await pool.query('INSERT INTO chats (userEmail, title, messages, scope) VALUES ($1, $2, $3, $4) RETURNING *', [userEmail, title, messages, scopedServer]);
   }
   return update;
