@@ -12,31 +12,30 @@ const pool = new Pool({
   database: process.env.POSTGRES_DB,
   max: 10,
   idleTimeoutMillis: 30000,
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
 
 
 const init = async() => {
-  await pool.query(`
-    
-    GRANT ALL PRIVILEGES ON DATABASE ${process.env.POSTGRES_DB} TO ${process.env.POSTGRES_USER};
-    GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO ${process.env.POSTGRES_USER};
-    GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO ${process.env.POSTGRES_USER};
-    GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA public TO ${process.env.POSTGRES_USER};
-    ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO ${process.env.POSTGRES_USER};
-    ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO ${process.env.POSTGRES_USER};
-    ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON FUNCTIONS TO ${process.env.POSTGRES_USER};
-
-    CREATE TABLE IF NOT EXISTS chats (
-      id            SERIAL            PRIMARY KEY,
-      userEmail     TEXT              NOT NULL,
-      title         TEXT              NOT NULL,
-      scope         TEXT,
-      messages      JSONB[]           NOT NULL,
-      created       TIMESTAMPTZ       NOT NULL DEFAULT now(),
-      updated       TIMESTAMPTZ       NOT NULL DEFAULT now()
-    );
-
-  `);
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS chats (
+        id            SERIAL            PRIMARY KEY,
+        userEmail     TEXT              NOT NULL,
+        title         TEXT              NOT NULL,
+        scope         TEXT,
+        messages      JSONB[]           NOT NULL,
+        created       TIMESTAMPTZ       NOT NULL DEFAULT now(),
+        updated       TIMESTAMPTZ       NOT NULL DEFAULT now()
+      );
+    `);
+    console.log('Table successfully created');
+  } catch(err) {
+    console.error('Failed to create table:', err);
+    throw err;
+  }
 };
 init();
 
