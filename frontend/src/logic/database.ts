@@ -55,4 +55,7 @@ export const saveChat = async(userEmail: string, messages: Message[], chatId: st
 };
 
 
-// TO DO: Delete chat
+export const deleteChat = async(userEmail: string, chatId: string) => {
+  const query = await pool.query('DELETE FROM chats WHERE id = $1 AND userEmail = $2;', [parseInt(chatId), userEmail]);
+  return query;
+};
