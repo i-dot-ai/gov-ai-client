@@ -146,6 +146,12 @@ export class MessageBox extends LitElement {
       } else if (response.type === 'end') {
         source.close();
         this.streamingInProgress = false;
+
+        // update chatId
+        /** @type {HTMLInputElement }*/(document.querySelector('input[name="chatid"]')).value = response.data;
+        const currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.set('chatid', response.data);
+        window.history.replaceState({}, '', currentUrl.toString());
       }
 
       scrollMessage();

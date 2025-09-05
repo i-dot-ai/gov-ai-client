@@ -6,24 +6,22 @@ import LitWrapper from '../components/lit-wrapper.astro';
 import LogoAnimation from '../components/LogoAnimation.astro';
 import type { Message } from '../logic/ai3.ts';
 import { getMcpServers } from '../logic/get-servers.ts';
+import { getChat } from '../logic/database';
 
 
-// clear session data if requested, otherwise fetch existing messages
 const { scope } = Astro.params;
+
+// Get messages (if a chatid has been passed in)
 let messages: Message[] | undefined = [];
-if (Astro.url.searchParams.get('clear') === 'true') {
-  Astro.session?.set(`messages-${scope || 'all'}`, []);
-} else {
-  messages = await Astro.session?.get(`messages-${scope || 'all'}`);
+const chatId = Astro.url.searchParams.get('chatid') || '-1';
+if (chatId !== '-1') {
+  const userEmail = await Astro.session?.get('user-email');
+  messages = (await getChat(userEmail, chatId))?.messages;
 }
 
 const mcpServers = await getMcpServers(Astro.request.headers.get('x-amzn-oidc-accesstoken') || '');
 
-// Scoped pages
 const singleServer = mcpServers.find((server) => server.name.toLowerCase() === scope?.toLowerCase());
-if (Astro.url.pathname !== '/' && !singleServer) {
-  return Astro.redirect('/');
-}
 
 ---
 
@@ -34,6 +32,7 @@ if (Astro.url.pathname !== '/' && !singleServer) {
   <form method="POST" action="/post-message" enctype="application/x-www-form-urlencoded">
 
     <input type="hidden" name="scope" value={ scope || 'all' } />
+    <input type="hidden" name="chatid" value={ chatId } />
 
     <div class="message-container">
 
@@ -99,7 +98,7 @@ if (Astro.url.pathname !== '/' && !singleServer) {
           </model-selector>
         </div>
         <div class="flex flex-col items-start mt-2 right-0 top-0 md:mt-0 md:absolute md:flex-row">
-          <a class="border-pink border-solid border-1 focus:shadow-none! inline-block min-h-[36px] mr-2 no-underline! outline-offset-0 px-2 py-1 rounded-md w-[147px] focus:bg-transparent! focus:text-pink! focus:outline-pink! focus-visible:outline-2! plausible-event-name=New+Chat" href={ '/' + (scope ? 'scoped/' + scope : '') + '?clear=true' }>Start a new chat</a>
+          <a class="border-pink border-solid border-1 focus:shadow-none! inline-block min-h-[36px] mr-2 no-underline! outline-offset-0 px-2 py-1 rounded-md w-[147px] focus:bg-transparent! focus:text-pink! focus:outline-pink! focus-visible:outline-2! plausible-event-name=New+Chat" href={ '/' + (scope ? 'scoped/' + scope : '') }>Start a new chat</a>
           <button class="bg-pink border-pink border-solid border-1 cursor-pointer mt-2 outline-offset-4 outline-pink px-2 py-1 rounded-md text-white md:mt-0 plausible-event-name=Send+Prompt">Send</button>
         </div>
       </div>
@@ -160,13 +159,6 @@ if (Astro.url.pathname !== '/' && !singleServer) {
     import '../components/message-input.mjs'
     import '../components/tool-info.mjs'
     import '../components/tool-selector.ts'
-  </script>
-
-  <script>
-    // remove clear=true so page reloads don't inadvertently clear the session
-    if (window.location.search) {
-      window.history.replaceState(null, document.title, `${window.location.origin}${window.location.pathname}`);
-    }
   </script>
 
 </Layout>
