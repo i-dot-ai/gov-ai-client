@@ -15,16 +15,19 @@ const chats = await getChats(userEmail);
     { chats.map((chat) =>
       <li class="border-1 border-border-grey border-solid flex justify-between mt-3 px-3 py-2 rounded-md">
         <a class="group no-underline!" href={ (chat.scope === 'all' ? '/' : '/scoped/' + chat.scope) + '?chatid=' + chat.id }>
-          <span class="underline underline-offset-5 group-hover:decoration-3">{ chat.title }</span>
+          <span class="underline underline-offset-4 group-hover:decoration-3">{ chat.title }</span>
           { chat.scope !== 'all' &&
             <span class="gap-1 inline-flex items-center ml-1 text-text-secondary">
               { chat.scope }
-              <img class="h-4 opacity-50" src={ '/server-logos/black/' + chat.scope.toLowerCase().replaceAll(' ', '_') + '.png' } alt="" />
+              <span class="bg-black border-2 border-black border-solid flex h-4 items-center justify-center opacity-50 relative rounded-full text-sm text-white w-4">
+                <span class="no-underline" aria-hidden="true">{ chat.scope[0].toUpperCase() }</span>
+                <img class="absolute h-4" src={ '/server-logos/black/' + chat.scope.toLowerCase().replaceAll(' ', '_') + '.png' } alt="" />
+              </span>
             </span>
           }
         </a>
         <form method="POST" action={ '/delete-chat?chatid=' + chat.id }>
-          <button class="cursor-pointer text-pink underline underline-offset-5 hover:decoration-3">
+          <button class="cursor-pointer text-pink underline underline-offset-4 hover:decoration-3">
             Delete
             <span class="sr-only"> { chat.title }</span>
           </button>

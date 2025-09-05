@@ -45,7 +45,7 @@ init();
 
 
 export const getChats = async(userEmail: string) => {
-  const chats = await pool.query('SELECT * FROM chats WHERE userEmail = $1', [userEmail]);
+  const chats = await pool.query('SELECT * FROM chats WHERE userEmail = $1 ORDER BY updated DESC', [userEmail]);
   return chats.rows;
 };
 
