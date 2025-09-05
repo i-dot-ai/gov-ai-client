@@ -1,17 +1,34 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { getChats } from '../logic/database';
+import { getMcpServers } from '../logic/get-servers.ts';
+
+const mcpServers = await getMcpServers(Astro.request.headers.get('x-amzn-oidc-accesstoken') || '');
 
 const userEmail = await Astro.session?.get('user-email');
 const chats = await getChats(userEmail);
 ---
 
-<Layout>
-  <h1 class="font-bold text-3xl">Chat history</h1>
-  <ul class="list-disc mt-4">
+<Layout mcpServers={ mcpServers }>
+  <h1 class="font-bold text-xl">Chat history</h1>
+  <ul class="mt-8">
     { chats.map((chat) =>
-      <li class="mt-1">
-        <a href={ (chat.scope === 'all' ? '/' : '/scoped/' + chat.scope) + '?chatid=' + chat.id }>{ chat.title }</a>
+      <li class="border-1 border-border-grey border-solid flex justify-between mt-3 px-3 py-2 rounded-md">
+        <a class="group no-underline!" href={ (chat.scope === 'all' ? '/' : '/scoped/' + chat.scope) + '?chatid=' + chat.id }>
+          <span class="underline underline-offset-5 group-hover:decoration-3">{ chat.title }</span>
+          { chat.scope !== 'all' &&
+            <span class="gap-1 inline-flex items-center ml-1 text-text-secondary">
+              { chat.scope }
+              <img class="h-4 opacity-50" src={ '/server-logos/black/' + chat.scope.toLowerCase().replaceAll(' ', '_') + '.png' } alt="" />
+            </span>
+          }
+        </a>
+        <form method="POST" action={ '/delete-chat?chatid=' + chat.id }>
+          <button class="cursor-pointer text-pink underline underline-offset-5 hover:decoration-3">
+            Delete
+            <span class="sr-only"> { chat.title }</span>
+          </button>
+        </form>
       </li>
     )}
   </ul>
