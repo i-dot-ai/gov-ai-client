@@ -1,10 +1,11 @@
 import 'dotenv/config';
-import pg from 'pg';
+import pg, { type PoolConfig } from 'pg';
 import type { Message } from './ai3';
 
-const { Pool } = pg;
 
-const pool = new Pool({
+// Setup pool
+const { Pool } = pg;
+const poolSettings: PoolConfig = {
   user: process.env.POSTGRES_USER,
   password: process.env.POSTGRES_PASSWORD,
   host: process.env.POSTGRES_HOST,
@@ -12,10 +13,13 @@ const pool = new Pool({
   database: process.env.POSTGRES_DB,
   max: 10,
   idleTimeoutMillis: 30000,
-  ssl: {
+};
+if (process.env.ENVIRONMENT !== 'local') {
+  poolSettings.ssl = {
     rejectUnauthorized: false,
-  },
-});
+  };
+}
+const pool = new Pool(poolSettings);
 
 
 const init = async() => {
