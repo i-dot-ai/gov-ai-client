@@ -7,31 +7,54 @@ const mcpServers = await getMcpServers(Astro.request.headers.get('x-amzn-oidc-ac
 
 const userEmail = await Astro.session?.get('user-email');
 const chats = await getChats(userEmail);
+
+const dateOptions: Intl.DateTimeFormatOptions = {
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric',
+};
+const timeOptions: Intl.DateTimeFormatOptions = {
+  hour: 'numeric',
+  minute: 'numeric',
+};
+
 ---
 
 <Layout mcpServers={ mcpServers }>
   <h1 class="font-bold text-xl">Chat history</h1>
   <ul class="mt-8">
     { chats.map((chat) =>
-      <li class="border-1 border-border-grey border-solid flex justify-between mt-3 px-3 py-2 rounded-md">
-        <a class="group no-underline!" href={ (chat.scope === 'all' ? '/' : '/scoped/' + chat.scope) + '?chatid=' + chat.id }>
-          <span class="underline underline-offset-4 group-hover:decoration-3">{ chat.title }</span>
-          { chat.scope !== 'all' &&
-            <span class="gap-1 inline-flex items-center ml-1 text-text-secondary">
-              { chat.scope }
-              <span class="bg-black border-2 border-black border-solid flex h-4 items-center justify-center opacity-50 relative rounded-full text-sm text-white w-4">
-                <span class="no-underline" aria-hidden="true">{ chat.scope[0].toUpperCase() }</span>
-                <img class="absolute h-4" src={ '/server-logos/black/' + chat.scope.toLowerCase().replaceAll(' ', '_') + '.png' } alt="" />
+      <li class="border-1 border-border-grey border-solid flex gap-2 justify-between mt-3 px-3 py-2 rounded-md">
+        <span class="flex flex-col lg:flex-row lg:gap-2">
+          <a class="break-all underline-offset-4 hover:decoration-3" href={ (chat.scope === 'all' ? '/' : '/scoped/' + chat.scope) + '?chatid=' + chat.id }>{ chat.title }</a>
+          <span class="flex flex-col sm:flex-row sm:gap-2">
+            { chat.scope !== 'all' &&
+              <span class="gap-1 inline-flex items-center text-text-secondary">
+                { chat.scope }
+                <span class="bg-black border-2 border-black border-solid flex h-4 items-center justify-center opacity-50 relative rounded-full text-xs text-white w-4">
+                  <span class="no-underline" aria-hidden="true">{ chat.scope[0].toUpperCase() }</span>
+                  <img class="absolute h-4" src={ '/server-logos/black/' + chat.scope.toLowerCase().replaceAll(' ', '_') + '.png' } alt="" />
+                </span>
               </span>
+            }
+            <span class="text-text-secondary lg:hidden">
+              { new Date(chat.updated).toLocaleDateString('en-GB', dateOptions) },
+              { new Date(chat.updated).toLocaleTimeString(undefined, timeOptions) }
             </span>
-          }
-        </a>
-        <form method="POST" action={ '/delete-chat?chatid=' + chat.id }>
-          <button class="cursor-pointer text-pink underline underline-offset-4 hover:decoration-3">
-            Delete
-            <span class="sr-only"> { chat.title }</span>
-          </button>
-        </form>
+          </span>
+        </span>
+        <span class="flex gap-2">
+          <span class="hidden text-text-secondary lg:block">
+            { new Date(chat.updated).toLocaleDateString('en-GB', dateOptions) },
+            { new Date(chat.updated).toLocaleTimeString(undefined, timeOptions) }
+          </span>
+          <form method="POST" action={ '/delete-chat?chatid=' + chat.id }>
+            <button class="cursor-pointer text-pink underline underline-offset-4 hover:decoration-3">
+              Delete
+              <span class="sr-only"> { chat.title }</span>
+            </button>
+          </form>
+        </span>
       </li>
     )}
   </ul>
