@@ -59,7 +59,7 @@ export const getChat = async(userEmail: string, chatId: string) => {
 export const saveChat = async(userEmail: string, messages: Message[], chatId: string, scopedServer?: string) => {
   let update;
   if (chatId !== '-1') {
-    update = await pool.query('UPDATE chats SET messages = $1, updated = now() WHERE id = $2 RETURNING *;', [messages, parseInt(chatId)]);
+    update = await pool.query('UPDATE chats SET messages = $1, updated = now() WHERE id = $2 RETURNING *;', [messages, chatId]);
   } else {
     const MAX_TITLE_LENGTH = 40;
     let title = messages[0].response.content.substring(0, MAX_TITLE_LENGTH);
@@ -73,6 +73,6 @@ export const saveChat = async(userEmail: string, messages: Message[], chatId: st
 
 
 export const deleteChat = async(userEmail: string, chatId: string) => {
-  const query = await pool.query('DELETE FROM chats WHERE id = $1 AND userEmail = $2;', [parseInt(chatId), userEmail]);
+  const query = await pool.query('DELETE FROM chats WHERE id = $1 AND userEmail = $2;', [chatId, userEmail]);
   return query;
 };
