@@ -16,7 +16,7 @@
     "@langchain/mcp-adapters": "^0.6.0",
     "@langchain/openai": "^0.6.7",
     "@lit-labs/ssr": "^3.3.1",
-    "@modelcontextprotocol/sdk": "^1.17.2",
+    "@modelcontextprotocol/sdk": "^1.17.5",
     "@sentry/astro": "^9.33.0",
     "@tailwindcss/vite": "^4.1.11",
     "astro": "^5.12.5",

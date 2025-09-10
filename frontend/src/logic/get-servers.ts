@@ -1,5 +1,4 @@
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
-import { SSEClientTransport, type SSEClientTransportOptions } from '@modelcontextprotocol/sdk/client/sse.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import { loadMcpTools } from '@langchain/mcp-adapters';
 import type { StructuredToolInterface } from '@langchain/core/tools';
@@ -26,6 +25,7 @@ export type MCP_SERVER = {
   url: string,
   accessToken?: string,
   tools: Tool[],
+  customPrompt?: string,
 };
 
 
@@ -59,8 +59,7 @@ const getServerList = (): MCP_SERVER[] => {
 };
 
 
-const getTools = async(mcpServer: MCP_SERVER, authToken?: string) => {
-  const tools = [];
+const createClient = async(mcpServer: MCP_SERVER, authToken?: string) => {
   const serverHeaders: { [key: string]: string } = {};
   if (mcpServer.accessToken) {
     serverHeaders['x-external-access-token'] = mcpServer.accessToken;
@@ -80,39 +79,62 @@ const getTools = async(mcpServer: MCP_SERVER, authToken?: string) => {
       headers: serverHeaders,
     },
   };
+
+  let client;
+
   try {
-    const client = new Client({
+    client = new Client({
       name: mcpServer.name,
       version: '1.0.0',
     });
-    try {
-      const transport: StreamableHTTPClientTransport = new StreamableHTTPClientTransport(new URL(mcpServer.url), transportOptions);
-      await client.connect(transport);
-      console.log(`${mcpServer.name}: Connected using Streamable HTTP transport`);
-    } catch(error) { /* eslint @typescript-eslint/no-unused-vars: "off" */
-      console.log(`${mcpServer.name}: Error connecting via StreamableHTTTP`, error);
-      const sseTransport = new SSEClientTransport(new URL(mcpServer.url), transportOptions as SSEClientTransportOptions);
-      await client.connect(sseTransport, {
-        timeout: 2000,
-      });
-      console.log(`${mcpServer.name}: Connected using SSE transport`);
-    }
-
-    const serverMcpTools = await loadMcpTools(mcpServer.url, client) as unknown as Tool[];
-    const toolList = await client.listTools();
-    serverMcpTools.forEach((tool, toolIndex) => {
-      tool.serverName = mcpServer.name;
-      tool.annotations = toolList.tools[toolIndex].annotations;
-    });
-
-    tools.push(...serverMcpTools);
-
+    const transport: StreamableHTTPClientTransport = new StreamableHTTPClientTransport(new URL(mcpServer.url), transportOptions);
+    await client.connect(transport);
   } catch(error) {
     console.log(`${mcpServer.name}: Error trying to access this server`, error);
     // serversWithFailedConnections.push(mcpServer.name);
   }
 
+  return client;
+
+};
+
+
+const getTools = async(mcpServer: MCP_SERVER, authToken?: string) => {
+  const tools = [];
+  const client = await createClient(mcpServer, authToken);
+  if (!client) {
+    return [];
+  }
+
+  try {
+    console.log(`${mcpServer.name}: Connected using Streamable HTTP transport`);
+  } catch(error) { /* eslint @typescript-eslint/no-unused-vars: "off" */
+    console.log(`${mcpServer.name}: Error connecting via StreamableHTTTP`, error);
+  }
+
+  const serverMcpTools = await loadMcpTools(mcpServer.url, client) as unknown as Tool[];
+  const toolList = await client.listTools();
+  serverMcpTools.forEach((tool, toolIndex) => {
+    tool.serverName = mcpServer.name;
+    tool.annotations = toolList.tools[toolIndex].annotations;
+  });
+
+  tools.push(...serverMcpTools);
   return tools;
+};
+
+
+const getPrompt = async(promptName: string, mcpServer: MCP_SERVER, authToken?: string): Promise<string> => {
+  const client = await createClient(mcpServer, authToken);
+  let prompt;
+  try {
+    prompt = await client?.getPrompt({
+      name: promptName,
+    });
+  } catch(err) {
+    console.log('Error getting prompt for', promptName, err);
+  }
+  return prompt?.messages.length ? prompt.messages[0].content.text as string : '';
 };
 
 
@@ -140,15 +162,18 @@ export const getMcpServers = async(authToken: string) => {
   }
 
   const caddyTools = await getTools(caddyServer, authToken);
-  caddyTools.forEach((tool) => {
+
+  for (const tool of caddyTools) {
+    const prompt = await getPrompt(tool.name, caddyServer, authToken);
     caddyServers.push({
       name: tool.annotations?.title?.replace('Search ', '') || tool.name,
       description: tool.description,
       url: caddyServer?.url || '',
       accessToken: caddyServer?.accessToken,
       tools: [tool],
+      customPrompt: prompt.trim(),
     });
-  });
+  }
 
   return [...caddyServers, ...cachedServers];
 

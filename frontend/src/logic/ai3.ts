@@ -59,7 +59,8 @@ export const getLlmResponse = async(messages: Message[], selectedServers: FormDa
   // filter out any unselected MCP servers
   const mcpTools: Tool[] = [];
   const mcpServers = await getMcpServers(authToken);
-  mcpServers.filter((server: { name: string }) => selectedServers.includes(server.name)).forEach((server) => {
+  const selectedMcpServers = mcpServers.filter((server: { name: string }) => selectedServers.includes(server.name));
+  selectedMcpServers.forEach((server) => {
     server.tools.forEach((tool) => {
       if (selectedTools.includes(tool.name)) {
         mcpTools.push(tool);
@@ -81,25 +82,33 @@ export const getLlmResponse = async(messages: Message[], selectedServers: FormDa
     hour12: true,
   });
 
-  const s3_link_example = '[mydocument.pdf](https://my-example-bucket.s3.eu-west-2.amazonaws.com/path/to/mydocument.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIOSFODNN7EXAMPLE%2F20250827%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250827T153045Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEGMaCXVzLWV&X-Amz-Signature=5d41402abc4b2a76b9719d911017c592)'; // pragma: allowlist secret
+  let systemMessageText = `The current time is ${currentTime}.`;
 
-  let systemMessageText: string = `
-    You are a UK civil servant. The current time is ${currentTime}.
-    Where appropriate cite any responses from tools to support answer, e.g. provide:
-    - source, i.e. link or title (this should be verbatim, do not modify, or invent this. Use concise but descriptive names for links so each unique link text describes the destination. Ensure all links are rendered as proper markdown links).
-    - quotes
-    - etc
-    If the source link is an s3 presigned url for downloading the file, obfuscate the link behind the document name, e.g. 
-    ${s3_link_example}
-    - do not adjust the link or lose any original information from it
-    - do not remove the query string or edit it
-    Reply in British English.
-    Use semantic markdown in your response, but do not display anything as footnotes.
-  `;
-  if (mcpTools.length === 1) {
-    systemMessageText += `You must use the ${mcpTools[0].name} tool.`;
-  } else if (mcpTools.length > 1) {
-    systemMessageText += 'You should use one or more MCP tools. If you see a word starting with "@" search for a tool by that name and use it.';
+  if (selectedMcpServers.length === 1 && selectedMcpServers[0].customPrompt) {
+
+    systemMessageText += selectedMcpServers[0].customPrompt;
+
+  } else {
+
+    const s3_link_example = '[mydocument.pdf](https://my-example-bucket.s3.eu-west-2.amazonaws.com/path/to/mydocument.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIOSFODNN7EXAMPLE%2F20250827%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250827T153045Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEGMaCXVzLWV&X-Amz-Signature=5d41402abc4b2a76b9719d911017c592)'; // pragma: allowlist secret
+    systemMessageText += `
+      You are a UK civil servant. Where appropriate cite any responses from tools to support answer, e.g. provide:
+      - source, i.e. link or title (this should be verbatim, do not modify, or invent this. Use concise but descriptive names for links so each unique link text describes the destination. Ensure all links are rendered as proper markdown links).
+      - quotes
+      - etc
+      If the source link is an s3 presigned url for downloading the file, obfuscate the link behind the document name, e.g. 
+      ${s3_link_example}
+      - do not adjust the link or lose any original information from it
+      - do not remove the query string or edit it
+      Reply in British English.
+      Use semantic markdown in your response, but do not display anything as footnotes.
+    `;
+    if (mcpTools.length === 1) {
+      systemMessageText += `You must use the ${mcpTools[0].name} tool.`;
+    } else if (mcpTools.length > 1) {
+      systemMessageText += 'You should use one or more MCP tools. If you see a word starting with "@" search for a tool by that name and use it.';
+    }
+
   }
 
   const agentMessages: (HumanMessage | AIMessage)[] = [new SystemMessage(systemMessageText)];
