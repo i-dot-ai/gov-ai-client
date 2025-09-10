@@ -6,7 +6,7 @@ const selectedServer = Astro.props.selectedServer;
 
 <side-panel>
 
-  <header class="sidepanel bg-background-grey border-r-1 border-border-grey fixed flex flex-col h-screen justify-between overflow-hidden top-0 transition-width w-10 z-10 [.ready>&]:motion-safe:duration-500 md:w-14 lg:sticky">
+  <header class="sidepanel bg-background-grey border-r-1 border-border-grey fixed flex flex-col h-screen justify-between max-h-screen overflow-x-hidden overflow-y-auto top-0 transition-width w-10 z-10 [.ready>&]:motion-safe:duration-500 md:w-14 lg:sticky">
     
     <div class="border-b-1 border-border-grey cursor-pointer flex gap-1 items-center justify-between px-1 py-3 w-60 z-20 md:px-2">
       <div class="flex gap-1 items-center">
@@ -48,7 +48,7 @@ const selectedServer = Astro.props.selectedServer;
             )}
           </ul>
         </div>
-        <a class="flex gap-3 items-start no-underline! px-[3px] rounded-sm md:px-2" href="/chat-history">
+        <a class="flex gap-3 items-start my-2 no-underline! px-[3px] rounded-sm md:px-2" href="/chat-history">
           <span class="rounded-full">
             <img class="h-4 md:h-5" src="/icons/history.svg" alt="Chat history" />
           </span>
