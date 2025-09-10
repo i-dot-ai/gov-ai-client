@@ -63,7 +63,7 @@ export class MessageBox extends LitElement {
           <h2 class="govuk-visually-hidden">AI:</h2>
           
           ${this.toolCalls.map((tool, toolIndex) => html`
-            <tool-info name=${tool.name} server=${tool.server} entries=${JSON.stringify(tool.args)} in-use=${toolIndex + 1 < this.toolCalls.length || this.content.length ? 'false' : 'true'} ref=${this.messageIndex + '-' + toolIndex}></tool-info>
+            <tool-info name=${tool.name} server=${tool.server} entries=${JSON.stringify(tool.args)} in-use=${toolIndex + 1 < this.toolCalls.length || !this.streamingInProgress ? 'false' : 'true'} ref=${this.messageIndex + '-' + toolIndex}></tool-info>
           `)}
 
           ${this.content ? html`
