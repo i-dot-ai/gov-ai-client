@@ -31,6 +31,8 @@ const testAccessibility = async (page: Page) => {
 
 test('Basic prompt-related tasks', async ({ page }) => {
 
+  await page.locator('#model-selector').selectOption('Fast');
+
   await sendPrompt('What is the capital of Norway?', page);
 
   // check the response is shown
@@ -62,6 +64,24 @@ test('Basic prompt-related tasks', async ({ page }) => {
   await page.waitForLoadState('domcontentloaded');
   expect(await page.locator('.message-box--llm').count()).toEqual(0);
  
+});
+
+
+test('Chat history', async ({ page, browserName }) => {
+
+  await page.locator('a:has-text("Chat history")').click();
+
+  await expect(page.locator('h1')).toContainText('Chat history');
+  await expect(page.locator('main li a').first()).toContainText('What is the capital of Norway?');
+
+  await testAccessibility(page);
+
+  const count1 = await page.locator('main li').count();
+  await page.locator('main li button:has-text("Delete")').first().click();
+
+  const count2 = await page.locator('main li').count();
+  expect (count2).toEqual(count1 - 1);
+
 });
 
 
@@ -116,6 +136,8 @@ test('Message input functionality', async ({ page }) => {
 
 
 test('Copy to clipboard', async ({ page, browserName }) => {
+
+  await page.locator('#model-selector').selectOption('Fast');
 
   await sendPrompt('What is the capital of Norway?', page);
   await waitForResponse(page);
