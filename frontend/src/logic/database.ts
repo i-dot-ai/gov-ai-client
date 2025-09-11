@@ -9,7 +9,7 @@ const poolSettings: PoolConfig = {
   user: process.env.POSTGRES_USER,
   password: process.env.POSTGRES_PASSWORD,
   host: process.env.POSTGRES_HOST,
-  port: parseInt(process.env.POSTGRES_PORT || '5432'),
+  port: parseInt(process.env.POSTGRES_PORT || '5433'),
   database: process.env.POSTGRES_DB,
   max: 10,
   idleTimeoutMillis: 30000,
