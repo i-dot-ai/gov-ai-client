@@ -100,6 +100,7 @@ export const getLlmResponse = async(messages: Message[], selectedServers: FormDa
       ${s3_link_example}
       - do not adjust the link or lose any original information from it
       - do not remove the query string or edit it
+      If a creation date is provided with a source, format this appropriately if necessary and display it with the link.
       Reply in British English.
       Use semantic markdown in your response, but do not display anything as footnotes.
     `;
