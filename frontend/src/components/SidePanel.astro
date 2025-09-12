@@ -1,7 +1,13 @@
 ---
+import type { MCP_SERVER } from "../logic/get-servers";
+import SidePanelServer from "./SidePanelServer.astro";
+
 const productName = [Astro.props.product];
-const mcpServers: {name: string}[] = Astro.props.mcpServers;
+const mcpServers: MCP_SERVER[] = Astro.props.mcpServers;
 const selectedServer = Astro.props.selectedServer;
+
+const caddyServers = mcpServers.filter((server) => server.isCaddy);
+
 ---
 
 <side-panel>
@@ -24,29 +30,30 @@ const selectedServer = Astro.props.selectedServer;
     <nav class="sidepanel__content h-full px-2 py-3 w-60">
       <div class="flex flex-col h-full justify-between">
         <div>
-          <div class="px-[2px] pb-5 pt-2">
-            <a class="flex gap-3 group items-start no-underline! rounded-sm" href="/" aria-current={ selectedServer ? undefined : 'page' }>
-              <span class="bg-black border-2 border-black border-solid decoration-none flex h-5 items-center justify-center relative rounded-full text-sm text-white w-5 data-current:border-pink md:h-6 md:ml-[6px] md:w-6" data-current={ Astro.url.pathname === '/' ? 'page' : undefined }>
-                <img src="/server-logos/black/govai.png" alt="Full Gov AI Client" />
-              </span>
-              <span class="sidepanel__hide-on-collapse border-b-1 mt-[2px] hover:border-b-3" aria-hidden="true">Full Gov AI Client</span>
-            </a>
-          </div>
-          <h2 class="sidepanel__hide-on-collapse float-left font-bold mt-1 pl-[3px] text-md md:pl-2">Single servers:</h2>
+          { caddyServers.length &&
+            <>
+              <h2 class="sidepanel__hide-on-collapse float-left font-bold mt-1 pl-[3px] text-md md:pl-2">Collections</h2>
+              <ul class="mt-7">
+                { caddyServers.map((mcpServer) =>
+                  <SidePanelServer mcpServer={ mcpServer } selectedServer={ selectedServer } />
+                )}
+              </ul>
+            </>
+          }
+          <h2 class="sidepanel__hide-on-collapse float-left font-bold mt-1 pl-[3px] text-md md:pl-2">Tools</h2>
           <ul class="mt-7">
-            { mcpServers.map((mcpServer) =>
-              <li class="px-[2px] py-2">
-                <a class="flex gap-3 items-start no-underline! rounded-sm" href={ '/scoped/' + mcpServer.name.toLowerCase() } aria-current={ mcpServer.name === selectedServer ? 'page' : undefined }>
-                  <span class="bg-black border-2 border-black border-solid decoration-none flex h-5 items-center justify-center relative rounded-full text-sm text-white w-5 data-current:border-pink md:h-6 md:ml-[6px] md:w-6" data-current={ mcpServer.name === selectedServer ? 'page' : undefined }>
-                    <span class="no-underline" aria-hidden="true">{ mcpServer.name[0].toUpperCase() }</span>
-                    <img class="absolute" src={ '/server-logos/black/' + mcpServer.name.toLowerCase().replaceAll(' ', '_') + '.png' } alt="" />
-                    <span class="sr-only">{ mcpServer.name }</span>
-                  </span>
-                  <span class="sidepanel__hide-on-collapse border-b-1 mt-[2px] hover:border-b-3" aria-hidden="true">{ mcpServer.name }</span>
-                </a>
-              </li>
+            { mcpServers.filter((mcpServer) => !mcpServer.isCaddy).map((mcpServer) =>
+              <SidePanelServer mcpServer={ mcpServer } selectedServer={ selectedServer } />
             )}
           </ul>
+          <div class="px-[2px] pb-5 pt-2">
+            <a class="flex gap-3 group items-start no-underline! rounded-sm" href="/mixed-sources" aria-current={ selectedServer ? undefined : 'page' }>
+              <span class="border-2 border-transparent border-solid decoration-none flex h-5 items-center justify-center p-[2px] relative rounded-full text-sm text-white w-5 data-current:border-pink md:h-6 md:ml-[6px] md:w-6" data-current={ Astro.url.pathname === '/' ? 'page' : undefined }>
+                <img src="/server-logos/black/mixed_sources.png" alt="Mixed sources" />
+              </span>
+              <span class="sidepanel__hide-on-collapse border-b-1 mt-[2px] hover:border-b-3" aria-hidden="true">Mixed sources</span>
+            </a>
+          </div>
         </div>
         <a class="flex gap-3 items-start my-2 no-underline! px-[3px] rounded-sm md:px-2" href="/chat-history">
           <span class="rounded-full">
@@ -54,6 +61,14 @@ const selectedServer = Astro.props.selectedServer;
           </span>
           <span class="sidepanel__hide-on-collapse underline underline-offset-6 hover:decoration-3" aria-hidden="true">Chat history</span>
         </a>
+        { caddyServers.length &&
+          <a class="flex gap-3 items-start my-2 no-underline! px-[3px] rounded-sm md:px-2" href="https://caddy.ai.cabinetoffice.gov.uk/">
+            <span class="rounded-full">
+              <img class="h-4 md:h-5" src="/icons/collections.svg" alt="Manage collections" />
+            </span>
+            <span class="sidepanel__hide-on-collapse underline underline-offset-6 hover:decoration-3" aria-hidden="true">Manage collections</span>
+          </a>
+        }
       </div>
     </nav>
     
@@ -109,7 +124,7 @@ const selectedServer = Astro.props.selectedServer;
 
 </script>
 
-<style>
+<style is:global>
 
   .sidepanel:has(.sidepanel__toggle[aria-pressed="true"]) {
     width: 300px;
