@@ -26,6 +26,7 @@ export type MCP_SERVER = {
   accessToken?: string,
   tools: Tool[],
   customPrompt?: string,
+  isCaddy?: boolean,
 };
 
 
@@ -172,6 +173,7 @@ export const getMcpServers = async(authToken: string) => {
       accessToken: caddyServer?.accessToken,
       tools: [tool],
       customPrompt: prompt.trim(),
+      isCaddy: true,
     });
   }
 

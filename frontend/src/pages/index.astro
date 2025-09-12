@@ -1,5 +1,14 @@
 ---
-import Chat from '../layouts/Chat.astro';
+import { getMcpServers } from "../logic/get-servers";
+
+const mcpServers = await getMcpServers(Astro.request.headers.get('x-amzn-oidc-accesstoken') || '');
+
+const caddyServers = mcpServers.filter((mcpServer) => mcpServer.isCaddy);
+
+if (caddyServers.length) {
+  return Astro.redirect(`/scoped/${caddyServers[0].name.toLowerCase()}`);
+}
+return Astro.redirect('/mixed-sources');
+
 ---
 
-<Chat></Chat>

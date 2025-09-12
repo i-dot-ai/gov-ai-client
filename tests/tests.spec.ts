@@ -2,7 +2,7 @@ import { test, expect, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('localhost:4321/');
+  await page.goto('localhost:4321/mixed-sources');
 });
 
 
