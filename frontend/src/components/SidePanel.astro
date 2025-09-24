@@ -8,6 +8,15 @@ const selectedServer = Astro.props.selectedServer;
 
 const caddyServers = mcpServers.filter((server) => server.isCaddy);
 
+const caddyUrl = (() => {
+  if (process.env.ENVIRONMENT?.toLowerCase() === 'dev' || process.env.ENVIRONMENT?.toLowerCase() === 'preprod') {
+    return `https://caddy-${process.env.ENVIRONMENT.toLocaleLowerCase()}.ai.cabinetoffice.gov.uk`;
+  } else if (process.env.ENVIRONMENT?.toLowerCase() === 'local') {
+    return 'http://localhost:4322';
+  }
+  return 'https://caddy.ai.cabinetoffice.gov.uk';
+})();
+
 ---
 
 <side-panel>
@@ -30,7 +39,7 @@ const caddyServers = mcpServers.filter((server) => server.isCaddy);
     <nav class="sidepanel__content grow px-2 py-3 w-60">
       <div class="flex flex-col h-full justify-between">
         <div>
-          { caddyServers.length &&
+          { caddyServers.length > 0 &&
             <>
               <h2 class="sidepanel__hide-on-collapse float-left font-bold mt-1 pl-[3px] text-md md:pl-2">Collections</h2>
               <ul class="mt-7">
@@ -43,7 +52,7 @@ const caddyServers = mcpServers.filter((server) => server.isCaddy);
           <h2 class="sidepanel__hide-on-collapse float-left font-bold mt-1 pl-[3px] text-md md:pl-2">Tools</h2>
           <ul class="mt-7">
             { mcpServers.filter((mcpServer) => !mcpServer.isCaddy).map((mcpServer) =>
-              <SidePanelServer mcpServer={ mcpServer } selectedServer={ selectedServer } />
+              <SidePanelServer mcpServer={ mcpServer } selectedServer={ selectedServer } hasLogo="true" />
             )}
           </ul>
           <div class="px-[2px] pb-5 pt-2">
@@ -62,12 +71,13 @@ const caddyServers = mcpServers.filter((server) => server.isCaddy);
             </span>
             <span class="sidepanel__hide-on-collapse underline underline-offset-6 hover:decoration-3" aria-hidden="true">Chat history</span>
           </a>
-          { caddyServers.length &&
-            <a class="flex gap-3 items-start mb-2 mt-4 no-underline! px-[3px] rounded-sm md:px-2" href="https://caddy.ai.cabinetoffice.gov.uk/">
+          { caddyServers.length > 0 &&
+            <a class="flex gap-3 items-start mb-2 mt-4 no-underline! px-[3px] rounded-sm md:px-2" href={ caddyUrl } target="_blank" rel="noreferrer noopener">
               <span class="rounded-full">
                 <img class="h-4 md:h-5" src="/icons/collections.svg" alt="Manage collections" />
               </span>
               <span class="sidepanel__hide-on-collapse underline underline-offset-6 hover:decoration-3" aria-hidden="true">Manage collections</span>
+              <span class="sr-only"> (opens in new tab)</span>
             </a>
           }
         </div>
