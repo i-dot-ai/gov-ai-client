@@ -3,13 +3,17 @@ import type { MCP_SERVER } from '../logic/get-servers';
 
 const mcpServer: MCP_SERVER = Astro.props.mcpServer;
 const selectedServer = Astro.props.selectedServer;
+const hasLogo = Astro.props.hasLogo;
+
 ---
 
 <li class="px-[2px] py-2">
   <a class="flex gap-3 items-start no-underline! rounded-sm" href={ '/scoped/' + mcpServer.name.toLowerCase() } aria-current={ mcpServer.name === selectedServer ? 'page' : undefined }>
     <span class="bg-black border-2 border-black border-solid decoration-none flex h-5 items-center justify-center relative rounded-full text-sm text-white w-5 data-current:border-pink md:h-6 md:ml-[6px] md:w-6" data-current={ mcpServer.name === selectedServer ? 'page' : undefined }>
       <span class="no-underline" aria-hidden="true">{ mcpServer.name[0].toUpperCase() }</span>
-      <img class="absolute" src={ '/server-logos/black/' + mcpServer.name.toLowerCase().replaceAll(' ', '_') + '.png' } alt="" />
+      { hasLogo && 
+        <img class="absolute" src={ '/server-logos/black/' + mcpServer.name.toLowerCase().replaceAll(' ', '_') + '.png' } alt="" />
+      }
       <span class="sr-only">{ mcpServer.name }</span>
     </span>
     <span class="sidepanel__hide-on-collapse border-b-1 mt-[2px] hover:border-b-3" aria-hidden="true">{ mcpServer.name }</span>
