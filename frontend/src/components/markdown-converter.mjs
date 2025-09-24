@@ -99,7 +99,7 @@ const MarkdownConverter = class extends LitElement {
     this.querySelectorAll('a:not([target="_blank"])').forEach((link) => {
       link.setAttribute('target', '_blank');
       link.setAttribute('rel', 'noreferrer noopener');
-      link.innerHTML += ' <span class="govuk-visually-hidden">(opens in new tab)</span>';
+      link.innerHTML += ' <span class="sr-only top-0 -left-[1000px]">(opens in new tab)</span>';
     });
   }
 
