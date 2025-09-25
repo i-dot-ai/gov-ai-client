@@ -12,7 +12,7 @@ export function sendMessage(message: string, token: string) {
   try {
     controller.enqueue(encoder.encode(`data: ${message}\n\n`));
   } catch(err) {
-    console.log(err);
+    console.log('Error streaming message:', err);
   }
 }
 

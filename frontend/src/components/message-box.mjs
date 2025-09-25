@@ -161,7 +161,9 @@ export class MessageBox extends LitElement {
       console.log('SSE error:', err);
       source.close();
       this.streamingInProgress = false;
-      window.setTimeout(this.#stream, 500);
+      window.setTimeout(() => {
+        this.#stream();
+      }, 500);
     };
 
   }
