@@ -34,8 +34,6 @@ export type Message = {
 
 export const getLlmResponse = async(messages: Message[], selectedServers: FormDataEntryValue[], selectedTools: FormDataEntryValue[], selectedModel: string, authToken: string, sessionToken: string) => {
 
-  const MODEL = selectedModel === 'Fast' ? 'bedrock-claude-3-haiku' : 'azure/o4-mini';
-
   let agentModel;
   if (process.env['USE_LITE_LLM'] === 'true') {
     console.log('Using Lite LLM');
@@ -44,7 +42,7 @@ export const getLlmResponse = async(messages: Message[], selectedServers: FormDa
       configuration: {
         baseURL: process.env['LLM_GATEWAY_URL'],
       },
-      modelName: `${MODEL}`,
+      modelName: `${selectedModel}`,
       callbackManager,
     });
   } else {
@@ -52,7 +50,7 @@ export const getLlmResponse = async(messages: Message[], selectedServers: FormDa
       openAIApiKey: process.env['AZURE_OPENAI_API_KEY'],
       openAIApiVersion: process.env['OPENAI_API_VERSION'],
       openAIBasePath: process.env['AZURE_OPENAI_ENDPOINT'],
-      deploymentName: MODEL.replace('azure/', ''),
+      deploymentName: selectedModel.replace('azure/', ''),
     });
   }
 
@@ -179,6 +177,14 @@ export const getLlmResponse = async(messages: Message[], selectedServers: FormDa
         finalMessage = response.content;
       }
     }
+
+    // Tool response - if required
+    /*
+    if (chunk.tools?.messages) {
+      console.log('TOOL RESPONSE', (chunk.tools.messages as {content: string}[])[0].content);
+    }
+    */
+
   }
 
   return {
