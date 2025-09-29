@@ -15,7 +15,13 @@ const ModelSelector = class extends HTMLElement {
 
     const selectedTool = window.localStorage.getItem('selected-model');
     if (selectedTool) {
-      select.value = selectedTool;
+      // check the option exists, if not default to the first
+      const availableOptions = Array.from(select.options);
+      if (availableOptions.some((option) => option.value === selectedTool)) {
+        select.value = selectedTool;
+      } else {
+        select.value = availableOptions[0].value;
+      }
     }
 
     select.addEventListener('change', () => {
