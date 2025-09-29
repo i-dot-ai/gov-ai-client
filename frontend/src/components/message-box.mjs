@@ -105,13 +105,15 @@ export class MessageBox extends LitElement {
         behavior: 'instant',
       });
     };
-    window.addEventListener('scroll', () => {
+
+    const scrollListener = () => {
       if (programmaticScroll) {
         programmaticScroll = false;
         return;
       }
       userHasScrolled = true;
-    });
+    };
+    document.querySelector('#scroll-panel')?.addEventListener('scroll', scrollListener);
 
     window.setTimeout(() => {
       scrollMessage();
@@ -152,6 +154,9 @@ export class MessageBox extends LitElement {
         const currentUrl = new URL(window.location.href);
         currentUrl.searchParams.set('chatid', response.data);
         window.history.replaceState({}, '', currentUrl.toString());
+
+        // unbind scroll event listener
+        document.querySelector('#scroll-panel')?.removeEventListener('scroll', scrollListener);
       }
 
       scrollMessage();
