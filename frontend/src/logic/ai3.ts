@@ -180,10 +180,10 @@ export const getLlmResponse = async(messages: Message[], selectedServers: FormDa
 
     // Tool response - if required
     /*
-    if (chunk.tools?.messages) {
-      console.log('TOOL RESPONSE', (chunk.tools.messages as {content: string}[])[0].content);
-    }
-    */
+     *if (chunk.tools?.messages) {
+     *  console.log('TOOL RESPONSE', (chunk.tools.messages as {content: string}[])[0].content);
+     *}
+     */
 
   }
 
