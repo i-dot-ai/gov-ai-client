@@ -50,6 +50,12 @@ module "frontend" {
 
   container_port = local.frontend_port
 
+  memory                     = terraform.workspace == "prod" ? 2048 : 1024
+  cpu                        = terraform.workspace == "prod" ? 1024 : 512
+  autoscaling_maximum_target = 1
+  autoscaling_minimum_target = 1
+  desired_app_count          = 1
+
   health_check = {
     accepted_response   = 200
     path                = "/api/health"
