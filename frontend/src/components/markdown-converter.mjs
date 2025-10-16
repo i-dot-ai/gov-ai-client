@@ -47,11 +47,7 @@ const MarkdownConverter = class extends LitElement {
     // 4. Wrap any remaining http(s) URLs
     const linked = noLinks.replace(
       /(https?:\/\/[^\s<]+[^<.,:;"')\]\s])/g,
-      (url) => {
-        // Ensure the destination URL has https:// at the beginning
-        const href = url.startsWith('http') ? url : `https://${url}`;
-        return `[${url}](${href})`;
-      },
+      (url) => `[${url}](${url})`,
     );
 
     // 5. Restore links/images, inline code, then fenced code
@@ -103,6 +99,10 @@ const MarkdownConverter = class extends LitElement {
     this.querySelectorAll('a:not([target="_blank"])').forEach((link) => {
       link.setAttribute('target', '_blank');
       link.setAttribute('rel', 'noreferrer noopener');
+      const href = link.getAttribute('href') || '';
+      if (!href.startsWith('http')) {
+        link.setAttribute('href', `https://${href}`);
+      }
       link.innerHTML += ' <span class="sr-only top-0 -left-[1000px]">(opens in new tab)</span>';
     });
   }
