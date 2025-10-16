@@ -99,6 +99,10 @@ const MarkdownConverter = class extends LitElement {
     this.querySelectorAll('a:not([target="_blank"])').forEach((link) => {
       link.setAttribute('target', '_blank');
       link.setAttribute('rel', 'noreferrer noopener');
+      const href = link.getAttribute('href') || '';
+      if (!href.startsWith('http')) {
+        link.setAttribute('href', `https://${href}`);
+      }
       link.innerHTML += ' <span class="sr-only top-0 -left-[1000px]">(opens in new tab)</span>';
     });
   }
