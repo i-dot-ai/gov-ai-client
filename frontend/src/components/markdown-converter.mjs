@@ -47,7 +47,11 @@ const MarkdownConverter = class extends LitElement {
     // 4. Wrap any remaining http(s) URLs
     const linked = noLinks.replace(
       /(https?:\/\/[^\s<]+[^<.,:;"')\]\s])/g,
-      (url) => `[${url}](${url})`,
+      (url) => {
+        // Ensure the destination URL has https:// at the beginning
+        const href = url.startsWith('http') ? url : `https://${url}`;
+        return `[${url}](${href})`;
+      },
     );
 
     // 5. Restore links/images, inline code, then fenced code
