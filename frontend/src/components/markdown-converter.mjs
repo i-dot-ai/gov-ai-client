@@ -99,10 +99,14 @@ const MarkdownConverter = class extends LitElement {
     this.querySelectorAll('a:not([target="_blank"])').forEach((link) => {
       link.setAttribute('target', '_blank');
       link.setAttribute('rel', 'noreferrer noopener');
-      const href = link.getAttribute('href') || '';
+      let href = link.getAttribute('href') || '';
+      // some links don't start with https:// incorrectly making them relative links
       if (!href.startsWith('http')) {
-        link.setAttribute('href', `https://${href}`);
+        href = `https://${href}`;
       }
+      // if linking to the caddy doc, this will redirect to the original download/webpage rather than just the document chunks
+      href += `${href.includes('?') ? '&' : '?'}from-chat=true`;
+      link.setAttribute('href', href);
       link.innerHTML += ' <span class="sr-only top-0 -left-[1000px]">(opens in new tab)</span>';
     });
   }
