@@ -85,11 +85,6 @@ variable "openai_api_version" {
   description = "Connect to Azure API"
 }
 
-variable "use_lite_llm" {
-  type        = string
-  description = "Whether to use Lite LLM"
-}
-
 variable "mcp_servers" {
   type        = string
   description = "JSON format - this overrides .mcp-servers.yaml"

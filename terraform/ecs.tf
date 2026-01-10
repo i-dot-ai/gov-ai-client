@@ -33,7 +33,7 @@ module "frontend" {
     "REPO" : "gov-ai-client",
     "DOCKER_BUILDER_CONTAINER" : "gov-ai-client",
     "AUTH_PROVIDER_PUBLIC_KEY" : data.aws_ssm_parameter.auth_provider_public_key.value,
-
+    "USE_LITE_LLM": true
     "LLM_GATEWAY_URL" : local.llm_gateway_url
   }
 
