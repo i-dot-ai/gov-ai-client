@@ -25,7 +25,7 @@ export async function onRequest(context, next) {
     if (process.env.ENVIRONMENT == 'local') {
       token = TEST_AUTHORISATION_JWT;
     } else {
-      token = context.request.headers.get('x-amzn-oidc-accesstoken');
+      token = context.request.headers.get('x-amzn-oidc-data');
     }
 
     if (!token) {
