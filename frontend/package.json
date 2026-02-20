@@ -10,13 +10,13 @@
     "lint": "npx eslint --fix"
   },
   "dependencies": {
-    "@astrojs/node": "^9.2.1",
+    "@astrojs/node": "^9.4.1",
     "@langchain/core": "^0.3.80",
     "@langchain/langgraph": "^0.4.3",
     "@langchain/mcp-adapters": "^0.6.0",
     "@langchain/openai": "^0.6.7",
     "@lit-labs/ssr": "^3.3.1",
-    "@modelcontextprotocol/sdk": "^1.17.5",
+    "@modelcontextprotocol/sdk": "^1.26.0",
     "@sentry/astro": "^9.33.0",
     "@tailwindcss/vite": "^4.1.11",
     "astro": "^5.16.6",
