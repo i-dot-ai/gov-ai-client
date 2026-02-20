@@ -10,7 +10,7 @@ module "frontend" {
   # checkov:skip=CKV_SECRET_4:Skip secret check as these have to be used within the Github Action
   # checkov:skip=CKV_TF_1: We're using semantic versions instead of commit hash
   #source                      = "../../i-dot-ai-core-terraform-modules//modules/infrastructure/ecs" # For testing local changes
-  source                       = "git::https://github.com/i-dot-ai/i-dot-ai-core-terraform-modules.git//modules/infrastructure/ecs?ref=v5.4.0-ecs"
+  source                       = "git::https://github.com/i-dot-ai/i-dot-ai-core-terraform-modules.git//modules/infrastructure/ecs?ref=v5.8.0-ecs"
   image_tag                    = var.image_tag
   ecr_repository_uri           = "public.ecr.aws/idotai/gov-ai-client"
   vpc_id                       = data.terraform_remote_state.vpc.outputs.vpc_id
@@ -32,7 +32,6 @@ module "frontend" {
     "PORT" : local.frontend_port,
     "REPO" : "gov-ai-client",
     "DOCKER_BUILDER_CONTAINER" : "gov-ai-client",
-    "AUTH_PROVIDER_PUBLIC_KEY" : data.aws_ssm_parameter.auth_provider_public_key.value,
 
     "LLM_GATEWAY_URL" : local.llm_gateway_url
   }
