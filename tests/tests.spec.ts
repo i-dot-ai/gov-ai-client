@@ -2,7 +2,7 @@ import { test, expect, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('localhost:4321/');
+  await page.goto('localhost:4321/mixed-sources');
 });
 
 
@@ -31,6 +31,8 @@ const testAccessibility = async (page: Page) => {
 
 test('Basic prompt-related tasks', async ({ page }) => {
 
+  await page.locator('#model-selector').selectOption('Fast');
+
   await sendPrompt('What is the capital of Norway?', page);
 
   // check the response is shown
@@ -58,10 +60,28 @@ test('Basic prompt-related tasks', async ({ page }) => {
 
   // check that the session can be cleared
   expect(await page.locator('.message-box--llm').count()).toEqual(2);
-  await page.locator('a[href="/clear-session"]').click({ clickCount: 3 });
+  await page.locator('a:has-text("Start a new chat")').click({ clickCount: 3 });
   await page.waitForLoadState('domcontentloaded');
   expect(await page.locator('.message-box--llm').count()).toEqual(0);
  
+});
+
+
+test('Chat history', async ({ page, browserName }) => {
+
+  await page.locator('a:has-text("Chat history")').click();
+
+  await expect(page.locator('h1')).toContainText('Chat history');
+  await expect(page.locator('main li a').first()).toContainText('What is the capital of Norway?');
+
+  await testAccessibility(page);
+
+  const count1 = await page.locator('main li').count();
+  await page.locator('main li button:has-text("Delete")').first().click();
+
+  const count2 = await page.locator('main li').count();
+  expect (count2).toEqual(count1 - 1);
+
 });
 
 
@@ -70,19 +90,19 @@ test('MCP call', async ({ page }) => {
   await sendPrompt('@ping-pong What is 6 * 7?', page);
 
   // check the tool call and the response is shown
-  await expect(page.getByText('Calling: ping-pong')).toBeVisible();
+  await expect(page.getByText('View the ping-pong tool')).toBeVisible();
   await waitForResponse(page);
   await expect(page.getByText('42').first()).toBeVisible();
 
   await testAccessibility(page);
 
   // check that the tool isn't called when the server is unticked
-  await page.locator('a[href="/clear-session"]').click({ clickCount: 3 });
+  await page.locator('a:has-text("Start a new chat")').click({ clickCount: 3 });
   await page.locator('summary:has-text("Plugins")').click();
   await page.getByLabel('test-mcp-server').uncheck();
   await sendPrompt('@ping-pong What is 6 * 7?', page);
   await waitForResponse(page);
-  await expect(page.getByText('Calling: ping-pong')).toHaveCount(0);
+  await expect(page.getByText('View the ping-pong tool')).toHaveCount(0);
 
 });
 
@@ -116,6 +136,8 @@ test('Message input functionality', async ({ page }) => {
 
 
 test('Copy to clipboard', async ({ page, browserName }) => {
+
+  await page.locator('#model-selector').selectOption('Fast');
 
   await sendPrompt('What is the capital of Norway?', page);
   await waitForResponse(page);

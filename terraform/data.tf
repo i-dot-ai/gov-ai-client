@@ -83,3 +83,8 @@ data "aws_wafv2_ip_set" "ip_whitelist_internal" {
 data "aws_ssm_parameter" "litellm_api_key" {
   name = "/i-dot-ai-${terraform.workspace}-core-llm-gateway/env_secrets/${var.project_name}-api-key"
 }
+
+data "aws_wafv2_ip_set" "ip_whitelist_internal" {
+  name  = "i-dot-ai-core-ip-config-ip-set-internal"
+  scope = var.scope
+}

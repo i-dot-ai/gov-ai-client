@@ -62,11 +62,16 @@ variable "security_level" {
   default     = "base"
   description = "Security Level of the infrastructure."
 }
-<<<<<<< found
 
 variable "azure_openai_api_key" {
   type        = string
   description = "Connect to Azure API"
+  sensitive   = true
+}
+
+variable "openai_api_key" {
+  type        = string
+  description = "Connect to LiteLLM"
   sensitive   = true
 }
 
@@ -103,6 +108,12 @@ variable "langfuse_public_key" {
   sensitive   = true
 }
 
+variable "langfuse_base_url" {
+  type        = string
+  description = "Langfuse base url"
+  sensitive   = true
+}
+
 variable "SENTRY_DSN" {
   type        = string
   description = "DSN for sentry logs"
@@ -114,12 +125,9 @@ variable "SENTRY_AUTH_TOKEN" {
   description = "Sentry auth token for log pushing"
   sensitive   = true
 }
-||||||| expected
-=======
 
 variable "scope" {
   description = "Scope of the WAF, either 'CLOUDFRONT' or 'REGIONAL'"
   type        = string
   default     = "REGIONAL"
 }
->>>>>>> replacement

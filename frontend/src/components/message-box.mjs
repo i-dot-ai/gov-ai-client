@@ -27,7 +27,7 @@ export class MessageBox extends LitElement {
     this.content = this.content || '';
 
     /**
-     * @type { {name: string, args: []}[] }
+     * @type { {name: string, server: string, args: []}[] }
      */
     this.toolCalls = this.toolCalls || [];
   }
@@ -62,8 +62,8 @@ export class MessageBox extends LitElement {
         ${this.type === 'llm' ? html`
           <h2 class="govuk-visually-hidden">AI:</h2>
           
-          ${this.toolCalls.map((tool) => html`
-            <tool-info name=${tool.name} entries=${JSON.stringify(tool.args)}></tool-info>
+          ${this.toolCalls.map((tool, toolIndex) => html`
+            <tool-info name=${tool.name} server=${tool.server} entries=${JSON.stringify(tool.args)} in-use=${toolIndex + 1 < this.toolCalls.length || !this.streamingInProgress ? 'false' : 'true'} ref=${this.messageIndex + '-' + toolIndex}></tool-info>
           `)}
 
           ${this.content ? html`
@@ -92,21 +92,34 @@ export class MessageBox extends LitElement {
 
     this.streamingInProgress = true;
 
-    window.setTimeout(() => {
-
-      /** @type { HTMLElement | null } */
-      const messageBox = this.querySelector('.message-box');
-      messageBox?.focus();
-    }, 100);
-
-    // get message in view
-    window.setTimeout(() => {
+    // scrolling behaviour - scroll message until it reaches the top of the page - unless the user as overridden it
+    let userHasScrolled = false;
+    let programmaticScroll = false;
+    const scrollMessage = () => {
+      if (userHasScrolled) {
+        return;
+      }
+      programmaticScroll = true;
       this.scrollIntoView({
         block: 'start',
         behavior: 'instant',
       });
+    };
+
+    const scrollListener = () => {
+      if (programmaticScroll) {
+        programmaticScroll = false;
+        return;
+      }
+      userHasScrolled = true;
+    };
+    document.querySelector('#scroll-panel')?.addEventListener('scroll', scrollListener);
+
+    window.setTimeout(() => {
+      scrollMessage();
+      const messageBox = /** @type {HTMLElement | null} */(this.querySelector('.message-box')); /* eslint @stylistic/no-extra-parens: "off" */
+      messageBox?.focus();
     }, 100);
-    /** @type {HTMLElement | null} */this.querySelector('.message-box')?.focus();
 
     // setup SSE
     const source = new EventSource('/api/sse');
@@ -135,14 +148,27 @@ export class MessageBox extends LitElement {
       } else if (response.type === 'end') {
         source.close();
         this.streamingInProgress = false;
+
+        // update chatId
+        /** @type {HTMLInputElement }*/(document.querySelector('input[name="chatid"]')).value = response.data;
+        const currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.set('chatid', response.data);
+        window.history.replaceState({}, '', currentUrl.toString());
+
+        // unbind scroll event listener
+        document.querySelector('#scroll-panel')?.removeEventListener('scroll', scrollListener);
       }
+
+      scrollMessage();
 
     };
     source.onerror = (err) => {
       console.log('SSE error:', err);
       source.close();
       this.streamingInProgress = false;
-      window.setTimeout(this.#stream, 500);
+      window.setTimeout(() => {
+        this.#stream();
+      }, 500);
     };
 
   }

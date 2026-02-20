@@ -9,8 +9,7 @@ import { createReactAgent } from '@langchain/langgraph/prebuilt';
 import { AzureChatOpenAI, ChatOpenAI } from '@langchain/openai';
 import { AIMessage, HumanMessage, SystemMessage } from '@langchain/core/messages';
 import { sendMessage } from '../pages/api/sse';
-import { mcpServers } from './get-servers.ts';
-import { getTools } from './get-tools.ts';
+import { getMcpServers, type Tool } from './get-servers';
 import { CallbackManager } from '@langchain/core/callbacks/manager';
 import { CallbackHandler as LangfuseHandler } from 'langfuse-langchain';
 
@@ -18,7 +17,7 @@ import { CallbackHandler as LangfuseHandler } from 'langfuse-langchain';
 const langfuseHandler = new LangfuseHandler({
   secretKey: process.env.LANGFUSE_SECRET_KEY,
   publicKey: process.env.LANGFUSE_PUBLIC_KEY,
-  baseUrl: 'https://cloud.langfuse.com',
+  baseUrl: process.env.LANGFUSE_BASE_URL,
 });
 const callbackManager = CallbackManager.fromHandlers(langfuseHandler);
 
@@ -32,10 +31,8 @@ export type Message = {
   },
 };
 
-const MODEL = 'o4-mini';
 
-
-export const getLlmResponse = async(messages: Message[], selectedServers: FormDataEntryValue[], selectedTools: FormDataEntryValue[], authToken: string, sessionToken: string) => {
+export const getLlmResponse = async(messages: Message[], selectedServers: FormDataEntryValue[], selectedTools: FormDataEntryValue[], selectedModel: string, authToken: string, sessionToken: string) => {
 
   let agentModel;
   if (process.env['USE_LITE_LLM'] === 'true') {
@@ -45,7 +42,7 @@ export const getLlmResponse = async(messages: Message[], selectedServers: FormDa
       configuration: {
         baseURL: process.env['LLM_GATEWAY_URL'],
       },
-      modelName: `azure/${MODEL}`,
+      modelName: `${selectedModel}`,
       callbackManager,
     });
   } else {
@@ -53,19 +50,20 @@ export const getLlmResponse = async(messages: Message[], selectedServers: FormDa
       openAIApiKey: process.env['AZURE_OPENAI_API_KEY'],
       openAIApiVersion: process.env['OPENAI_API_VERSION'],
       openAIBasePath: process.env['AZURE_OPENAI_ENDPOINT'],
-      deploymentName: MODEL,
+      deploymentName: selectedModel.replace('azure/', ''),
     });
   }
 
   // filter out any unselected MCP servers
+  const mcpTools: Tool[] = [];
+  const mcpServers = await getMcpServers(authToken);
   const selectedMcpServers = mcpServers.filter((server: { name: string }) => selectedServers.includes(server.name));
-
-  // Get mcpTools for all servers
-  let { mcpTools } = await getTools(selectedMcpServers, authToken);
-
-  // filter out any unselected MCP tools
-  mcpTools = mcpTools.filter((tool) => {
-    return selectedTools.includes(tool.name);
+  selectedMcpServers.forEach((server) => {
+    server.tools.forEach((tool) => {
+      if (selectedTools.includes(tool.name)) {
+        mcpTools.push(tool);
+      }
+    });
   });
 
   const agent = createReactAgent({
@@ -82,18 +80,34 @@ export const getLlmResponse = async(messages: Message[], selectedServers: FormDa
     hour12: true,
   });
 
-  let systemMessageText: string = `
-    You are a UK civil servant. The current time is ${currentTime}.
-    If you see a word starting with "@" search for a tool by that name and use it. 
-    Where appropriate cite any responses from tools to support answer, e.g. provide:
-    - source, i.e. link or title (this should be verbatim, do not modify, or invent this. Use concise but descriptive names for links so each unique link text describes the destination. Ensure all links are rendered as proper markdown links)
-    - quotes
-    - etc
-    Reply in British English.
-    Use semantic markdown in your response, but do not display anything as footnotes.
-  `;
-  if (selectedMcpServers.length) {
-    systemMessageText += 'You should call an MCP tool if one is available.';
+  let systemMessageText = `The current time is ${currentTime}.`;
+
+  if (selectedMcpServers.length === 1 && selectedMcpServers[0].customPrompt) {
+
+    systemMessageText += selectedMcpServers[0].customPrompt;
+
+  } else {
+
+    const s3_link_example = '[mydocument.pdf](https://my-example-bucket.s3.eu-west-2.amazonaws.com/path/to/mydocument.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIOSFODNN7EXAMPLE%2F20250827%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250827T153045Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEGMaCXVzLWV&X-Amz-Signature=5d41402abc4b2a76b9719d911017c592)'; // pragma: allowlist secret
+    systemMessageText += `
+      You are a UK civil servant. Where appropriate cite any responses from tools to support answer, e.g. provide:
+      - source, i.e. link or title (this should be verbatim, do not modify, or invent this. Use concise but descriptive names for links so each unique link text describes the destination. Ensure all links are rendered as proper markdown links).
+      - quotes
+      - etc
+      If the source link is an s3 presigned url for downloading the file, obfuscate the link behind the document name, e.g. 
+      ${s3_link_example}
+      - do not adjust the link or lose any original information from it
+      - do not remove the query string or edit it
+      If a creation date is provided with a source, format this appropriately if necessary and display it with the link.
+      Reply in British English.
+      Use semantic markdown in your response, but do not display anything as footnotes.
+    `;
+    if (mcpTools.length === 1) {
+      systemMessageText += `You must use the ${mcpTools[0].name} tool.`;
+    } else if (mcpTools.length > 1) {
+      systemMessageText += 'You should use one or more MCP tools. If you see a word starting with "@" search for a tool by that name and use it.';
+    }
+
   }
 
   const agentMessages: (HumanMessage | AIMessage)[] = [new SystemMessage(systemMessageText)];
@@ -150,6 +164,7 @@ export const getLlmResponse = async(messages: Message[], selectedServers: FormDa
         const toolCall = response.tool_calls.map((tool: { name: string; args: { request?: string } }) => {
           return {
             name: tool.name,
+            server: mcpTools.filter((item) => item.name === tool.name)[0].serverName,
             args: tool.args.request || tool.args,
           };
         });
@@ -160,11 +175,16 @@ export const getLlmResponse = async(messages: Message[], selectedServers: FormDa
         }), sessionToken);
       } else if (response.content) {
         finalMessage = response.content;
-        sendMessage(JSON.stringify({
-          type: 'end',
-        }), sessionToken);
       }
     }
+
+    // Tool response - if required
+    /*
+     *if (chunk.tools?.messages) {
+     *  console.log('TOOL RESPONSE', (chunk.tools.messages as {content: string}[])[0].content);
+     *}
+     */
+
   }
 
   return {

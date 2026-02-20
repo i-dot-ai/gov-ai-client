@@ -22,6 +22,10 @@ locals {
       name  = "AZURE_OPENAI_API_KEY"
       value = var.azure_openai_api_key
     },
+    {
+      name  = "OPENAI_API_KEY"
+      value = var.openai_api_key
+    },
 
     {
       name  = "AZURE_OPENAI_ENDPOINT"
@@ -47,17 +51,34 @@ locals {
       name  = "LANGFUSE_SECRET_KEY"
       value = var.langfuse_secret_key
     },
-
+    {
+      name = "LANGFUSE_BASE_URL",
+      value = var.langfuse_base_url
+    },
     {
       name  = "LANGFUSE_PUBLIC_KEY"
       value = var.langfuse_public_key
     },
-
     {
-      name  = "EXAMPLE_VAR"
-      value = "placeholder" # Update value in SSM - Do not hardcode
+      name  = "POSTGRES_HOST"
+      value = module.rds.db_instance_address
+    },
+    {
+      name  = "POSTGRES_PORT"
+      value = 5432
+    },
+    {
+      name  = "POSTGRES_DB"
+      value = module.rds.db_instance_name
+    },
+    {
+      name  = "POSTGRES_USER"
+      value = module.rds.rds_instance_username
+    },
+    {
+      name  = "POSTGRES_PASSWORD"
+      value = module.rds.rds_instance_db_password
     }
-
   ]
 }
 

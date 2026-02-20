@@ -9,6 +9,7 @@ pre-commit-install:
 	pre-commit install
 
 run_frontend:
+	docker compose up -d --wait postgres
 	cd frontend && npm run dev
 run:
 	docker compose up -d --wait

@@ -1,6 +1,8 @@
 import type { APIContext } from 'astro';
 import { getLlmResponse } from '../logic/ai3.ts';
 import type { Message } from '../logic/ai3.ts';
+import { getChat, saveChat } from '../logic/database.ts';
+import { sendMessage } from './api/sse.ts';
 
 export async function POST(context: APIContext) {
 
@@ -8,11 +10,17 @@ export async function POST(context: APIContext) {
   let userPrompt = '';
   let selectedServers: FormDataEntryValue[] = [];
   let selectedTools: FormDataEntryValue[] = [];
+  let model = '';
+  let scope = '';
+  let chatId = '';
   try {
     const data = await context.request.formData();
     userPrompt = data.get('prompt')?.toString() || '';
     selectedServers = data.getAll('servers');
     selectedTools = data.getAll('tools');
+    model = data.get('model')?.toString() || '';
+    scope = data.get('scope')?.toString() || 'all';
+    chatId = data.get('chatid')?.toString() || '-1';
   } catch(error) {
     if (error instanceof Error) {
       console.error(error.message);
@@ -20,7 +28,8 @@ export async function POST(context: APIContext) {
   }
 
   // add user prompt to session data
-  let messages: Message[] | undefined = await context.session?.get('messages');
+  const userEmail = await context.session?.get('user-email');
+  let messages: Message[] | undefined = (await getChat(userEmail, chatId))?.messages;
   if (!messages) {
     messages = [];
   }
@@ -38,7 +47,7 @@ export async function POST(context: APIContext) {
   const keycloakToken = context.request.headers.get('x-amzn-oidc-accesstoken') || '';
   let llmResponse;
   if (userPrompt) {
-    llmResponse = await getLlmResponse(messages, selectedServers, selectedTools, keycloakToken, sessionToken);
+    llmResponse = await getLlmResponse(messages, selectedServers, selectedTools, model, keycloakToken, sessionToken);
   }
 
   // add LLM response to session data
@@ -48,8 +57,12 @@ export async function POST(context: APIContext) {
     });
   }
 
-  // save session data
-  await context.session?.set('messages', messages);
+  // save chat data
+  const data = await saveChat(userEmail, messages, chatId, scope);
+  sendMessage(JSON.stringify({
+    type: 'end',
+    data: data.rows[0].id,
+  }), sessionToken);
 
-  return context.redirect('/');
+  return context.redirect(`/?chatid=${data.rows[0].id}`);
 }
