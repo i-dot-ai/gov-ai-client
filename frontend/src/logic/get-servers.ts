@@ -50,7 +50,7 @@ const getServerList = (): MCP_SERVER[] => {
   // if not, try pulling in list from yaml file
   try {
     const file = fs.readFileSync('../.mcp-servers.yaml', 'utf8');
-    return YAML.parse(file).servers;
+    return YAML.parse(file).servers || [];
   } catch(err) {
     console.error('Missing or invalid .mcp-servers.yaml file - no MCP servers have been added');
     console.log(err);

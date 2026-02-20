@@ -42,15 +42,6 @@ data "terraform_remote_state" "account" {
   }
 }
 
-data "terraform_remote_state" "keycloak" {
-  backend   = "s3"
-  workspace = terraform.workspace
-  config = {
-    bucket = var.state_bucket
-    key    = "core/keycloak/keycloak/terraform.tfstate"
-    region = var.region
-  }
-}
 
 locals {
   name              = "${var.team_name}-${var.env}-${var.project_name}"
@@ -60,13 +51,6 @@ locals {
   auth_ses_identity = "arn:aws:ses:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:identity/auth-notify.ai.cabinetoffice.gov.uk"
 }
 
-data "aws_ssm_parameter" "client_secret" {
-  name = "/${var.team_name}-${terraform.workspace}-core-keycloak/app_client_secret/${var.project_name}"
-}
-
-data "aws_ssm_parameter" "auth_provider_public_key" {
-  name = "/i-dot-ai-${terraform.workspace}-core-keycloak/realm_public_key"
-}
 
 data "aws_secretsmanager_secret" "slack" {
   name = "i-dot-ai-${var.env}-platform-slack-webhook"

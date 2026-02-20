@@ -66,12 +66,11 @@ module "frontend" {
     port                = local.frontend_port
   }
 
-  authenticate_keycloak = {
+
+  authenticate_gds_internal_access = {
     enabled : true,
-    realm_name : data.terraform_remote_state.keycloak.outputs.realm_name,
-    client_id : var.project_name,
-    client_secret : data.aws_ssm_parameter.client_secret.value,
-    keycloak_dns : data.terraform_remote_state.keycloak.outputs.keycloak_dns
+    client_id : aws_ssm_parameter.oidc_secrets["client_id"].value,
+    client_secret : aws_ssm_parameter.oidc_secrets["client_secret"].value,
   }
 }
 
