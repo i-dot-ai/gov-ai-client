@@ -5,7 +5,7 @@ import { decodeJwt } from 'jose';
 export async function parseAuthToken(header: string) {
   if (!header) {
     console.error('No auth token provided to parse');
-    return null;
+    return { email: null, roles: [] };
   }
 
   // Decode without verification since we're using auth-at-the-edge and can trust all traffic
@@ -13,8 +13,8 @@ export async function parseAuthToken(header: string) {
   try {
     tokenContent = decodeJwt(header);
   } catch(error) {
-    console.error('Malformed JWT during decoding:', error);
-    return null;
+    console.error('Malformed JWT during decoding: ' + header, error);
+    return { email: null, roles: [] };
   }
 
   const email = tokenContent.email as string | undefined;
@@ -26,7 +26,7 @@ export async function parseAuthToken(header: string) {
   const realmAccess = tokenContent.realm_access as { roles?: string[] } | undefined;
   if (!realmAccess) {
     console.error('No realm access information found in token');
-    return null;
+    return { email: null, roles: [] };
   }
 
   const roles = realmAccess.roles || [];
