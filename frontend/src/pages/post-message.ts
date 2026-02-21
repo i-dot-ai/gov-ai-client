@@ -3,6 +3,7 @@ import { getLlmResponse } from '../logic/ai3.ts';
 import type { Message } from '../logic/ai3.ts';
 import { getChat, saveChat } from '../logic/database.ts';
 import { sendMessage } from './api/sse.ts';
+import { parseAuthToken } from '../auth.ts';
 
 export async function POST(context: APIContext) {
 
@@ -27,8 +28,16 @@ export async function POST(context: APIContext) {
     }
   }
 
+  // get user email from JWT
+  const oidcDataToken = context.request.headers.get('x-amzn-oidc-data') || '';
+  const { email: userEmail } = await parseAuthToken(oidcDataToken);
+
+  if (!userEmail) {
+    console.error('No user email found in token');
+    return new Response('Unauthorized: No user email in token', { status: 401 });
+  }
+
   // add user prompt to session data
-  const userEmail = await context.session?.get('user-email');
   let messages: Message[] | undefined = (await getChat(userEmail, chatId))?.messages;
   if (!messages) {
     messages = [];
