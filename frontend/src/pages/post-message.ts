@@ -31,7 +31,8 @@ export async function POST(context: APIContext) {
   // get user email from JWT
   const oidcDataToken = context.request.headers.get('x-amzn-oidc-data') || '';
   console.log('OIDC data token present:', !!oidcDataToken, 'length:', oidcDataToken.length);
-  const { email: userEmail } = await parseAuthToken(oidcDataToken);
+  const authResult = await parseAuthToken(oidcDataToken);
+  const userEmail = authResult.email;
   console.log('Parsed email from token:', userEmail);
 
   if (!userEmail) {
