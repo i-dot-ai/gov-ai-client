@@ -36,13 +36,12 @@ export const getLlmResponse = async(messages: Message[], selectedServers: FormDa
 
   let agentModel;
   if (process.env['USE_LITE_LLM'] === 'true') {
-    console.log('Using Lite LLM');
     agentModel = new ChatOpenAI({
-      openAIApiKey: process.env['LITELLM_GOVAI_CLIENT_OPENAI_API_KEY'],
+      apiKey: process.env['LITELLM_GOVAI_CLIENT_OPENAI_API_KEY'],
       configuration: {
         baseURL: process.env['LLM_GATEWAY_URL'],
       },
-      modelName: `${selectedModel}`,
+      model: selectedModel,
       callbackManager,
     });
   } else {

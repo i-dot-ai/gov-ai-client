@@ -36,10 +36,8 @@ export async function POST(context: APIContext) {
   } else {
     oidcDataToken = context.request.headers.get('x-amzn-oidc-data') || '';
   }
-  console.log('OIDC data token present:', !!oidcDataToken, 'length:', oidcDataToken.length);
   const authResult = await parseAuthToken(oidcDataToken);
   const userEmail = authResult.email;
-  console.log('Parsed email from token:', userEmail);
 
   if (!userEmail) {
     console.error('No user email found in token');
