@@ -4,9 +4,9 @@ import { defineConfig, devices } from '@playwright/test';
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
  */
-// import dotenv from 'dotenv';
-// import path from 'path';
-// dotenv.config({ path: path.resolve(__dirname, '.env') });
+import dotenv from 'dotenv';
+import path from 'path';
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -79,16 +79,22 @@ export default defineConfig({
   /* Run local dev servers before starting the tests */
   webServer: [
     {
-      cwd: '../',
-      command: 'make run_frontend',
-      url: 'http://localhost:4321',
-      reuseExistingServer: !process.env.CI,
-    },
-    {
       cwd: '../mcp-server-demo',
       command: 'npm run start',
       url: 'http://localhost:3210/sse',
       reuseExistingServer: !process.env.CI,
+    },
+    {
+      cwd: '../',
+      command: 'make run_frontend',
+      url: 'http://localhost:4321',
+      reuseExistingServer: !process.env.CI,
+      env: {
+        ...process.env,
+        USE_LITE_LLM: process.env.USE_LITE_LLM || '',
+        LITELLM_GOVAI_CLIENT_OPENAI_API_KEY: process.env.LITELLM_GOVAI_CLIENT_OPENAI_API_KEY || '',
+        LLM_GATEWAY_URL: process.env.LLM_GATEWAY_URL || '',
+      },
     },
   ]
 });

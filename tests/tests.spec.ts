@@ -67,7 +67,7 @@ test('Basic prompt-related tasks', async ({ page }) => {
 });
 
 
-test('Chat history', async ({ page, browserName }) => {
+test('Chat history', async ({ page }) => {
 
   await page.locator('a:has-text("Chat history")').click();
 
@@ -89,7 +89,17 @@ test('Chat history', async ({ page, browserName }) => {
 
 
 test('MCP call', async ({ page }) => {
-  
+
+  await page.locator('#model-selector').selectOption('gpt-4.1-nano');
+
+  // Enable the test-mcp-server
+  await page.locator('summary:has-text("Plugins")').click();
+  await page.getByLabel('test-mcp-server').check();
+  // Wait for tools to load after checking the server
+  await page.waitForTimeout(1000);
+  // Check the ping-pong tool
+  await page.getByLabel('ping-pong:').check();
+
   await sendPrompt('@ping-pong What is 6 * 7?', page);
 
   // check the tool call and the response is shown
@@ -138,7 +148,7 @@ test('Message input functionality', async ({ page }) => {
 });
 
 
-test('Copy to clipboard', async ({ page, browserName }) => {
+test('Copy to clipboard', async ({ page }) => {
 
   await page.locator('#model-selector').selectOption('gpt-4.1-nano');
 
