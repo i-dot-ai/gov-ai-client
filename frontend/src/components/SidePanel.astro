@@ -49,11 +49,16 @@ const caddyUrl = (() => {
               </ul>
             </>
           }
-          <h2 class="sidepanel__hide-on-collapse float-left font-bold mt-1 pl-[3px] text-md md:pl-2">Tools</h2>
+          <h2 class="sidepanel__hide-on-collapse float-left font-bold mt-1 pl-[3px] text-md md:pl-2">Chat History</h2>
           <ul class="mt-7">
-            { mcpServers.filter((mcpServer) => !mcpServer.isCaddy).map((mcpServer) =>
-              <SidePanelServer mcpServer={ mcpServer } selectedServer={ selectedServer } hasLogo="true" />
-            )}
+            <li class="px-[2px] pb-2">
+              <a class="flex gap-3 group items-start no-underline! rounded-sm" href="/chat-history">
+                <span class="rounded-full">
+                  <img class="h-4 md:h-5" src="/icons/history.svg" alt="Chat history" />
+                </span>
+                <span class="sidepanel__hide-on-collapse underline underline-offset-6 hover:decoration-3" aria-hidden="true">View all chats</span>
+              </a>
+            </li>
           </ul>
           <div class="px-[2px] pb-5 pt-2">
             <a class="flex gap-3 group items-start no-underline! rounded-sm" href="/mixed-sources" aria-current={ selectedServer ? undefined : 'page' }>
@@ -65,12 +70,6 @@ const caddyUrl = (() => {
           </div>
         </div>
         <div>
-          <a class="flex gap-3 items-start my-2 no-underline! px-[3px] rounded-sm md:px-2" href="/chat-history">
-            <span class="rounded-full">
-              <img class="h-4 md:h-5" src="/icons/history.svg" alt="Chat history" />
-            </span>
-            <span class="sidepanel__hide-on-collapse underline underline-offset-6 hover:decoration-3" aria-hidden="true">Chat history</span>
-          </a>
           { caddyServers.length > 0 &&
             <a class="flex gap-3 items-start mb-2 mt-4 no-underline! px-[3px] rounded-sm md:px-2" href={ caddyUrl } target="_blank" rel="noreferrer noopener">
               <span class="rounded-full">

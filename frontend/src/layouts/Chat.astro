@@ -1,7 +1,5 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import ToolsAllServers from '../components/ToolsAllServers.astro';
-import ToolsSingleServer from '../components/ToolsSingleServer.astro';
 import LitWrapper from '../components/lit-wrapper.astro';
 import LogoAnimation from '../components/LogoAnimation.astro';
 import type { Message } from '../logic/ai3.ts';
@@ -44,8 +42,8 @@ const singleServer = mcpServers.find((server) => server.name.toLowerCase() === s
             <LogoAnimation></LogoAnimation>
           }
         </span>
-        <h1 class="font-bold mx-auto pt-2 text-5xl">Welcome to <span class="text-pink">{ singleServer ? singleServer.name : 'Caddy' }</span></h1>
-        <p class="govuk-body mb-7! mt-3!" set:html={ singleServer? singleServer.description : 'A dedicated assistant for securely connecting to plugins' }></p>
+        <h1 class="font-bold mx-auto pt-2 text-5xl">Welcome to <span class="text-pink">{ singleServer ? singleServer.name : 'The Lab' }</span></h1>
+        <p class="govuk-body mb-7! mt-3!" set:html={ singleServer? singleServer.description : 'Test, compare and explore AI models in one place' }></p>
       </div>
 
       <h2 class="govuk-visually-hidden">Messages</h2>
@@ -79,17 +77,7 @@ const singleServer = mcpServers.find((server) => server.name.toLowerCase() === s
 
       <div class="prompt-box__buttons">
         <div class="relative">
-          { singleServer ?
-            <ToolsSingleServer server={ singleServer } />
-          :
-            <tool-selector class="tool-selector">
-              <details class="mb-2 md:mb-0">
-                <summary class="border-1 border-pink border-solid cursor-pointer outline-pink px-2 py-1 rounded-sm text-[16px] text-pink w-[92px] focus-visible:outline-2 plausible-event-name=Expand+Plugins">Plugins</summary>
-                <ToolsAllServers servers={ mcpServers } />
-              </details>
-            </tool-selector>
-          }
-          <model-selector class="[tool-selector+&]:left-21 top-0 md:mt-0 md:absolute">
+          <model-selector class="top-0 md:mt-0 md:absolute">
             <label class="sr-only" for="model-selector">Mode</label>
             <select class="border-pink border-solid border-1 cursor-pointer inline-block min-h-[36px] mr-5 outline-pink px-2 py-[5px] rounded-sm text-pink w-40 focus-visible:outline-2" id="model-selector" name="model">
               <option value="locailabs/locai-l1-large-2011" class="p-[4px]">
