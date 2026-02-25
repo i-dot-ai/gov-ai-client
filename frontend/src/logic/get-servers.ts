@@ -109,18 +109,17 @@ const getTools = async(mcpServer: MCP_SERVER, authToken?: string) => {
 
   try {
     console.log(`${mcpServer.name}: Connected using Streamable HTTP transport`);
+    const serverMcpTools = await loadMcpTools(mcpServer.url, client) as unknown as Tool[];
+    const toolList = await client.listTools();
+    serverMcpTools.forEach((tool, toolIndex) => {
+      tool.serverName = mcpServer.name;
+      tool.annotations = toolList.tools[toolIndex].annotations;
+    });
+    tools.push(...serverMcpTools);
   } catch(error) { /* eslint @typescript-eslint/no-unused-vars: "off" */
-    console.log(`${mcpServer.name}: Error connecting via StreamableHTTTP`, error);
+    console.log(`${mcpServer.name}: Error loading tools`, error);
   }
 
-  const serverMcpTools = await loadMcpTools(mcpServer.url, client) as unknown as Tool[];
-  const toolList = await client.listTools();
-  serverMcpTools.forEach((tool, toolIndex) => {
-    tool.serverName = mcpServer.name;
-    tool.annotations = toolList.tools[toolIndex].annotations;
-  });
-
-  tools.push(...serverMcpTools);
   return tools;
 };
 
@@ -141,13 +140,15 @@ const getPrompt = async(promptName: string, mcpServer: MCP_SERVER, authToken?: s
 
 const cachedServers: MCP_SERVER[] = [];
 let caddyServer: MCP_SERVER | undefined;
+let testServer: MCP_SERVER | undefined;
 
 
-// Cache all servers except Caddy
+// Cache all servers except Caddy and test-mcp-server
 (async() => {
   const servers = getServerList();
   caddyServer = servers.find((server) => server.name === 'Caddy');
-  for (const server of servers.filter((server) => server.name !== 'Caddy')) {
+  testServer = servers.find((server) => server.name === 'test-mcp-server');
+  for (const server of servers.filter((server) => server.name !== 'Caddy' && server.name !== 'test-mcp-server')) {
     server.tools = await getTools(server);
     cachedServers.push(server);
   }
@@ -158,25 +159,30 @@ export const getMcpServers = async(authToken: string) => {
 
   // Get Caddy collections
   const caddyServers: MCP_SERVER[] = [];
-  if (!caddyServer) {
-    return cachedServers;
+  if (caddyServer) {
+    const caddyTools = await getTools(caddyServer, authToken);
+
+    for (const tool of caddyTools) {
+      const prompt = await getPrompt(tool.name, caddyServer, authToken);
+      caddyServers.push({
+        name: tool.annotations?.title?.replace('Search ', '') || tool.name,
+        description: tool.description,
+        url: caddyServer?.url || '',
+        accessToken: caddyServer?.accessToken,
+        tools: [tool],
+        customPrompt: prompt.trim(),
+        isCaddy: true,
+      });
+    }
   }
 
-  const caddyTools = await getTools(caddyServer, authToken);
-
-  for (const tool of caddyTools) {
-    const prompt = await getPrompt(tool.name, caddyServer, authToken);
-    caddyServers.push({
-      name: tool.annotations?.title?.replace('Search ', '') || tool.name,
-      description: tool.description,
-      url: caddyServer?.url || '',
-      accessToken: caddyServer?.accessToken,
-      tools: [tool],
-      customPrompt: prompt.trim(),
-      isCaddy: true,
-    });
+  // Load test server tools dynamically (not cached)
+  const testServers: MCP_SERVER[] = [];
+  if (testServer) {
+    testServer.tools = await getTools(testServer, authToken);
+    testServers.push(testServer);
   }
 
-  return [...caddyServers, ...cachedServers];
+  return [...caddyServers, ...testServers, ...cachedServers];
 
 };
