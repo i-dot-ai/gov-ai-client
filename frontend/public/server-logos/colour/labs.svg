@@ -29,12 +29,16 @@
 <!--Bubbles in liquid-->
   <circle cx="210" cy="360" r="14" fill="#c0008c">
     <animate attributeName="fill" from="#c0008c" to="white" dur="1s" fill="freeze" begin="2s"/>
+    <animate attributeName="fill" to="#c0008c" from="white" dur="1s" fill="freeze" begin="4s"/>
   </circle>
+
   <circle cx="270" cy="350" r="10" fill="#c0008c">
     <animate attributeName="fill" from="#c0008c" to="white" dur="1s" fill="freeze" begin="0s"/>
+    <animate attributeName="fill" to="#c0008c" from="white" dur="1s" fill="freeze" begin="3s"/>
   </circle>
+
   <circle cx="310" cy="368" r="8" fill="#c0008c">
     <animate attributeName="fill" from="#c0008c" to="white" dur="1s" fill="freeze" begin="1s"/>
-
+    <animate attributeName="fill" to="#c0008c" from="white" dur="1s" fill="freeze" begin="5s"/>
   </circle>
 </svg>
