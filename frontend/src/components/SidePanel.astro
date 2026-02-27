@@ -25,7 +25,7 @@ const caddyUrl = (() => {
     
     <div class="border-b-1 border-border-grey cursor-pointer flex gap-1 items-center justify-between px-1 py-3 w-60 z-20 md:px-2">
       <div class="flex gap-1 items-center">
-        <img class="relative w-5 z-10 md:w-7" height="35" width="35" src="/server-logos/colour/govai.png" alt={ productName.toString() } />
+        <img class="relative w-5 z-10 md:w-7" height="35" width="35" src="/server-logos/colour/labs.svg" alt={ productName.toString() } />
         <span class="font-bold text-xl" aria-hidden="true">{ productName }</span>
       </div>
       <button class="sidepanel__toggle absolute bg-background-grey flex h-6 items-center justify-center right-[-3px] transition-transform w-6 aria-pressed:right-0 aria-pressed:rotate-180 [.ready>&]:motion-safe:duration-500 focus:outline-transparent focus-visible:outline-pink" id="sidepanel__toggle" aria-pressed="false">
@@ -49,28 +49,27 @@ const caddyUrl = (() => {
               </ul>
             </>
           }
-          <h2 class="sidepanel__hide-on-collapse float-left font-bold mt-1 pl-[3px] text-md md:pl-2">Tools</h2>
+          <h2 class="sidepanel__hide-on-collapse float-left font-bold mt-1 pl-[3px] text-md md:pl-2">Chat History</h2>
           <ul class="mt-7">
-            { mcpServers.filter((mcpServer) => !mcpServer.isCaddy).map((mcpServer) =>
-              <SidePanelServer mcpServer={ mcpServer } selectedServer={ selectedServer } hasLogo="true" />
-            )}
+            <li class="px-[2px] pb-2">
+              <a class="flex gap-3 group items-start no-underline! rounded-sm" href="/chat-history">
+                <span class="rounded-full">
+                  <img class="h-4 md:h-5" src="/icons/history.svg" alt="Chat history" />
+                </span>
+                <span class="sidepanel__hide-on-collapse underline underline-offset-6 hover:decoration-3" aria-hidden="true">View all chats</span>
+              </a>
+            </li>
           </ul>
           <div class="px-[2px] pb-5 pt-2">
             <a class="flex gap-3 group items-start no-underline! rounded-sm" href="/mixed-sources" aria-current={ selectedServer ? undefined : 'page' }>
               <span class="border-2 border-transparent border-solid decoration-none flex h-5 items-center justify-center p-[2px] relative rounded-full text-sm text-white w-5 data-current:border-pink md:h-6 md:ml-[6px] md:w-6" data-current={ Astro.url.pathname === '/' ? 'page' : undefined }>
-                <img src="/server-logos/black/mixed_sources.png" alt="Mixed sources" />
+                <img src="/server-logos/black/mixed_sources.png" alt="Current Chat" />
               </span>
-              <span class="sidepanel__hide-on-collapse border-b-1 mt-[2px] hover:border-b-3" aria-hidden="true">Mixed sources</span>
+              <span class="sidepanel__hide-on-collapse border-b-1 mt-[2px] hover:border-b-3" aria-hidden="true">Current Chat</span>
             </a>
           </div>
         </div>
         <div>
-          <a class="flex gap-3 items-start my-2 no-underline! px-[3px] rounded-sm md:px-2" href="/chat-history">
-            <span class="rounded-full">
-              <img class="h-4 md:h-5" src="/icons/history.svg" alt="Chat history" />
-            </span>
-            <span class="sidepanel__hide-on-collapse underline underline-offset-6 hover:decoration-3" aria-hidden="true">Chat history</span>
-          </a>
           { caddyServers.length > 0 &&
             <a class="flex gap-3 items-start mb-2 mt-4 no-underline! px-[3px] rounded-sm md:px-2" href={ caddyUrl } target="_blank" rel="noreferrer noopener">
               <span class="rounded-full">
