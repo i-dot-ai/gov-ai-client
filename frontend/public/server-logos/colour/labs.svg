@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 484 484" width="484" height="484">
+<!--Outer magenta circle (full)-->
+  <circle cx="242" cy="242" r="232" fill="#c0008c"/>
+<!--=== ERLENMEYER FLASK ===-->
+<!--Neck-->
+  <rect x="214" y="108" width="56" height="100" rx="10" fill="white"/>
+<!--Top rim of neck-->
+  <rect x="202" y="96" width="80" height="28" rx="14" fill="white"/>
+<!--Flask body: wide triangle with rounded bottom-->
+  <path d="
+    M 214 200
+    L 114 358
+    A 46 46 0 0 0 158 400
+    L 326 400
+    A 46 46 0 0 0 370 358
+    L 270 200
+    Z
+  " fill="white"/>
+<!--Liquid fill inside flask (magenta)-->
+  <path d="
+    M 150 320
+    L 125 358
+    A 46 46 0 0 0 158 392
+    L 320 392
+    A 46 46 0 0 0 360 358
+    L 335 320
+    Z
+  " fill="#c0008c"/>
+<!--Bubbles in liquid-->
+  <circle cx="210" cy="360" r="14" fill="#c0008c">
+    <animate attributeName="fill" from="#c0008c" to="white" dur="1s" fill="freeze" begin="2s"/>
+  </circle>
+  <circle cx="270" cy="350" r="10" fill="#c0008c">
+    <animate attributeName="fill" from="#c0008c" to="white" dur="1s" fill="freeze" begin="0s"/>
+  </circle>
+  <circle cx="310" cy="368" r="8" fill="#c0008c">
+    <animate attributeName="fill" from="#c0008c" to="white" dur="1s" fill="freeze" begin="1s"/>
+
+  </circle>
+</svg>
